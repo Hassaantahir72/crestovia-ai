@@ -11,6 +11,32 @@ async function getUserContext(){
  await enforceOwnerMfa(supabase,memberships[0].role);return {supabase,user,membership:memberships[0]};
 }
 function field(data:FormData,name:string,max:number){return String(data.get(name)??"").trim().slice(0,max)}
+export async function testAssistantProvider(){
+ const {membership}=await getUserContext();
+ if(membership.role!=="owner")redirect("/dashboard/assistant?provider_test=owner_only");
+ const apiKey=process.env.GROQ_API_KEY;
+ if(!apiKey)redirect("/dashboard/assistant?provider_test=not_configured");
+ const model=process.env.GROQ_MODEL||"llama-3.3-70b-versatile";
+ try{
+  const response=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+   method:"POST",headers:{Authorization:"Bearer "+apiKey,"Content-Type":"application/json"},
+   body:JSON.stringify({model,messages:[{role:"user",content:"Reply with OK only."}],temperature:0,max_tokens:8}),
+   cache:"no-store",signal:AbortSignal.timeout(10000)
+  });
+  if(!response.ok){
+   if(response.status===401||response.status===403)redirect("/dashboard/assistant?provider_test=auth_failed");
+   if(response.status===429)redirect("/dashboard/assistant?provider_test=rate_limited");
+   redirect("/dashboard/assistant?provider_test=request_failed");
+  }
+  const result=await response.json() as {choices?:{message?:{content?:string|null}}[]};
+  if(!result.choices?.[0]?.message?.content?.trim())redirect("/dashboard/assistant?provider_test=empty_response");
+  redirect("/dashboard/assistant?provider_test=success");
+ }catch(error){
+  if(error instanceof Error&&error.message==="NEXT_REDIRECT")throw error;
+  if(error instanceof Error&&(error.name==="TimeoutError"||error.name==="AbortError"))redirect("/dashboard/assistant?provider_test=timeout");
+  redirect("/dashboard/assistant?provider_test=request_failed");
+ }
+}
 export async function createConversation(){
  const {supabase,user}=await getUserContext();const {data,error}=await supabase.from("assistant_conversations").insert({user_id:user.id,title:"New conversation"}).select("id").single();
  if(error||!data)redirect("/dashboard/assistant?error=conversation_create_failed");redirect("/dashboard/assistant?conversation="+data.id);
