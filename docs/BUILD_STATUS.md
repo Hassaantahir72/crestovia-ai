@@ -59,7 +59,7 @@
 - Architecture/planning: 100%
 - Phase 1 foundation: 85% (schema, auth scaffolding, safe organization bootstrap; real-account tests pending)
 - Phase 2 workspace: 48% (project/task writes, comments, member controls, assignments, invitation acceptance; real-user testing pending)
-- Phase 3 AI/memory/approvals: 25% (private chat and memory foundation; provider secret, approvals, and tool systems pending)
+- Phase 3 AI/memory/approvals: 25% (private chat/memory and approval-request queue foundation; provider secret, approval execution, and tool systems pending)
 - Phase 4 assistant/voice: 0%
 - Phase 5 integrations: 0%
 - Phase 6 automation/hardening: 15% (MFA and RLS baseline implemented; security acceptance testing remains)
