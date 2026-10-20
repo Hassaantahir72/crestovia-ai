@@ -1,5 +1,13 @@
 # Crestovia AI — Changelog
 
+## 0.2.17 — Department management and project organization
+- Added a departments workspace with create, edit, and delete flows for owners, admins, and managers, subject to Supabase RLS.
+- Added project counts per department and clear handling when a department is deleted (projects are preserved and become unassigned).
+- Connected department selection to owner-only project creation and display department labels on project cards.
+- Added dashboard and workspace navigation to departments.
+- Kept all reads and writes on the authenticated Supabase client; no service-role key or new external API is needed for department management.
+
+
 ## 0.2.16 — Daily briefing foundation
 - Added a workspace-aware daily briefing for overdue tasks, due-today and upcoming deadlines, blocked/in-progress tasks, projects, pending approval requests, and recent activity.
 - Kept briefing reads on the authenticated Supabase client so row-level security scopes results to each user.
