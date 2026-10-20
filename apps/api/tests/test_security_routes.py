@@ -153,3 +153,27 @@ def test_approved_task_execution_is_atomic_owner_scoped_and_invoker_only():
     assert 'supabase.rpc("execute_approved_task_request",{p_request_id:id,p_organization_id:membership.organization_id})' in executor
     assert '.from("tasks").insert(' not in executor
     assert "external actions remain disabled" in approvals
+
+
+def test_task_reminder_cron_requires_private_secret_and_is_bounded():
+    route = read_web("app/api/cron/task-reminders/route.ts")
+
+    assert 'process.env.CRON_SECRET' in route
+    assert 'request.headers.get("authorization")' in route
+    assert 'status:401' in route
+    assert 'createAdminClient()' in route
+    assert '.limit(500)' in route
+    assert 'ignoreDuplicates:true' in route
+    assert 'cache-control' in route.lower()
+
+
+def test_notification_inbox_actions_are_recipient_and_org_scoped():
+    actions = read_web("app/dashboard/notifications/actions.ts")
+    page = read_web("app/dashboard/notifications/page.tsx")
+
+    assert '.eq("recipient_id",user.id)' in actions
+    assert '.eq("organization_id",membership.organization_id)' in actions
+    assert 'export async function markNotificationRead' in actions
+    assert 'export async function markAllNotificationsRead' in actions
+    assert '.eq("recipient_id",user.id)' in page
+    assert '.order("created_at",{ascending:false})' in page
