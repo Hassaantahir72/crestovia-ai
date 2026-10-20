@@ -184,3 +184,14 @@ def test_approval_decision_notification_insert_is_bound_to_reviewed_request():
     assert "requested_by = notifications.recipient_id" in sql
     assert "reviewed_by = (select auth.uid())" in sql
     assert "status in ('approved', 'rejected')" in sql
+
+
+def test_notification_insert_policies_are_consolidated_and_scoped():
+    sql = compact_sql("0027_consolidate_notification_insert_policy_v0_2_45.sql")
+    assert 'drop policy if exists "task creators notify assigned members"' in sql
+    assert 'drop policy if exists "owners notify approval requesters"' in sql
+    assert 'create policy "scoped notification inserts"' in sql
+    assert "type = 'task_assigned'" in sql
+    assert "type = 'approval_reviewed'" in sql
+    assert "app_private.is_org_owner(r.organization_id)" in sql
+    assert "recipient_id <> (select auth.uid())" in sql
