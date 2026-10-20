@@ -1,5 +1,11 @@
 # Crestovia AI — Changelog
 
+## 0.2.30 — RLS policy consolidation (validation pending)
+- Prepared migration 0019 to combine overlapping organization SELECT policies and replace overlapping owner FOR ALL policies with command-specific owner write policies.
+- Added source regression assertions for organization creator/invitee/member reads, owner write access, and the organization bootstrap path.
+- Migration is not yet applied to Supabase. It requires API CI, review of policy equivalence, and post-migration advisor checks before rollout.
+- No public deployment.
+
 ## 0.2.29 — Foreign-key lookup performance
 - Added additive indexes for 19 foreign-key lookup patterns flagged by the Supabase performance advisor, including organization-scoped composite relationships.
 - Added a source regression test that verifies each expected index is represented and the migration is non-destructive.
