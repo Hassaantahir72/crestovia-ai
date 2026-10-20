@@ -65,6 +65,10 @@ export async function createTask(data:FormData){
  const {data:created,error}=await supabase.from("tasks").insert({organization_id:membership.organization_id,project_id,title,description,priority,assigned_to,due_at,created_by:user.id}).select("id").single();
  if(error||!created)redirect("/dashboard/tasks?error=save_failed");
  await recordAuditEvent({organizationId:membership.organization_id,actorId:user.id,action:"task.created",entityType:"task",entityId:created.id,metadata:{title,priority,assigned_to}});
+ if(assigned_to&&assigned_to!==user.id){
+  const {error:notificationError}=await supabase.from("notifications").insert({organization_id:membership.organization_id,recipient_id:assigned_to,created_by:user.id,type:"task_assigned",title:"A task was assigned to you",body:title,entity_type:"task",entity_id:created.id,dedupe_key:"task_assigned:"+created.id+":"+assigned_to});
+  if(notificationError){await recordAuditEvent({organizationId:membership.organization_id,actorId:user.id,action:"notification.task_assignment.failed",entityType:"task",entityId:created.id,metadata:{recipient_id:assigned_to}});}
+ }
  revalidatePath("/dashboard");revalidatePath("/dashboard/tasks");redirect("/dashboard/tasks?created=1");
 }
 export async function updateTaskStatus(data:FormData){
