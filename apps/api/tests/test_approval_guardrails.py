@@ -42,7 +42,8 @@ def test_review_action_is_owner_only_pending_and_unexpired():
 def test_approval_queue_does_not_execute_external_actions():
     page = (WEB / "app" / "dashboard" / "approvals" / "page.tsx").read_text(encoding="utf-8")
     actions = (WEB / "app" / "dashboard" / "actions.ts").read_text(encoding="utf-8")
-    assert "Approval records do not execute actions in this version." in page
+    assert "external actions remain disabled" in page
+    assert "Only approved internal workspace task requests can be executed here" in page
     assert 'action:"approval.request.created"' in actions
     assert 'action:"approval.request.reviewed"' in actions
     # Guard against accidental expansion of the approval handlers into outbound actions.

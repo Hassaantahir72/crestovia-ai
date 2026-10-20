@@ -131,3 +131,24 @@ def test_assistant_response_can_only_be_submitted_as_an_explicit_approval_reques
     assert 'Turn this response into an approval request' in page
     assert 'It does not execute the proposed action.' in page
     assert 'No action has been executed.' in page
+
+
+def test_approved_task_execution_is_atomic_owner_scoped_and_invoker_only():
+    migration = (ROOT / "database" / "migrations" / "0022_atomic_approved_task_execution_v0_2_40.sql").read_text(encoding="utf-8")
+    actions = read_web("app/dashboard/actions.ts")
+    approvals = read_web("app/dashboard/approvals/page.tsx")
+
+    assert "security invoker" in migration.lower()
+    assert "for update" in migration.lower()
+    assert "auth.uid()" in migration
+    assert "m.role = 'owner'" in migration
+    assert "v_request.status <> 'approved'" in migration
+    assert "v_request.expires_at <= now()" in migration
+    assert "v_request.execution_status <> 'pending'" in migration
+    assert "insert into public.tasks" in migration.lower()
+    assert "execution_status = 'succeeded'" in migration
+    assert "grant execute on function public.execute_approved_task_request(uuid) to authenticated" in migration.lower()
+    executor = actions[actions.index("export async function executeApprovedTaskRequest"):]
+    assert 'supabase.rpc("execute_approved_task_request",{p_request_id:id})' in executor
+    assert '.from("tasks").insert(' not in executor
+    assert "external actions remain disabled" in approvals

@@ -175,23 +175,17 @@ export async function executeApprovedTaskRequest(data:FormData){
  if(membership.role!=="owner")redirect("/dashboard/approvals?error=owner_only");
  const id=value(data,"request_id",64);
  if(!id)redirect("/dashboard/approvals?error=execution_unavailable");
- const now=new Date().toISOString();
- const {data:request,error:lookupError}=await supabase.from("action_approval_requests").select("id,organization_id,requested_by,action_type,summary,details,status,expires_at,execution_status").eq("id",id).eq("organization_id",membership.organization_id).eq("status","approved").gt("expires_at",now).maybeSingle();
- if(lookupError||!request)redirect("/dashboard/approvals?error=execution_unavailable");
- if(request.action_type!=="create_task")redirect("/dashboard/approvals?error=unsupported_execution");
- if(request.execution_status!=="pending")redirect("/dashboard/approvals?error=execution_already_started");
- const {data:claimed,error:claimError}=await supabase.from("action_approval_requests").update({execution_status:"running",execution_started_at:now,execution_result:"Execution started."}).eq("id",id).eq("organization_id",membership.organization_id).eq("status","approved").eq("execution_status","pending").gt("expires_at",now).select("id").maybeSingle();
- if(claimError||!claimed)redirect("/dashboard/approvals?error=execution_already_started");
- const {data:task,error:taskError}=await supabase.from("tasks").insert({organization_id:membership.organization_id,title:request.summary,description:request.details||"",priority:"medium",created_by:request.requested_by}).select("id").single();
- if(taskError||!task){
-  await supabase.from("action_approval_requests").update({execution_status:"failed",execution_completed_at:new Date().toISOString(),execution_result:"Task creation failed. No successful task record was returned."}).eq("id",id).eq("organization_id",membership.organization_id).eq("execution_status","running");
-  await recordAuditEvent({organizationId:membership.organization_id,actorId:user.id,action:"approval.request.execution_failed",entityType:"action_approval_request",entityId:id,metadata:{action_type:"create_task"}});
+ const {data:result,error}=await supabase.rpc("execute_approved_task_request",{p_request_id:id});
+ if(error||!Array.isArray(result)||!result[0]?.task_id){
+  const reason=error?.message??"unexpected_result";
+  await recordAuditEvent({organizationId:membership.organization_id,actorId:user.id,action:"approval.request.execution_failed",entityType:"action_approval_request",entityId:id,metadata:{action_type:"create_task",reason:reason.includes("already_started")?"already_started":reason.includes("expired")?"expired":reason.includes("not_approved")?"not_approved":"execution_error"}});
+  if(reason.includes("already_started"))redirect("/dashboard/approvals?error=execution_already_started");
+  if(reason.includes("expired")||reason.includes("not_approved")||reason.includes("not_found"))redirect("/dashboard/approvals?error=execution_unavailable");
+  if(reason.includes("unsupported_action"))redirect("/dashboard/approvals?error=unsupported_execution");
   redirect("/dashboard/approvals?error=execution_failed");
  }
- const completedAt=new Date().toISOString();
- const {data:finished,error:finishError}=await supabase.from("action_approval_requests").update({execution_status:"succeeded",execution_completed_at:completedAt,execution_result:"Created workspace task "+task.id+"."}).eq("id",id).eq("organization_id",membership.organization_id).eq("execution_status","running").select("id").maybeSingle();
- if(finishError||!finished)redirect("/dashboard/approvals?error=execution_state_update_failed");
- await recordAuditEvent({organizationId:membership.organization_id,actorId:user.id,action:"approval.request.executed",entityType:"action_approval_request",entityId:id,metadata:{action_type:"create_task",task_id:task.id}});
+ const taskId=String(result[0].task_id);
+ await recordAuditEvent({organizationId:membership.organization_id,actorId:user.id,action:"approval.request.executed",entityType:"action_approval_request",entityId:id,metadata:{action_type:"create_task",task_id:taskId}});
  revalidatePath("/dashboard");revalidatePath("/dashboard/tasks");revalidatePath("/dashboard/approvals");
  redirect("/dashboard/approvals?executed=1");
 }

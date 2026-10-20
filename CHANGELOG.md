@@ -1,3 +1,11 @@
+## v0.2.40 — Atomic approved-task execution
+
+- Moves approved internal task execution into a single PostgreSQL transaction using a SECURITY INVOKER RPC.
+- Locks the approval row, rechecks owner membership, approval status, expiry, action type, and pending execution state inside the transaction.
+- Creates the task and marks the approval successful atomically; database failures roll back both changes, avoiding orphaned tasks or stuck partial executions.
+- Keeps execution privileges restricted to authenticated callers, with RLS still enforced; no SECURITY DEFINER or external integrations are used.
+- Corrects approval-page copy to distinguish executable internal tasks from disabled external actions.
+
 ## v0.2.39 — Task approval allow-list fix
 
 - Accepts create_task in both the manual approval request action and the assistant-proposal server action, matching the v0.2.38 UI and database constraint.
