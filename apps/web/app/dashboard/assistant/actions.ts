@@ -83,3 +83,22 @@ export async function deleteMemory(data:FormData){
  const {error}=await supabase.from("assistant_memories").delete().eq("id",id).eq("user_id",user.id);if(error)redirect("/dashboard/memory?error=memory_delete_failed");
  revalidatePath("/dashboard/memory");redirect("/dashboard/memory?deleted=1");
 }
+
+
+export async function proposeAssistantActionForApproval(data:FormData){
+ const {supabase,user,membership}=await getUserContext();
+ const messageId=field(data,"message_id",64),actionType=field(data,"action_type",32)||"other";
+ if(!messageId||!["external_write","send_email","send_message","calendar_change","data_export","other"].includes(actionType))redirect("/dashboard/assistant?error=invalid_approval_proposal");
+ const {data:message,error:messageError}=await supabase.from("assistant_messages").select("id,conversation_id,content,role").eq("id",messageId).eq("user_id",user.id).eq("role","assistant").maybeSingle();
+ if(messageError||!message)redirect("/dashboard/assistant?error=approval_proposal_unavailable");
+ const {data:conversation,error:conversationError}=await supabase.from("assistant_conversations").select("id").eq("id",message.conversation_id).eq("user_id",user.id).maybeSingle();
+ if(conversationError||!conversation)redirect("/dashboard/assistant?error=approval_proposal_unavailable");
+ const details=String(message.content??"").trim().slice(0,4000);
+ const summary=details.replace(/\s+/g," ").slice(0,200);
+ if(summary.length<3)redirect("/dashboard/assistant?error=invalid_approval_proposal");
+ const {data:created,error}=await supabase.from("action_approval_requests").insert({organization_id:membership.organization_id,requested_by:user.id,action_type:actionType,summary,details}).select("id").single();
+ if(error||!created)redirect("/dashboard/assistant?conversation="+message.conversation_id+"&error=approval_proposal_failed");
+ await (await import("@/lib/security/audit")).recordAuditEvent({organizationId:membership.organization_id,actorId:user.id,action:"approval.request.created_from_assistant",entityType:"action_approval_request",entityId:created.id,metadata:{action_type:actionType,assistant_message_id:message.id}});
+ revalidatePath("/dashboard/approvals");revalidatePath("/dashboard/assistant");
+ redirect("/dashboard/assistant?conversation="+message.conversation_id+"&approval_created=1");
+}
