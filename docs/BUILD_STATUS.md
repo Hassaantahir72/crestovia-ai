@@ -1,9 +1,17 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.17  
-**Milestone:** Department management, owner/team access controls, private AI assistant foundation, email-code MFA, approvals, and daily briefing  
-**Overall product implementation estimate:** approximately 39%  
+**Project version:** 0.2.18  
+**Milestone:** Tracked invitations and revocation, department management, owner/team access controls, private AI assistant foundation, email-code MFA, approvals, and daily briefing  
+**Overall product implementation estimate:** approximately 41%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.18 — Invitation tracking, acceptance, and revocation
+- Connected owner-created Supabase Auth invitations to the existing `organization_invitations` table with organization, email, invited user, inviter, role, and pending status.
+- Added pending invitation visibility and owner revocation on the Team Access page.
+- Revocation marks the tracking row revoked and suspends the associated membership if it is still invited. It does not delete the auth account.
+- Acceptance updates the tracking row to accepted before activating the invited membership; if activation fails, the tracked row is reset to pending. Older invited memberships without a tracking row remain accepted through the compatibility path.
+- Added migration `0013_expand_invitation_roles.sql` to align tracked role constraints with supported organization roles. The role constraint was applied to the connected Supabase project.
+- Real email delivery and complete multi-account acceptance/revocation tests are still required. No deployment occurred.
 
 ## Version 0.2.17 — Department management and project organization
 - Added a Departments page to create, edit, and delete departments for owners, admins, and managers. Database RLS remains the final authorization boundary.
@@ -22,19 +30,19 @@
 - Next.js frontend, Supabase Auth, protected dashboard, sign-in, sign-out, callback, and onboarding.
 - FastAPI health and authenticated identity endpoints.
 - Owner-only project creation with optional department assignment, department management for owner/admin/manager roles, task creation/status updates, task comments, member role/status controls, and project-level viewer/contributor/manager assignments.
-- Owner-initiated Supabase Auth invitations and an onboarding acceptance flow for invited memberships.
+- Owner-initiated Supabase Auth invitations with tracked pending/accepted/revoked states, owner revocation controls, and an onboarding acceptance flow.
 - RLS-protected approval requests with owner approve/reject decisions; approvals are records only and do not execute external actions.
 - Private per-user assistant conversations and saved memories, with a server-side Groq provider adapter and chat UI.
 - Owner email-code second factor when private provider settings are configured, with authenticator-app TOTP as fallback.
 - Data-based daily briefing with deadline, blocked-work, project, approval, and recent-activity summaries.
-- Supabase schema migrations through 0012 are represented in source; all 17 public tables have RLS enabled. The organization_invitations table is applied but is not yet wired into the invite UI; membership rows remain the active invitation-state source.
+- Supabase schema migrations through 0013 are represented in source; all 17 public tables have RLS enabled. The organization_invitations table is wired into owner invite, acceptance, and revocation workflows; membership status remains the authorization gate for workspace access.
 
 ## Verification
 - Private GitHub repository: https://github.com/Hassaantahir72/crestovia-ai
 - Supabase security advisor last reported no security lint findings before this UI-only increment; re-check after future schema changes.
 - Organization creation uses SECURITY INVOKER with RLS-constrained bootstrap policies.
 - Python API tests: 2 passed on the prior verified increment.
-- GitHub Actions frontend lint and production build passed for the application code on commit 7d7f0e16ca8cbff6fc7b94431a118038a2425f12. Version 0.2.17 requires a fresh CI run; do not treat the prior run as validation of this increment.
+- GitHub Actions frontend lint and production build passed for v0.2.17. Version 0.2.18 requires a fresh CI run; do not treat prior CI as validation of this increment.
 - Local npm installation timed out in this environment; no local production build is claimed.
 - No public application deployment has been created.
 
@@ -62,13 +70,12 @@
 - Finish audit coverage, rate limiting, recovery/session revocation, backup/restore drill, dependency/security review, and production acceptance tests.
 - Add a permission-checked AI tool registry and connect approvals to future allow-listed actions. No external action should execute merely because the model requested it.
 - Add reminders/notifications, voice, integrations, and automation.
-- Integrate the existing organization_invitations tracking table into invitation and acceptance workflows.
 - Complete final security and user acceptance tests before deployment. No public deployment is authorized yet.
 
 ## Phase estimates
 - Architecture/planning: 100%
 - Phase 1 foundation: 85% (schema, auth scaffolding, safe organization bootstrap; real-account tests pending)
-- Phase 2 workspace: 54% (project/task writes, comments, member controls, assignments, invitation acceptance; real-user testing pending)
+- Phase 2 workspace: 58% (project/task writes, comments, member controls, assignments, invitation acceptance; real-user testing pending)
 - Phase 3 AI/memory/approvals: 25% (private chat/memory and approval-request queue foundation; provider secret, approval execution, and tool systems pending)
 - Phase 4 assistant/voice/productivity: 8% (data-based daily briefing implemented; voice/reminders remain pending)
 - Phase 5 integrations: 0%
