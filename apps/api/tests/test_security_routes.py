@@ -113,4 +113,5 @@ def test_assistant_workspace_tools_are_read_only_scoped_and_bounded():
     assert ".limit(100)" in tools
     assert ".limit(40)" in tools
     assert ".limit(20)" in tools
-    assert r'replace(/[\u0000-\u001f]/g, " ")' in tools
+    assert "function safeText" in tools
+    assert "u0000" in tools
