@@ -17,6 +17,13 @@
 - Acceptance activates only the current user's own invited membership and writes an audit event through the server-only admin client.
 - Actual invitation delivery requires private server secrets and configured Supabase Auth email settings; real-account delivery tests are pending.
 
+## Version 0.2.14 email MFA increment
+
+- Added owner email-code request and verification routes with keyed OTP hashes, 10-minute expiry, resend cooldown/hourly limit, five-attempt cap, one-time consumption, and a signed HttpOnly cookie bound to the current Supabase session.
+- Challenge storage is RLS-enabled, has no browser grants, and has an explicit deny policy for anon/authenticated roles; service-role access is server-only.
+- Owner access accepts a valid email-MFA cookie or a verified TOTP factor at AAL2.
+- Email delivery remains inactive until SUPABASE_SERVICE_ROLE_KEY, APP_MFA_SECRET, RESEND_API_KEY, and RESEND_FROM_EMAIL are configured privately.
+
 ## Included
 - Next.js frontend with Supabase Auth, sign-in, protected dashboard, callback, sign-out, and organization onboarding.
 - FastAPI health and authenticated identity endpoints.
@@ -35,7 +42,7 @@
 
 ## Security caveats
 - TOTP authenticator MFA is implemented in the code. Owner routes and server actions require a verified factor and AAL2 session.
-- The owner's requested email-delivered second-factor code is not implemented yet. It needs a secure email provider integration, OTP hashing/expiry/rate limits/replay protection, and a server-only provider key configured privately.
+- Email-code second factor is implemented in code with keyed OTP hashes, expiry, rate limits, replay prevention, and a session-bound HttpOnly cookie. Email delivery is not active until private server secrets and a verified sender are configured and real-account tests pass.
 - Invitation email, account invitation, real-user owner/member isolation, and session revocation workflows remain pending.
 - Supabase security advisor returned no current security lint findings after migration 0006 converted the organization-creation RPC to SECURITY INVOKER and added RLS-constrained bootstrap policies. Real authenticated bootstrap testing is still required.
 
@@ -56,10 +63,10 @@
 - Architecture/planning: 100%
 - Phase 1 foundation: 80%
 - Phase 2 workspace: 35%
-- Phase 3 AI/memory/approvals: 12% (private chat and memory foundation; provider key and approval/tool systems pending)
+- Phase 3 AI/memory/approvals: 18% (private chat and memory foundation; provider key and approval/tool systems pending)
 - Phase 4 assistant/voice: 0%
 - Phase 5 integrations: 0%
 - Phase 6 automation/hardening: 0%
-- Overall product implementation: approximately 32%
+- Overall product implementation: approximately 35%
 
 These are implementation estimates, not production-readiness claims. Public deployment is intentionally deferred until completion and owner approval.
