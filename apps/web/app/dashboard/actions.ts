@@ -97,3 +97,18 @@ export async function inviteTeamMember(data:FormData){
  if(membershipError)redirect("/dashboard/team?error=membership_invite_failed");
  revalidatePath("/dashboard/team");redirect("/dashboard/team?invited=1");
 }
+
+export async function createApprovalRequest(data:FormData){
+ const {supabase,user,membership}=await context();const actionType=value(data,"action_type",32)||"other",summary=value(data,"summary",200),details=value(data,"details",4000);
+ if(!["external_write","send_email","send_message","calendar_change","data_export","other"].includes(actionType))redirect("/dashboard/approvals?error=invalid_action_type");
+ if(summary.length<3)redirect("/dashboard/approvals?error=invalid_summary");
+ const {error}=await supabase.from("action_approval_requests").insert({organization_id:membership.organization_id,requested_by:user.id,action_type:actionType,summary,details});
+ if(error)redirect("/dashboard/approvals?error=request_failed");revalidatePath("/dashboard/approvals");redirect("/dashboard/approvals?created=1");
+}
+export async function reviewApprovalRequest(data:FormData){
+ const {supabase,user,membership}=await context();if(membership.role!=="owner")redirect("/dashboard/approvals?error=owner_only");
+ const id=value(data,"request_id",64),decision=value(data,"decision",16),reviewNote=value(data,"review_note",1000);
+ if(!id||!["approved","rejected"].includes(decision))redirect("/dashboard/approvals?error=invalid_decision");
+ const {data:request,error}=await supabase.from("action_approval_requests").update({status:decision,reviewed_by:user.id,reviewed_at:new Date().toISOString(),review_note:reviewNote}).eq("id",id).eq("organization_id",membership.organization_id).eq("status","pending").select("id").maybeSingle();
+ if(error||!request)redirect("/dashboard/approvals?error=request_not_pending");revalidatePath("/dashboard/approvals");redirect("/dashboard/approvals?reviewed=1");
+}
