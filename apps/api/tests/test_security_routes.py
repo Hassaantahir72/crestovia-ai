@@ -77,3 +77,18 @@ def test_assistant_provider_readiness_never_exposes_secret_value():
     assert 'AI provider key detected; connectivity and validity have not been tested yet.' in page
     assert 'Never use a NEXT_PUBLIC_ variable or commit the key.' in page
     assert 'process.env.GROQ_API_KEY}' not in page
+
+
+def test_ai_provider_connection_test_is_owner_only_bounded_and_secret_safe():
+    actions = read_web("app/dashboard/assistant/actions.ts")
+    page = read_web("app/dashboard/assistant/page.tsx")
+
+    assert "export async function testAssistantProvider()" in actions
+    assert 'if(membership.role!=="owner")redirect("/dashboard/assistant?provider_test=owner_only")' in actions
+    assert 'const apiKey=process.env.GROQ_API_KEY' in actions
+    assert 'signal:AbortSignal.timeout(10000)' in actions
+    assert 'max_tokens:8' in actions
+    assert 'cache:"no-store"' in actions
+    assert 'Authorization:"Bearer "+apiKey' in actions
+    assert "The API key was not exposed." in page
+    assert "GROQ_API_KEY" not in actions[actions.index("export async function testAssistantProvider()"):actions.index("export async function createConversation()")].replace('const apiKey=process.env.GROQ_API_KEY','')
