@@ -1,5 +1,12 @@
 # Crestovia AI — Changelog
 
+## 0.2.11 — Private assistant chat and memory foundation
+- Added private per-user assistant conversations and messages with RLS isolation.
+- Added private memory CRUD screens, also isolated by user ID.
+- Added a server-side Groq provider adapter and assistant chat UI; a private GROQ_API_KEY is required before replies work.
+- Applied migration 0007 to Supabase and verified RLS is enabled on all three assistant tables.
+- No tools or external actions are enabled in the AI chat yet.
+
 ## 0.2.10 — RLS-enforced organization bootstrap
 - Replaced the SECURITY DEFINER organization-creation RPC with a SECURITY INVOKER function and explicit RLS-constrained first-owner policies.
 - Verified the function is no longer SECURITY DEFINER and the Supabase security advisor reports no current security lints.
