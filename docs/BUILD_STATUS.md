@@ -1,14 +1,19 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.33 (in progress)  
-**Milestone:** Editable private memory  
+**Project version:** 0.2.34 (in progress)  
+**Milestone:** AI provider readiness visibility  
 **Overall product implementation estimate:** approximately 48%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.33 — Editable private memory (in progress)
-- Added a private-memory edit workflow with bounded title/content, an allow-list for categories, explicit user_id predicates on lookup and update, and updated timestamps.
-- Added regression coverage for account scoping and validation. API tests, web lint, and production build are pending.
-- No schema migration or new secret is needed. Public deployment remains deferred.
+## Version 0.2.34 — AI provider readiness visibility (in progress)
+- The assistant page distinguishes a missing server-side GROQ_API_KEY from a detected key, without rendering the secret. Presence does not mean the provider connection is valid.
+- Added setup guidance and regression coverage. API tests, web lint, and production build are pending.
+- No schema migration is needed. Public deployment remains deferred.
+
+## Version 0.2.33 — Editable private memory (completed)
+- Added private-memory editing with bounded title/content, an allow-list for categories, explicit user_id predicates on lookup and update, and updated timestamps.
+- Added regression coverage for account scoping and validation. API tests, ESLint, and Next.js production build passed; PR #7 merged into main.
+- No schema migration or new secret was needed. Public deployment remains deferred.
 
 ## Version 0.2.32 — Assistant account-isolation hardening (completed)
 - Added explicit user_id filters to assistant conversations, messages, saved memories, and title updates as defense in depth alongside Supabase RLS.
