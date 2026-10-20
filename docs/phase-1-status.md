@@ -1,6 +1,6 @@
 # Phase 1 status
 
-## Implemented in starter repository
+## Implemented
 
 - [x] Next.js application skeleton and landing page
 - [x] Supabase browser/server client helpers
@@ -9,22 +9,25 @@
 - [x] OAuth callback route
 - [x] FastAPI health endpoint
 - [x] Bearer-token verification against Supabase JWKS
-- [x] Initial organization/profile/membership/audit schema\n- [x] Secure first-organization creation RPC (signed-in creator becomes owner)\n- [x] Organization onboarding screen
+- [x] Initial organization/profile/membership/audit schema
+- [x] Secure first-organization creation RPC (signed-in creator becomes owner)
+- [x] Organization onboarding screen
 - [x] Initial RLS policies
 - [x] API tests for health and missing token
 - [x] Environment examples and setup instructions
+- [x] Connected Supabase project with foundation and workspace schema applied
+- [x] Source tree uploaded to the private GitHub repository
 
 ## Not yet complete or verified
 
-- [ ] Create/configure the actual Supabase project
-- [ ] Apply and test SQL migration in Supabase
-- [ ] End-to-end login test with real project credentials
+- [ ] End-to-end login test with a real user
+- [ ] Organization onboarding test in the web app
+- [ ] Cross-organization RLS behavior tested with two separate test organizations/users
 - [ ] Admin invitation flow
 - [ ] Complete permission matrix and adversarial RLS tests
-- [ ] Run frontend install, lint, and production build
-- [ ] Run backend tests in the target Python environment
-- [ ] Production deployment, monitoring, backups, restore test
+- [ ] Frontend dependency installation, lint, and production build
+- [ ] Live preview deployment, monitoring, backups, and restore test
 
 ## Overall project status
 
-This repository is a Phase 1 starter, not the full Crestovia AI product. Phases 2–6 are not implemented yet. Do not represent the full plan as complete.
+This repository is the Phase 1 foundation and the start of Phase 2 workspace, not the full Crestovia AI product. AI chat, memory, approvals, integrations, voice, and advanced automation remain planned work.
