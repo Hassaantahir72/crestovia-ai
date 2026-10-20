@@ -141,3 +141,15 @@ def test_membership_bootstrap_policy_hotfix_removes_duplicate_insert_policy():
 
     assert 'drop policy if exists "users bootstrap their own owner membership" on public.memberships' in sql
     assert "drop table" not in sql
+
+
+def test_assistant_queries_explicitly_scope_private_records_to_signed_in_user():
+    actions = (ROOT / "apps" / "web" / "app" / "dashboard" / "assistant" / "actions.ts").read_text(encoding="utf-8")
+    page = (ROOT / "apps" / "web" / "app" / "dashboard" / "assistant" / "page.tsx").read_text(encoding="utf-8")
+
+    # RLS remains the primary boundary; explicit filters provide defense in depth.
+    assert '.from("assistant_conversations").select("id,title").eq("id",id).eq("user_id",user.id)' in actions
+    assert '.from("assistant_messages").select("role,content").eq("conversation_id",id).eq("user_id",user.id)' in actions
+    assert '.from("assistant_memories").select("category,title,content").eq("user_id",user.id)' in actions
+    assert '.from("assistant_conversations").select("id,title,updated_at").eq("user_id",user.id)' in page
+    assert '.from("assistant_messages").select("id,role,content,created_at").eq("conversation_id",active.id).eq("user_id",user.id)' in page

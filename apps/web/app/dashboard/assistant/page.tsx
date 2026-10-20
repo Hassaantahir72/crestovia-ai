@@ -15,10 +15,10 @@ const errorText:Record<string,string>={
 export default async function AssistantPage({searchParams}:Props){
  const p=await searchParams,supabase=await createClient();const {data:{user},error}=await supabase.auth.getUser();if(error||!user)redirect("/login");
  const {data:memberships}=await supabase.from("memberships").select("role").eq("user_id",user.id).eq("status","active").limit(1);if(!memberships?.length)redirect("/onboarding");await enforceOwnerMfa(supabase,memberships[0].role);
- const {data:conversations}=await supabase.from("assistant_conversations").select("id,title,updated_at").order("updated_at",{ascending:false}).limit(30);
+ const {data:conversations}=await supabase.from("assistant_conversations").select("id,title,updated_at").eq("user_id",user.id).order("updated_at",{ascending:false}).limit(30);
  const requested=typeof p.conversation==="string"?p.conversation:"",activeId=requested||(conversations?.[0]?.id??"");
  const active=conversations?.find(x=>x.id===activeId)??null;
- const {data:messages}=active?await supabase.from("assistant_messages").select("id,role,content,created_at").eq("conversation_id",active.id).order("created_at",{ascending:true}).limit(100):{data:[]};
+ const {data:messages}=active?await supabase.from("assistant_messages").select("id,role,content,created_at").eq("conversation_id",active.id).eq("user_id",user.id).order("created_at",{ascending:true}).limit(100):{data:[]};
  const errorKey=typeof p.error==="string"?p.error:"";
  return <main className="container"><nav className="workspace-nav"><Link href="/dashboard">← Dashboard</Link><Link href="/dashboard/projects">Projects</Link><Link href="/dashboard/memory">Private memory</Link><Link href="/dashboard/security">Account security</Link></nav>
  <header className="page-header"><div><p className="brand">CRESTOVIA AI / ASSISTANT</p><h1>Personal AI assistant</h1><p className="muted">Private to your signed-in account. When enabled, recent chat and selected saved memories are sent to Groq. Read-only workspace tools can summarize visible tasks, projects, and pending approvals; they never change records or execute external actions.</p></div><form action={createConversation}><button className="button" type="submit">New conversation</button></form></header>

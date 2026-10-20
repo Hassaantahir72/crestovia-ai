@@ -1,9 +1,15 @@
 # Crestovia AI — Changelog
 
-## 0.2.31 — Membership policy hotfix
+## 0.2.32 — Assistant account-isolation hardening
+- Added explicit signed-in user filters to assistant conversation, message-history, and saved-memory reads, plus the conversation-title update. Supabase RLS remains the primary access-control boundary.
+- Added source regression coverage to prevent these explicit account-scoping predicates from being accidentally removed.
+- API CI, web lint, and production build are required before merge. Real multi-account acceptance tests remain required.
+- No public deployment.
+
+## 0.2.31 — Membership policy hotfix (completed)
 - Follow-up migration 0020 removes the legacy membership bootstrap INSERT policy because migration 0019 already includes the same creator bootstrap condition in its consolidated policy.
-- Applied migration 0020 to Supabase after the performance advisor identified the duplicate INSERT policy; rechecking advisors and policy catalog is part of this increment.
-- Added a regression assertion for the follow-up migration. API CI and web lint/production build must pass before this hotfix is merged.
+- Applied migration 0020 to Supabase; the policy catalog confirms one INSERT policy on memberships. Security advisor has no findings; remaining performance notices are informational unused-index warnings.
+- API tests, web ESLint, and Next.js production build passed; PR #5 merged into main.
 - No public deployment.
 
 ## 0.2.30 — RLS policy consolidation (merged; rollout reviewed)
