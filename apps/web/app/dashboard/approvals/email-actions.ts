@@ -89,3 +89,29 @@ export async function executeApprovedEmailRequest(data: FormData) {
     redirect("/dashboard/approvals?error=email_delivery_failed");
   }
 }
+
+
+export async function testEmailProviderConnection() {
+  const { user, membership } = await ownerContext();
+  const readiness = emailProviderReadiness();
+  if (!readiness.ready) redirect("/dashboard/approvals?error=email_provider_not_configured");
+  try {
+    const response = await fetch("https://api.resend.com/domains", {
+      method: "GET",
+      headers: { Authorization: "Bearer " + process.env.RESEND_API_KEY },
+      cache: "no-store",
+      signal: AbortSignal.timeout(8000)
+    });
+    if (!response.ok) {
+      await recordAuditEvent({ organizationId: membership.organization_id, actorId: user.id, action: "email_provider.connection_test_failed", entityType: "integration", metadata: { provider: "resend", status: response.status } });
+      redirect("/dashboard/approvals?error=email_connection_failed");
+    }
+    await recordAuditEvent({ organizationId: membership.organization_id, actorId: user.id, action: "email_provider.connection_test_succeeded", entityType: "integration", metadata: { provider: "resend" } });
+    revalidatePath("/dashboard/approvals");
+    redirect("/dashboard/approvals?email_connection_ok=1");
+  } catch (error) {
+    if (error && typeof error === "object" && "digest" in error) throw error;
+    await recordAuditEvent({ organizationId: membership.organization_id, actorId: user.id, action: "email_provider.connection_test_failed", entityType: "integration", metadata: { provider: "resend", status: "network_or_timeout" } });
+    redirect("/dashboard/approvals?error=email_connection_failed");
+  }
+}
