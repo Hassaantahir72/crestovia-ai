@@ -1,14 +1,19 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.30 (in progress)  
-**Milestone:** RLS policy consolidation and performance warnings  
+**Project version:** 0.2.31 (in progress)  
+**Milestone:** Membership RLS policy hotfix  
 **Overall product implementation estimate:** approximately 48%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.30 — RLS policy consolidation (in progress)
-- Prepared migration 0019 to remove overlapping permissive policies on departments, memberships, organizations, and project assignments while preserving owner writes, bootstrap membership creation, and scoped reads.
-- Added source regression checks. CI and policy-equivalence review are pending; migration is not applied to Supabase.
+## Version 0.2.31 — Membership RLS policy hotfix (in progress)
+- Applied migration 0020 to remove the duplicate legacy bootstrap INSERT policy after advisor review found the same creator-bootstrap predicate existed in both the consolidated and legacy policies.
+- Source regression test and CI are pending; recheck policy catalog and Supabase advisors before declaring complete.
 - Public deployment remains deferred.
+
+## Version 0.2.30 — RLS policy consolidation (merged and applied)
+- PR #4 merged after API tests, web ESLint, and Next.js production build passed.
+- Applied migration 0019: command-specific owner writes and a consolidated organization relationship SELECT policy preserve the intended access predicates.
+- Supabase security advisor returned no findings. Performance review found a duplicate membership INSERT policy; the v0.2.31 hotfix removes it.
 
 ## Version 0.2.29 — Foreign-key lookup performance (completed)
 - Added 19 non-destructive indexes covering foreign-key lookup patterns identified by Supabase's performance advisor. API tests and web lint/production build passed in GitHub Actions; PR #3 merged to `main`.

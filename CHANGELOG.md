@@ -1,9 +1,16 @@
 # Crestovia AI — Changelog
 
-## 0.2.30 — RLS policy consolidation (validation pending)
-- Prepared migration 0019 to combine overlapping organization SELECT policies and replace overlapping owner FOR ALL policies with command-specific owner write policies.
-- Added source regression assertions for organization creator/invitee/member reads, owner write access, and the organization bootstrap path.
-- Migration is not yet applied to Supabase. It requires API CI, review of policy equivalence, and post-migration advisor checks before rollout.
+## 0.2.31 — Membership policy hotfix
+- Follow-up migration 0020 removes the legacy membership bootstrap INSERT policy because migration 0019 already includes the same creator bootstrap condition in its consolidated policy.
+- Applied migration 0020 to Supabase after the performance advisor identified the duplicate INSERT policy; rechecking advisors and policy catalog is part of this increment.
+- Added a regression assertion for the follow-up migration. API CI and web lint/production build must pass before this hotfix is merged.
+- No public deployment.
+
+## 0.2.30 — RLS policy consolidation (merged; rollout reviewed)
+- Merged PR #4 after API tests, web ESLint, and Next.js production build passed.
+- Applied migration 0019 to combine organization SELECT policies and replace overlapping owner FOR ALL policies with command-specific owner write policies.
+- Post-migration review caught one remaining duplicate membership bootstrap INSERT policy; migration 0020 removes the legacy duplicate while retaining the combined creator bootstrap condition.
+- Security advisor returned no findings. Performance advisor no longer reports overlapping policy warnings outside the membership INSERT duplication being fixed in v0.2.31.
 - No public deployment.
 
 ## 0.2.29 — Foreign-key lookup performance
