@@ -1,9 +1,16 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.26  
-**Milestone:** Audit history permission alignment, workspace event logging, permission-aware read-only assistant tools, tracked invitations, department management, owner/team access controls, private AI assistant, email-code MFA, approvals, and daily briefing  
-**Overall product implementation estimate:** approximately 46%  
+**Project version:** 0.2.27  
+**Milestone:** Approval workflow guardrails and source-level security regression tests  
+**Overall product implementation estimate:** approximately 47%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.27 — Approval workflow guardrails
+- Added automated source regression tests for active-member self-request, owner-only review, pending/unexpired request constraints, audit events, and the no-external-execution boundary.
+- Added `docs/security/APPROVAL_WORKFLOW.md` with the approval security contract and a real-account acceptance checklist.
+- API pytest and web lint/build checks passed for the merged feature branch. Source tests do not replace real-account RLS testing.
+- No database migration, new external key, or deployment was needed. Public deployment remains deferred.
+
 
 ## Version 0.2.26 — MFA regression test alignment
 - Replaced the obsolete compare-and-set assertion with regression checks for the atomic failed-attempt RPC introduced in 0017.
