@@ -1,5 +1,10 @@
 # Crestovia AI — Changelog
 
+## 0.2.22 — Audit permission regression tests
+- Added automated regression tests for the owner/admin-only audit SELECT policy, organization scoping, active membership requirement, and browser read-only grants.
+- Added security documentation distinguishing source-migration tests from real-account RLS acceptance tests.
+- API CI runs the new checks as part of its existing pytest suite. No API keys, database changes, or deployment are required.
+
 ## 0.2.21 — Align audit history database permissions
 - Fixed the mismatch between the audit page's owner/admin role check and the database policy that allowed only owners to read audit logs.
 - Added migration 0014 to allow active organization owners and admins to read their organization's audit records.

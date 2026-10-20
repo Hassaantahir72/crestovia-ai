@@ -1,9 +1,15 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.21  
+**Project version:** 0.2.22  
 **Milestone:** Audit history permission alignment, workspace event logging, permission-aware read-only assistant tools, tracked invitations, department management, owner/team access controls, private AI assistant, email-code MFA, approvals, and daily briefing  
 **Overall product implementation estimate:** approximately 46%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.22 — Audit permission regression tests
+- Added pytest regression checks for migration 0014 (active owner/admin membership and organization-scoped SELECT) and migration 0015 (browser roles are read-only).
+- Added docs/security/AUDIT_LOG_ACCESS.md explaining the security contract and the limits of static migration tests.
+- Existing API CI automatically runs these checks. No new credentials or schema changes are needed.
+- These tests guard the migration source but do not replace live owner/admin/member and cross-organization acceptance testing.
 
 ## Version 0.2.21 — Audit history permission alignment
 - Fixed a policy mismatch: the audit page supports owner/admin viewing, but the database previously restricted SELECT access to owners only.
@@ -56,11 +62,11 @@
 - Private per-user assistant conversations and saved memories, with a server-side Groq provider adapter and chat UI.
 - Owner email-code second factor when private provider settings are configured, with authenticator-app TOTP as fallback.
 - Data-based daily briefing with deadline, blocked-work, project, approval, and recent-activity summaries.
-- Supabase schema migrations through 0013 are represented in source; all 17 public tables have RLS enabled. The organization_invitations table is wired into owner invite, acceptance, and revocation workflows; membership status remains the authorization gate for workspace access.
+- Supabase schema migrations through 0013 are represented in source; all 17 public tables had RLS enabled at the last full-table check; migrations 0014–0015 additionally harden audit-log grants. The organization_invitations table is wired into owner invite, acceptance, and revocation workflows; membership status remains the authorization gate for workspace access.
 
 ## Verification
 - Private GitHub repository: https://github.com/Hassaantahir72/crestovia-ai
-- Supabase security advisor returned no security lint findings after migration 0014; re-check after future schema changes.
+- Supabase security advisor returned no security lint findings after migrations 0014–0015; re-check after future schema changes.
 - Organization creation uses SECURITY INVOKER with RLS-constrained bootstrap policies.
 - Python API tests: 2 passed on the prior verified increment.
 - GitHub Actions frontend lint and production build passed for v0.2.18 application source at commit 2234cbe80a5443a0548ede2778bb6f77dc0582fc. The following commit only refreshes this status documentation.
@@ -85,7 +91,7 @@
 - Daily briefing itself needs no external API key.
 
 ## Remaining work
-- Complete owner/admin/member audit-history access tests using separate real accounts and verify cross-organization records remain invisible.
+- Complete owner/admin/member audit-history access tests using separate real accounts and verify cross-organization records remain invisible; source-migration regression tests now run in CI.
 - Verify email delivery, expiry, replay rejection, resend limits, wrong-code lockout, session binding, sign-out/session rotation, and TOTP fallback using real accounts.
 - Verify invitations end-to-end using a new test email and ensure Supabase Auth redirect URLs/email delivery are configured.
 - Test owner, unassigned member, viewer, contributor, manager, and suspended-member access across at least two projects and multiple organizations.
