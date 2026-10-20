@@ -21,3 +21,9 @@
 - Add rate limiting to sign-in, recovery, invitations, OTP, and AI endpoints.
 - Review audit logging, backups/restoration, security headers, CSRF/XSS exposure, redirect allow-lists, dependency health, and AI action approvals.
 - Do not deploy publicly until the product is complete, security tests pass, and the owner explicitly approves release.
+
+
+## Organization bootstrap hardening (0.2.10)
+- Organization creation now uses a SECURITY INVOKER function and explicit RLS policies for creator-owned organization insertion and first-owner membership bootstrap.
+- Verified pg_proc.prosecdef is false and the Supabase security advisor currently returns no security lints.
+- The authenticated first-run flow still requires end-to-end testing with a test account before launch.
