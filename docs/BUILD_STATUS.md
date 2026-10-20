@@ -1,13 +1,17 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.35 (in progress)  
-**Milestone:** Owner-only live AI connection test  
+**Project version:** 0.2.36 (in progress)  
+**Milestone:** Read-only assistant tool guardrails  
 **Overall product implementation estimate:** approximately 48%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.35 — Owner-only live AI connection test (in progress)
+## Version 0.2.36 — Read-only assistant tool guardrails (in progress)
+- Added regression coverage to ensure workspace assistant tools remain read-only, organization-scoped, user-scoped for assigned tasks, and bounded by query limits.
+- Test-focused increment; no runtime behavior or database schema change. CI must pass before merge. Public deployment remains deferred.
+
+## Version 0.2.35 — Owner-only live AI connection test (completed)
 - Added an owner-only server-side Groq test request with a 10-second timeout and a tiny token budget. It does not persist messages or display the API key.
-- Added safe provider error feedback and regression coverage. API tests, ESLint, and production build must pass before merge.
+- API tests, ESLint, and Next.js production build passed on main after PR #9 merged. Provider connectivity still requires a valid privately configured GROQ_API_KEY.
 - No database migration is required. Public deployment remains deferred.
 
 ## Version 0.2.34 — AI provider readiness visibility (completed)
