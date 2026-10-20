@@ -1,3 +1,10 @@
+## v0.2.38 — Approval-gated workspace task execution
+
+- Adds a narrowly scoped execution path for owner-approved create_task requests.
+- Adds persisted execution states and timestamps; a conditional database update claims a request before creating the task to reduce duplicate execution risk.
+- Records execution outcomes and audit events. Unsupported external action types remain non-executable; no email, messaging, calendar, or arbitrary assistant text is executed.
+- Requires the matching Supabase migration before the new executor is enabled.
+
 # Crestovia AI — Changelog
 
 ## 0.2.37 — Assistant proposals to approval queue (in progress)
