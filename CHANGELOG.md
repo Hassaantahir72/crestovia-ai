@@ -6,7 +6,7 @@
 - Revoking a pending invite marks the invitation revoked and suspends the still-invited membership, so the account does not gain workspace access from that invitation.
 - Invitation acceptance updates the tracking row and membership state; legacy invitations without a tracking row can still use the existing acceptance path.
 - Added migration 0013 to allow the full supported organization role set in tracked invitations.
-- Applied the role-constraint migration to the connected Supabase project and will verify schema and security advisors after this increment.
+- Applied and verified the role-constraint migration in the connected Supabase project; the Supabase security advisor returned no findings.
 - No public deployment was performed.
 
 
