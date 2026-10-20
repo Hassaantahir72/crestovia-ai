@@ -25,3 +25,7 @@ Private chat history and memory are stored in user-isolated tables. The Groq pro
 
 ## Invitation acceptance (0.2.13)
 Owners can initiate email invitations and invited users can accept them during onboarding. This requires SUPABASE_SERVICE_ROLE_KEY configured as a server-only secret and valid Supabase Auth email settings. Invite delivery and acceptance must be tested with real accounts before production.
+
+
+## Email-code owner MFA (0.2.14)
+The code now supports a short-lived, rate-limited email second factor with a TOTP fallback. To activate email delivery, configure SUPABASE_SERVICE_ROLE_KEY, APP_MFA_SECRET, RESEND_API_KEY, and RESEND_FROM_EMAIL as server-only secrets. Email delivery and real-account acceptance tests remain pending until those secrets and the sender are configured. Never share secrets in chat.
