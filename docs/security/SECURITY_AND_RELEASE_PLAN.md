@@ -27,3 +27,9 @@
 - Organization creation now uses a SECURITY INVOKER function and explicit RLS policies for creator-owned organization insertion and first-owner membership bootstrap.
 - Verified pg_proc.prosecdef is false and the Supabase security advisor currently returns no security lints.
 - The authenticated first-run flow still requires end-to-end testing with a test account before launch.
+
+
+## Assistant data privacy
+- Assistant conversations, messages, and saved memories are user-owned and protected by RLS; team members cannot read one another's assistant data.
+- The Groq provider adapter only receives the recent conversation history for the current user's conversation. It has no tools or external-action capability in this version.
+- Configure GROQ_API_KEY only as a server-side secret. Never place it in a NEXT_PUBLIC variable or commit a real key.
