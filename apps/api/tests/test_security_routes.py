@@ -124,7 +124,7 @@ def test_assistant_response_can_only_be_submitted_as_an_explicit_approval_reques
     assert "export async function proposeAssistantActionForApproval(data:FormData)" in actions
     assert 'eq("id",messageId).eq("user_id",user.id).eq("role","assistant")' in actions
     assert 'eq("id",message.conversation_id).eq("user_id",user.id)' in actions
-    assert '["external_write","send_email","send_message","calendar_change","data_export","other"].includes(actionType)' in actions
+    assert '["create_task","external_write","send_email","send_message","calendar_change","data_export","other"].includes(actionType)' in actions
     assert 'from("action_approval_requests").insert(' in actions
     assert 'action:"approval.request.created_from_assistant"' in actions
     assert 'redirect("/dashboard/assistant?conversation="+message.conversation_id+"&approval_created=1")' in actions

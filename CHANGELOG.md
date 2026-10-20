@@ -1,3 +1,8 @@
+## v0.2.39 — Task approval allow-list fix
+
+- Accepts create_task in both the manual approval request action and the assistant-proposal server action, matching the v0.2.38 UI and database constraint.
+- No additional database migration is required; migration 0021 is already applied.
+
 ## v0.2.38 — Approval-gated workspace task execution
 
 - Adds a narrowly scoped execution path for owner-approved create_task requests.
