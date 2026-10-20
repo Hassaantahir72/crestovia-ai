@@ -5,6 +5,8 @@ Free-first company operating system starter using Next.js, FastAPI, and Supabase
 ## Current capabilities
 - Sign-in, protected dashboard, organization onboarding.
 - Owner-only project creation, task creation/status updates, task comments, team role controls, and project-level access assignments.
+- Department management and optional project-to-department assignment.
+- Owner-managed tracked invitations with pending status, acceptance tracking, and revocation controls.
 - Owner-private data isolation and database RLS policies.
 - Owner email-code second factor when configured, with authenticator-app TOTP fallback.
 - Private AI assistant chat and saved memories, with a server-side Groq adapter.
