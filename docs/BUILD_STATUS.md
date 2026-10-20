@@ -10,6 +10,13 @@
 - Added assistant chat and private memory UI, plus a server-side Groq provider adapter.
 - AI replies remain inactive until GROQ_API_KEY is configured privately in the server environment. No tools/actions are enabled.
 
+## Version 0.2.13 invitation increment
+
+- Added owner-initiated email invitations using a server-only Supabase admin client.
+- Added onboarding acceptance for invited memberships and a narrow organization-read policy for invitees.
+- Acceptance activates only the current user's own invited membership and writes an audit event through the server-only admin client.
+- Actual invitation delivery requires private server secrets and configured Supabase Auth email settings; real-account delivery tests are pending.
+
 ## Included
 - Next.js frontend with Supabase Auth, sign-in, protected dashboard, callback, sign-out, and organization onboarding.
 - FastAPI health and authenticated identity endpoints.
@@ -19,7 +26,7 @@
 
 ## Verified
 - Private GitHub repository: https://github.com/Hassaantahir72/crestovia-ai
-- Supabase project crestovia-ai; all 14 public tables have RLS enabled.
+- Supabase project crestovia-ai; all 15 public tables have RLS enabled.
 - API tests: 2 passed on the latest locally available test run.
 - Render and GitHub Actions YAML parsed successfully.
 - GitHub web CI previously exposed ESLint configuration errors; these were corrected. Latest CI run must be checked before calling the frontend build verified.
