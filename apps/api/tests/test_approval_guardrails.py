@@ -14,11 +14,11 @@ def test_approval_insert_is_self_requested_and_starts_pending():
     sql = compact_sql("0011_approval_request_queue.sql")
     assert 'create policy "active members request approvals"' in sql
     assert "for insert to authenticated with check" in sql
-    assert "requested_by = (select auth.uid())" in sql
-    assert "status = 'pending'" in sql
+    assert "requested_by=(select auth.uid())" in sql
+    assert "status='pending'" in sql
     assert "reviewed_by is null" in sql
     assert "reviewed_at is null" in sql
-    assert "m.status = 'active'" in sql
+    assert "m.status='active'" in sql
 
 
 def test_only_organization_owner_can_update_approval_records():
