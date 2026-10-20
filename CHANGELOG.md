@@ -1,3 +1,9 @@
+## v0.2.46 — Approval-gated transactional email delivery
+
+- Adds a server-only Resend adapter with strict single-recipient, subject, and plain-text body validation; requests must be approved and executed by an organization owner with MFA.
+- Adds an organization-scoped delivery ledger with owner-only reads, idempotency keys, provider message IDs, bounded attempts, and safe error categories. The UI distinguishes provider acceptance from actual inbox delivery.
+- Email sends require private RESEND_API_KEY and RESEND_FROM_EMAIL configuration. No secrets are committed and public deployment remains deferred.
+
 ## v0.2.45 — Consolidated notification insert policy
 
 - Combines task-assignment and approval-decision notification inserts into one scoped RLS policy to avoid duplicate permissive-policy evaluation.

@@ -152,7 +152,8 @@ def test_approved_task_execution_is_atomic_owner_scoped_and_invoker_only():
     executor = actions[actions.index("export async function executeApprovedTaskRequest"):]
     assert 'supabase.rpc("execute_approved_task_request",{p_request_id:id,p_organization_id:membership.organization_id})' in executor
     assert '.from("tasks").insert(' not in executor
-    assert "external actions remain disabled" in approvals
+    assert "Unsupported external actions remain disabled" in approvals
+    assert "owner-approved email delivery" in approvals
 
 
 def test_task_reminder_cron_requires_private_secret_and_is_bounded():

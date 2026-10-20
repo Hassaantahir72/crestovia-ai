@@ -42,8 +42,12 @@ def test_review_action_is_owner_only_pending_and_unexpired():
 def test_approval_queue_does_not_execute_external_actions():
     page = (WEB / "app" / "dashboard" / "approvals" / "page.tsx").read_text(encoding="utf-8")
     actions = (WEB / "app" / "dashboard" / "actions.ts").read_text(encoding="utf-8")
-    assert "external actions remain disabled" in page
-    assert "Only approved internal workspace task requests can be executed here" in page
+    assert "Unsupported external actions remain disabled" in page
+    assert "owner-approved email delivery" in page
+    email_action = (WEB / "app" / "dashboard" / "approvals" / "email-actions.ts").read_text(encoding="utf-8")
+    assert 'request.action_type !== "send_email"' in email_action
+    assert 'request.status !== "approved"' in email_action
+    assert 'await enforceOwnerMfa(supabase, membership.role)' in email_action
     assert 'action:"approval.request.created"' in actions
     assert 'action:"approval.request.reviewed"' in actions
     # Guard against accidental expansion of the approval handlers into outbound actions.
