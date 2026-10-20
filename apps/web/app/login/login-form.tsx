@@ -1,39 +1,15 @@
 "use client";
-
-import { FormEvent, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-
-export function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-    setBusy(true);
-    try {
-      const supabase = createClient();
-      const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
-      if (authError) throw authError;
-      window.location.assign("/dashboard");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to sign in.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <form onSubmit={onSubmit}>
-      <label htmlFor="email">Email</label>
-      <input className="input" id="email" type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} />
-      <label htmlFor="password">Password</label>
-      <input className="input" id="password" type="password" autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} />
-      {error && <p role="alert" style={{ color: "#ff9292" }}>{error}</p>}
-      <button className="button" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button>
-      <p className="muted" style={{ fontSize: 13 }}>Account creation is intentionally admin-controlled for the initial release.</p>
-    </form>
-  );
+import {FormEvent,useEffect,useState} from "react";
+import {createClient} from "@/lib/supabase/client";
+export function LoginForm(){
+ const [email,setEmail]=useState("");const [password,setPassword]=useState("");const [mfaCode,setMfaCode]=useState("");const [factorId,setFactorId]=useState("");const [mfaPending,setMfaPending]=useState(false);const [error,setError]=useState("");const [busy,setBusy]=useState(false);
+ useEffect(()=>{if(new URLSearchParams(window.location.search).get("mfa")!=="required")return;const supabase=createClient();void supabase.auth.mfa.listFactors().then(({data,error:listError})=>{const factor=(data?.totp??[]).find(item=>item.status==="verified");if(listError)setError(listError.message);else if(!factor)setError("No verified authenticator was found. Open Account security to enroll one.");else{setFactorId(factor.id);setMfaPending(true);setError("Enter the current code from your authenticator app.");}})},[]);
+ async function onSubmit(event:FormEvent<HTMLFormElement>){event.preventDefault();setError("");setBusy(true);try{const supabase=createClient();if(mfaPending&&factorId){const challenge=await supabase.auth.mfa.challenge({factorId});if(challenge.error)throw challenge.error;const verify=await supabase.auth.mfa.verify({factorId,challengeId:challenge.data.id,code:mfaCode.trim()});if(verify.error)throw verify.error;window.location.assign("/dashboard");return}
+ const {data,error:authError}=await supabase.auth.signInWithPassword({email,password});if(authError)throw authError;
+ const {data:memberships}=await supabase.from("memberships").select("role").eq("user_id",data.user.id).eq("status","active").limit(1);
+ if(memberships?.[0]?.role==="owner"){const {data:factors,error:factorError}=await supabase.auth.mfa.listFactors();if(factorError)throw factorError;const verified=(factors?.totp??[]).find(f=>f.status==="verified");if(!verified){window.location.assign("/dashboard/security?required=1");return}const {data:assurance,error:assuranceError}=await supabase.auth.mfa.getAuthenticatorAssuranceLevel();if(assuranceError)throw assuranceError;if(assurance?.currentLevel!=="aal2"){setFactorId(verified.id);setMfaPending(true);setError("Enter the current code from your authenticator app to finish signing in.");return}}
+ window.location.assign("/dashboard");
+ }catch(err){setError(err instanceof Error?err.message:"Unable to sign in.")}finally{setBusy(false)}}
+ return <form onSubmit={onSubmit}>{!mfaPending?<><label htmlFor="email">Email</label><input className="input" id="email" type="email" autoComplete="email" required value={email} onChange={e=>setEmail(e.target.value)}/><label htmlFor="password">Password</label><input className="input" id="password" type="password" autoComplete="current-password" required value={password} onChange={e=>setPassword(e.target.value)}/></>:<><label htmlFor="mfa-code">Authenticator code</label><input className="input" id="mfa-code" type="text" inputMode="numeric" autoComplete="one-time-code" maxLength={8} required value={mfaCode} onChange={e=>setMfaCode(e.target.value.replace(/\D/g,""))} placeholder="Current 6-digit code"/><p className="muted" style={{fontSize:13}}>Use the code from your authenticator app.</p></>}
+ {error&&<p role="alert" style={{color:"#ff9292"}}>{error}</p>}<button className="button" type="submit" disabled={busy}>{busy?"Please wait…":mfaPending?"Verify and continue":"Sign in"}</button>{mfaPending?<button className="button button-secondary" type="button" disabled={busy} onClick={()=>{setMfaPending(false);setFactorId("");setMfaCode("");setError("")}}>Back to sign in</button>:<p className="muted" style={{fontSize:13}}>Account creation is intentionally admin-controlled for the initial release.</p>}</form>;
 }

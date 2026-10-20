@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
     target.searchParams.set("next", request.nextUrl.pathname);
     return NextResponse.redirect(target);
   }
-  if (request.nextUrl.pathname === "/login" && user) {
+  if (request.nextUrl.pathname === "/login" && user && request.nextUrl.searchParams.get("mfa") !== "required") {
     const target = request.nextUrl.clone();
     target.pathname = "/dashboard";
     return NextResponse.redirect(target);
