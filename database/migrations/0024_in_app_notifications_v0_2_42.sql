@@ -71,6 +71,8 @@ create policy "task creators notify assigned members" on public.notifications
     and recipient_id <> (select auth.uid())
     and type = 'task_assigned'
     and entity_type = 'task'
+    and dedupe_key = 'task_assigned:' || entity_id::text || ':' || recipient_id::text
+    and title = 'A task was assigned to you'
     and exists (
       select 1 from public.memberships m
       where m.organization_id = notifications.organization_id
@@ -82,10 +84,12 @@ create policy "task creators notify assigned members" on public.notifications
       where t.id = notifications.entity_id
         and t.organization_id = notifications.organization_id
         and t.assigned_to = notifications.recipient_id
+        and notifications.body = t.title
         and (t.created_by = (select auth.uid()) or app_private.is_org_owner(t.organization_id))
     )
   );
 
-revoke all on public.notifications from anon;
-grant select, update, insert on public.notifications to authenticated;
+revoke all on public.notifications from anon, authenticated;
+grant select, insert on public.notifications to authenticated;
+grant update (read_at) on public.notifications to authenticated;
 grant all on public.notifications to service_role;
