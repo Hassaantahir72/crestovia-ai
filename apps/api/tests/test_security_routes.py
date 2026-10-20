@@ -57,3 +57,14 @@ def test_audit_writer_is_server_only_and_uses_typed_bounded_metadata_shape():
     assert 'metadata: event.metadata ?? {}' in audit
     assert 'metadata?: Record<string, string | number | boolean | null>' in audit
     assert 'comment bodies, or long free-text content' in audit
+
+
+def test_private_memory_update_is_validated_and_scoped_to_signed_in_user():
+    actions = read_web("app/dashboard/assistant/actions.ts")
+
+    assert 'export async function updateMemory(data:FormData)' in actions
+    assert 'allowedCategories=["general","work","preference","project","process"]' in actions
+    assert '.from("assistant_memories").select("id").eq("id",id).eq("user_id",user.id)' in actions
+    assert '.from("assistant_memories").update({title,category,content,updated_at:new Date().toISOString()}).eq("id",id).eq("user_id",user.id)' in actions
+    assert 'field(data,"title",160)' in actions
+    assert 'field(data,"content",12000)' in actions
