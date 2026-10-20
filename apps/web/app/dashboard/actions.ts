@@ -52,3 +52,16 @@ export async function removeProjectMember(data:FormData){
  const {error}=await supabase.from("project_memberships").delete().eq("id",id).eq("organization_id",membership.organization_id);
  if(error)redirect("/dashboard/team?error=save_failed");revalidatePath("/dashboard/team");redirect("/dashboard/team?removed=1");
 }
+
+export async function updateMemberAccess(data:FormData){
+ const {supabase,user,membership}=await context();
+ if(membership.role!=="owner")redirect("/dashboard/team?error=owner_only");
+ const targetUserId=value(data,"user_id",64),role=value(data,"role",20),status=value(data,"status",20);
+ if(!targetUserId||targetUserId===user.id)redirect("/dashboard/team?error=cannot_change_owner");
+ if(!["admin","manager","member","guest"].includes(role)||!["active","suspended"].includes(status))redirect("/dashboard/team?error=invalid_member_access");
+ const {data:target}=await supabase.from("memberships").select("user_id,role").eq("organization_id",membership.organization_id).eq("user_id",targetUserId).maybeSingle();
+ if(!target||target.role==="owner")redirect("/dashboard/team?error=cannot_change_owner");
+ const {error}=await supabase.from("memberships").update({role,status}).eq("organization_id",membership.organization_id).eq("user_id",targetUserId);
+ if(error)redirect("/dashboard/team?error=member_update_failed");
+ revalidatePath("/dashboard/team");revalidatePath("/dashboard/projects");revalidatePath("/dashboard/tasks");redirect("/dashboard/team?member_updated=1");
+}
