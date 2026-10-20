@@ -1,9 +1,16 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.20  
-**Milestone:** Audit history and workspace event logging, permission-aware read-only assistant tools, tracked invitations, department management, owner/team access controls, private AI assistant, email-code MFA, approvals, and daily briefing  
-**Overall product implementation estimate:** approximately 45%  
+**Project version:** 0.2.21  
+**Milestone:** Audit history permission alignment, workspace event logging, permission-aware read-only assistant tools, tracked invitations, department management, owner/team access controls, private AI assistant, email-code MFA, approvals, and daily briefing  
+**Overall product implementation estimate:** approximately 46%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.21 — Audit history permission alignment
+- Fixed a policy mismatch: the audit page supports owner/admin viewing, but the database previously restricted SELECT access to owners only.
+- Added migration `0014_audit_log_admin_read_access.sql`; active owners and admins can now read audit records for their own organization.
+- The policy adds read access only. Browser clients still have no audit insert/update/delete policy; trusted server-side writes remain separate.
+- Applied the migration to the connected Supabase project. Verified the resulting `pg_policies` entry and the Supabase security advisor returned no security lint findings.
+- Real-account owner/admin/member isolation tests remain required. No public app deployment was performed.
 
 ## Version 0.2.20 — Audit history and workspace event logging
 - Added an owner/admin-only audit history page, with action filtering and the latest 100 matching records.
@@ -53,7 +60,7 @@
 
 ## Verification
 - Private GitHub repository: https://github.com/Hassaantahir72/crestovia-ai
-- Supabase security advisor last reported no security lint findings before this UI-only increment; re-check after future schema changes.
+- Supabase security advisor returned no security lint findings after migration 0014; re-check after future schema changes.
 - Organization creation uses SECURITY INVOKER with RLS-constrained bootstrap policies.
 - Python API tests: 2 passed on the prior verified increment.
 - GitHub Actions frontend lint and production build passed for v0.2.18 application source at commit 2234cbe80a5443a0548ede2778bb6f77dc0582fc. The following commit only refreshes this status documentation.
@@ -78,6 +85,7 @@
 - Daily briefing itself needs no external API key.
 
 ## Remaining work
+- Complete owner/admin/member audit-history access tests using separate real accounts and verify cross-organization records remain invisible.
 - Verify email delivery, expiry, replay rejection, resend limits, wrong-code lockout, session binding, sign-out/session rotation, and TOTP fallback using real accounts.
 - Verify invitations end-to-end using a new test email and ensure Supabase Auth redirect URLs/email delivery are configured.
 - Test owner, unassigned member, viewer, contributor, manager, and suspended-member access across at least two projects and multiple organizations.
