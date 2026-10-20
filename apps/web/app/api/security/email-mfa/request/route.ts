@@ -7,7 +7,7 @@ export const runtime="nodejs";
 export async function POST(request:Request){
  const origin=request.headers.get("origin");if(origin&&origin!==new URL(request.url).origin)return NextResponse.json({error:"invalid_origin"},{status:403});
  const supabase=await createClient();const {data:{user},error:authError}=await supabase.auth.getUser();if(authError||!user)return NextResponse.json({error:"not_authenticated"},{status:401});
- const {data:memberships}=await supabase.from("memberships").select("role").eq("user_id",user.id).eq("status","active").limit(1);if(memberships?.[0]?.role!=="owner")return NextResponse.json({error:"owner_only"},{status:403});
+ const {data:memberships}=await supabase.from("memberships").select("role").eq("user_id",user.id).eq("status","active");if(!memberships?.some(m=>m.role==="owner"))return NextResponse.json({error:"owner_only"},{status:403});
  if(!user.email||!user.email_confirmed_at)return NextResponse.json({error:"verified_email_required"},{status:403});
  const resendKey=process.env.RESEND_API_KEY,fromEmail=process.env.RESEND_FROM_EMAIL,appSecret=process.env.APP_MFA_SECRET,serviceRole=process.env.SUPABASE_SERVICE_ROLE_KEY;
  if(!resendKey||!fromEmail||!appSecret||appSecret.length<32||!serviceRole)return NextResponse.json({error:"email_mfa_not_configured"},{status:503});

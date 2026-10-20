@@ -10,7 +10,7 @@ export async function POST(request:Request){
  let body:{code?:unknown};try{body=await request.json() as {code?:unknown}}catch{return NextResponse.json({error:"invalid_request"},{status:400})}
  const code=typeof body.code==="string"?body.code.trim():"";if(!/^\d{6}$/.test(code))return NextResponse.json({error:"invalid_code"},{status:400});
  const supabase=await createClient();const {data:{user},error:authError}=await supabase.auth.getUser();if(authError||!user)return NextResponse.json({error:"not_authenticated"},{status:401});
- const {data:memberships}=await supabase.from("memberships").select("role").eq("user_id",user.id).eq("status","active").limit(1);if(memberships?.[0]?.role!=="owner")return NextResponse.json({error:"owner_only"},{status:403});
+ const {data:memberships}=await supabase.from("memberships").select("role").eq("user_id",user.id).eq("status","active");if(!memberships?.some(m=>m.role==="owner"))return NextResponse.json({error:"owner_only"},{status:403});
  const {data:claimsData,error:claimsError}=await supabase.auth.getClaims();const sessionId=claimsData?.claims?.session_id;if(claimsError||typeof sessionId!=="string")return NextResponse.json({error:"session_unavailable"},{status:401});
  let admin:ReturnType<typeof createAdminClient>;try{admin=createAdminClient()}catch{return NextResponse.json({error:"email_mfa_not_configured"},{status:503})}
  const now=new Date().toISOString();const {data:challenge,error}=await admin.from("email_mfa_challenges").select("id,code_hash,attempt_count,expires_at").eq("user_id",user.id).eq("session_id",sessionId).is("used_at",null).gt("expires_at",now).order("created_at",{ascending:false}).limit(1).maybeSingle();
