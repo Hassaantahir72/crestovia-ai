@@ -1,0 +1,26 @@
+import Link from "next/link";
+import {redirect} from "next/navigation";
+import {createClient} from "@/lib/supabase/server";
+import {assignProjectMember,removeProjectMember} from "../actions";
+type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
+export default async function TeamPage({searchParams}:Props){
+ const p=await searchParams,supabase=await createClient();const {data:{user},error}=await supabase.auth.getUser();if(error||!user)redirect("/login");
+ const {data:own}=await supabase.from("memberships").select("organization_id,role,status,organizations(name)").eq("user_id",user.id).eq("status","active").limit(1);
+ const m=own?.[0];if(!m)redirect("/onboarding");if(m.role!=="owner")redirect("/dashboard?error=owner_only");
+ const org=Array.isArray(m.organizations)?m.organizations[0]:m.organizations;
+ const [{data:people},{data:projects},{data:assignments, error:assignmentError}]=await Promise.all([
+  supabase.from("memberships").select("user_id,role,status,created_at").eq("organization_id",m.organization_id).eq("status","active").order("created_at"),
+  supabase.from("projects").select("id,name,status").eq("organization_id",m.organization_id).order("name"),
+  supabase.from("project_memberships").select("id,user_id,project_id,access_level,projects(name)").eq("organization_id",m.organization_id).order("created_at",{ascending:false})
+ ]);
+ return <main className="container"><nav className="workspace-nav"><Link href="/dashboard">← Dashboard</Link><Link href="/dashboard/projects">Projects</Link><Link href="/dashboard/tasks">Tasks</Link></nav>
+ <header className="page-header"><div><p className="brand">CRESTOVIA AI / OWNER CONTROL</p><h1>Team access</h1><p className="muted">{org?.name??"Your organization"} · Grant access only to the projects each person needs.</p></div></header>
+ {p.assigned==="1"?<p className="notice notice-success">Project access saved.</p>:null}{p.removed==="1"?<p className="notice notice-success">Project access removed.</p>:null}{p.error?<p className="notice notice-error">Could not complete that action: {String(p.error).replaceAll("_"," ")}</p>:null}
+ <section className="panel" style={{marginBottom:18}}><h2>Organization members</h2><p className="muted">This page does not fetch private authentication emails. New invitations are not enabled until a trusted server-side invitation workflow is complete.</p><div className="table-wrap"><table className="data-table"><thead><tr><th>User ID</th><th>Organization role</th><th>Status</th></tr></thead><tbody>{(people??[]).map(person=><tr key={person.user_id}><td><code>{person.user_id}</code>{person.user_id===user.id?" (you)":""}</td><td>{person.role}</td><td>{person.status}</td></tr>)}</tbody></table></div></section>
+ <section className="panel" style={{marginBottom:18}}><h2>Assign a project</h2>{!projects?.length?<p className="muted">Create a project first.</p>:(people?.length??0)<2?<p className="muted">No other active members yet. Add a teammate through the secure invitation flow when it is implemented.</p>:<form action={assignProjectMember} className="form-grid">
+ <div><label htmlFor="project_id">Project</label><select className="input" id="project_id" name="project_id" required defaultValue=""><option value="" disabled>Select a project</option>{projects?.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></div>
+ <div><label htmlFor="user_id">Team member</label><select className="input" id="user_id" name="user_id" required defaultValue=""><option value="" disabled>Select a member</option>{people?.filter(x=>x.user_id!==user.id).map(x=><option key={x.user_id} value={x.user_id}>{x.user_id.slice(0,8)}… ({x.role})</option>)}</select></div>
+ <div><label htmlFor="access_level">Project permission</label><select className="input" id="access_level" name="access_level" defaultValue="contributor"><option value="viewer">Viewer — read only</option><option value="contributor">Contributor — work on tasks</option><option value="manager">Manager — manage assigned project</option></select></div>
+ <div className="form-actions"><button className="button" type="submit">Save project access</button></div></form>}</section>
+ <section className="panel"><h2>Current project assignments</h2>{assignmentError?<p className="muted">Assignments could not be loaded. Check the database migration and RLS policies.</p>:!assignments?.length?<p className="muted">No project assignments yet.</p>:<div className="table-wrap"><table className="data-table"><thead><tr><th>Project</th><th>Member ID</th><th>Permission</th><th>Action</th></tr></thead><tbody>{assignments.map(a=>{const project=Array.isArray(a.projects)?a.projects[0]:a.projects;return <tr key={a.id}><td>{project?.name??"Project"}</td><td><code>{a.user_id.slice(0,8)}…</code></td><td>{a.access_level}</td><td><form action={removeProjectMember}><input type="hidden" name="assignment_id" value={a.id}/><button className="button button-danger" type="submit">Remove</button></form></td></tr>})}</tbody></table></div>}</section></main>;
+}
