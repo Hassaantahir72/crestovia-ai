@@ -1,5 +1,11 @@
 # Crestovia AI — Changelog
 
+## 0.2.16 — Daily briefing foundation
+- Added a workspace-aware daily briefing for overdue tasks, due-today and upcoming deadlines, blocked/in-progress tasks, projects, pending approval requests, and recent activity.
+- Kept briefing reads on the authenticated Supabase client so row-level security scopes results to each user.
+- Added timezone-aware date grouping with a safe fallback and dashboard navigation.
+- The briefing is read-only and deterministic; it requires no AI key and cannot execute actions.
+
 ## 0.2.15 — Owner approval queue foundation
 - Added an RLS-protected action approval request queue for team members to request owner review.
 - Added owner approve/reject decisions with optional review notes and expiry metadata.
