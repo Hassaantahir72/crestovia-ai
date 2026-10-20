@@ -28,7 +28,7 @@
 - Supabase security advisor last reported no security lint findings before this UI-only increment; re-check after future schema changes.
 - Organization creation uses SECURITY INVOKER with RLS-constrained bootstrap policies.
 - Python API tests: 2 passed on the prior verified increment.
-- GitHub Actions frontend lint and production build passed on the preceding code commit. This increment still needs its own remote CI result before the frontend is considered verified.
+- GitHub Actions frontend lint and production build passed for the daily-briefing code on commit 7d7f0e16ca8cbff6fc7b94431a118038a2425f12.
 - Local npm installation timed out in this environment; no local production build is claimed.
 - No public application deployment has been created.
 
