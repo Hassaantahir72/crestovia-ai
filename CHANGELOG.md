@@ -1,5 +1,11 @@
 # Crestovia AI — Changelog
 
+## 0.2.29 — Foreign-key lookup performance
+- Added additive indexes for 19 foreign-key lookup patterns flagged by the Supabase performance advisor, including organization-scoped composite relationships.
+- Added a source regression test that verifies each expected index is represented and the migration is non-destructive.
+- Migration is prepared in source and must pass CI before being applied to the connected Supabase project.
+- No application runtime changes, data rewrites, or public deployment.
+
 ## 0.2.28 — Authentication and audit regression coverage
 - Added source regression checks for cross-origin rejection, authenticated owner-only email-MFA request/verification, user/session-bound challenge lookup, expiry, atomic failed-attempt counting, and one-time challenge consumption before cookie issuance.
 - Added audit-writer boundary checks and documented the live acceptance tests still required.
