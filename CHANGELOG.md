@@ -1,3 +1,9 @@
+## v0.2.41 — Explicit organization scope for task execution
+
+- Passes the current organization ID to the execution RPC and filters the locked approval row by both request ID and organization ID.
+- Prevents a crafted request ID from crossing the UI's active-organization boundary, even for a user who owns multiple organizations.
+- Replaces the one-argument RPC with a two-argument SECURITY INVOKER function; execution stays owner-only and transactional.
+
 ## v0.2.40 — Atomic approved-task execution
 
 - Moves approved internal task execution into a single PostgreSQL transaction using a SECURITY INVOKER RPC.
