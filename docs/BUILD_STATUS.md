@@ -1,60 +1,47 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.8  
-**Milestone:** Foundation + owner privacy + project-scoped access + owner team controls + project/task write flows  
-**Status:** Workspace write flows and owner team access UI are now in GitHub. Supabase schema and RLS are applied. Real-user auth, multi-user tenant-isolation tests, frontend production build, MFA enforcement, and final deployment are pending. Deployment remains intentionally deferred until project completion.
+**Project version:** 0.2.9  
+**Milestone:** Owner privacy, scoped team access, workspace write flows, owner membership controls, and TOTP MFA enforcement  
+**Status:** Source updates are pushed to the private GitHub repository. Supabase schema and RLS are applied. Real-user end-to-end permission tests and frontend production build remain in progress. Deployment is intentionally deferred until project completion and owner approval.
 
 ## Included
-- Next.js frontend with Supabase Auth helpers, sign-in, protected dashboard, callback, sign-out, and onboarding.
-- FastAPI health and authenticated identity endpoints with Supabase JWKS validation.
+- Next.js frontend with Supabase Auth, sign-in, protected dashboard, callback, sign-out, and organization onboarding.
+- FastAPI health and authenticated identity endpoints.
 - Supabase schema for organizations, profiles, memberships, audit logs, departments, projects, tasks, comments, activity, project assignments, and owner-private items.
-- Owner-only private records and explicit project membership with viewer/contributor/manager access levels.
-- Owner-only project creation, task creation/status updates, and team project-assignment UI.
-- Organization-scoped RLS, environment templates, API tests, setup guides, and Render Free blueprint.
+- Owner-only project creation, task creation/status updates, owner team management, project-level assignments, and member suspension/role controls.
+- Account security page with TOTP enrollment, verification, factor removal, login challenge, and server-side AAL2 checks on owner workspace pages and server actions.
 
 ## Verified
 - Private GitHub repository: https://github.com/Hassaantahir72/crestovia-ai
 - Supabase project crestovia-ai; all 11 expected public tables have RLS enabled.
-- Python API tests: 2 passed.
-- Render configuration and frontend workflow YAML parse successfully.
-- Local frontend dependency install timed out, so local lint/build has not been verified.
-- GitHub Actions web lint/build result is pending.
+- API tests: 2 passed on the latest locally available test run.
+- Render and GitHub Actions YAML parsed successfully.
+- GitHub web CI previously exposed ESLint configuration errors; these were corrected. Latest CI run must be checked before calling the frontend build verified.
+- Local npm installation timed out in this environment; no claim of local frontend build success.
 - No public deployment has been created.
 
-## Version 0.2.8 workspace increment
-- Added owner-only project creation and task creation/status update server actions.
-- Added owner-only Team Access screen to list active organization memberships and assign/revoke project-level access.
-- Added GitHub Actions workflow to lint and build the Next.js frontend.
-- Secure invitations and profile email display remain disabled until a trusted server-side invitation flow is implemented.
-
-## Version 0.2.7 security increment
-- Added migrations 0004_owner_only_membership_and_audit_access.sql and 0005_fix_membership_rls_recursion.sql.
-- Membership administration and audit-log visibility are restricted to organization owners.
-- Introduced app_private.is_org_owner to avoid a self-referencing membership RLS policy.
-- Supabase recorded both migrations successfully; a null-user helper check returned false. Real owner/member session tests remain pending.
-
-## Version 0.2.6 security increment
-- Added migration 0003_owner_privacy_project_scoped_access.sql and docs/security/TEAM_ACCESS_MODEL.md.
-- Replaced broad workspace reads with owner-or-explicitly-assigned project access.
-- Added owner_private_items, isolated by owner_id = auth.uid().
+## Security caveats
+- TOTP authenticator MFA is implemented in the code. Owner routes and server actions require a verified factor and AAL2 session.
+- The owner's requested email-delivered second-factor code is not implemented yet. It needs a secure email provider integration, OTP hashing/expiry/rate limits/replay protection, and a server-only provider key configured privately.
+- Invitation email, account invitation, real-user owner/member isolation, and session revocation workflows remain pending.
+- Security advisor still warns about the intentional authenticated SECURITY DEFINER organization-creation RPC; review its access design before launch.
 
 ## Still pending
-- Frontend dependency install, lint, and production build.
-- Real-user sign-in, owner identity configuration, and organization onboarding.
-- Test owner/member separation with two real test users and projects, including negative access attempts.
-- Enforced MFA, owner-controlled invitations, organization role management, session revocation, rate limiting, and recovery.
+- Verify latest frontend lint and production build in GitHub Actions and fix any reported issues.
+- Test with separate owner, unassigned member, viewer, contributor, and manager accounts across at least two projects.
+- Implement email-code second factor if retained as the owner's required preference, secure invitations, audit events for membership changes, rate limiting, recovery, and session revocation.
+- AI chat, persistent assistant memory, approvals, daily briefings, voice, integrations, and automation.
 - Security review, backup/restore drill, and acceptance tests.
-- AI chat, memory/approvals UI, briefings, voice, integrations, and automation.
 - Final hosting and deployment, only after the project is complete and owner approves release.
 
 ## Progress estimates
 - Architecture/planning: 100%
-- Phase 1 foundation: 75%
-- Phase 2 workspace: 30% (schema, project/task write forms, owner assignment UI; invitations and full multi-user tests pending)
+- Phase 1 foundation: 80%
+- Phase 2 workspace: 35%
 - Phase 3 AI/memory/approvals: 0%
 - Phase 4 assistant/voice: 0%
 - Phase 5 integrations: 0%
 - Phase 6 automation/hardening: 0%
-- Overall product implementation: approximately 24%
+- Overall product implementation: approximately 27%
 
-These are estimates, not production-readiness claims. Public deployment is intentionally deferred until completion and owner approval.
+These are implementation estimates, not production-readiness claims. Public deployment is intentionally deferred until completion and owner approval.

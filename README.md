@@ -1,28 +1,19 @@
-# Crestovia AI — Phase 1 Foundation
+# Crestovia AI
 
-Free-first starter for Crestovia AI: Next.js frontend, FastAPI backend, and Supabase/PostgreSQL authentication and data foundation.
+Free-first company operating system starter using Next.js, FastAPI, and Supabase.
 
-## Included
-- Next.js App Router + TypeScript frontend and Supabase Auth helpers
-- Protected dashboard, sign-in, callback, sign-out, and organization onboarding
-- FastAPI health and authenticated /api/v1/me endpoints
-- Supabase migrations for organizations, memberships, profiles, audit events, departments, projects, tasks, comments, activity, project assignments, and owner-private items
-- RLS policies, environment templates, tests, and free preview deployment instructions
+## Current capabilities
+- Sign-in, protected dashboard, organization onboarding.
+- Owner-only project creation, task creation and task status updates.
+- Owner team page for existing member roles/status and project-level viewer/contributor/manager assignments.
+- Owner-private data isolation and database RLS policies.
+- TOTP authenticator enrollment and AAL2 enforcement for owner workspace routes and server actions.
 
-## Status
-This is foundation starter code, not a fully deployed production system. Real-user authentication, frontend build, cross-tenant security tests, MFA enforcement, and deployment remain pending. Test RLS with multiple test users before adding real company data.
+## Still in development
+Secure invitations, the requested email-delivered second-factor code, multi-user isolation tests, AI assistant and memory, approvals, voice, integrations, automation, production hardening, and deployment. The project is not yet production-ready.
 
 ## Setup
-Read docs/supabase/BEGINNER_SETUP.md and docs/deployment/LIVE_PREVIEW_SETUP.md. Configure local environment files from examples. Never commit secrets.
+See docs/supabase/BEGINNER_SETUP.md, docs/security/TEAM_ACCESS_MODEL.md, docs/security/SECURITY_AND_RELEASE_PLAN.md, and docs/deployment/LIVE_PREVIEW_SETUP.md. Never paste or commit secrets.
 
-## Owner and team security
-Read docs/security/SECURITY_AND_RELEASE_PLAN.md and docs/security/TEAM_ACCESS_MODEL.md. Owner-private data is isolated from the shared company workspace. Team access to projects is explicitly assigned with viewer/contributor/manager levels. Membership administration and audit-log visibility are owner-only. Assignment UI is available, while secure invitations, MFA enforcement, and multi-user security tests remain pending.
-
-## Workspace operations (0.2.8)
-- Owners can create projects and manage project-level assignments from /dashboard/team.
-- Signed-in users can create tasks and update task status within the limits enforced by Supabase RLS.
-- Project access levels are viewer, contributor, and manager. New-user invitations, role changes, enforced MFA, and multi-user security acceptance tests are still pending.
-- GitHub Actions includes a frontend lint/build workflow. Check Actions for the actual result; local npm dependency installation timed out in this environment.
-
-## Deployment
-The Render blueprint is preparation only. Public deployment is intentionally deferred until the project is complete, security and acceptance tests pass, and the owner explicitly approves launch.
+## Deployment policy
+Public deployment remains deferred until the product is complete, security and acceptance tests pass, and the owner explicitly approves launch. No public deployment has been created.
