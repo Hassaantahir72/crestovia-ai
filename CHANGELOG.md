@@ -1,5 +1,12 @@
 # Crestovia AI — Changelog
 
+## 0.2.27 — Approval workflow guardrails
+- Added automated regression checks for self-requested pending approvals, active membership checks, owner-only review, pending/unexpired request constraints, audit events, and the no-execution boundary.
+- Added a security contract and real-account acceptance checklist for approval workflows.
+- No database migration, external API key, or public deployment is needed for this increment. Live role-isolation acceptance tests remain required.
+
+# Crestovia AI — Changelog
+
 ## 0.2.26 — Update MFA regression tests for atomic RPC
 - Replaced an obsolete compare-and-set source test with checks for the server-only atomic failed-attempt RPC now used by the verification route.
 - CI had correctly caught the stale assertion after v0.2.25; this increment fixes the test rather than weakening the runtime protection.
