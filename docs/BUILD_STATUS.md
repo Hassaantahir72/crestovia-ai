@@ -1,13 +1,18 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.31 (in progress)  
-**Milestone:** Membership RLS policy hotfix  
+**Project version:** 0.2.32 (in progress)  
+**Milestone:** Assistant account-isolation hardening  
 **Overall product implementation estimate:** approximately 48%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.31 — Membership RLS policy hotfix (in progress)
-- Applied migration 0020 to remove the duplicate legacy bootstrap INSERT policy after advisor review found the same creator-bootstrap predicate existed in both the consolidated and legacy policies.
-- Source regression test and CI are pending; recheck policy catalog and Supabase advisors before declaring complete.
+## Version 0.2.32 — Assistant account-isolation hardening (in progress)
+- Added explicit user_id filters to assistant conversations, messages, saved memories, and title updates as defense in depth alongside Supabase RLS.
+- Added source regression coverage. API tests, web lint, and production build are pending.
+- Public deployment remains deferred.
+
+## Version 0.2.31 — Membership policy hotfix (completed)
+- Applied migration 0020 to remove the duplicate legacy membership bootstrap INSERT policy. The policy catalog confirms one INSERT policy on memberships.
+- API tests, ESLint, and Next.js production build passed; PR #5 merged to main. Supabase security advisor has no findings.
 - Public deployment remains deferred.
 
 ## Version 0.2.30 — RLS policy consolidation (merged and applied)
