@@ -1,9 +1,15 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.14  
+**Project version:** 0.2.15  
 **Milestone:** Owner/team access controls, workspace collaboration, private assistant foundation, invitations, and email-code owner MFA  
-**Overall product implementation estimate:** approximately 35%  
+**Overall product implementation estimate:** approximately 37%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.15 approval queue increment
+
+- Added action_approval_requests with RLS: active members can request review, requesters and owners can read, and only owners can update decisions.
+- Added an approval page for team requests and owner approve/reject decisions. Approval records do not execute external actions.
+- Migration 0011 is applied to Supabase; CI passed for the approval queue and is checking the latest team-page refinement.
 
 ## Current capabilities
 - Next.js frontend, Supabase Auth, protected dashboard, sign-in, sign-out, callback, and onboarding.
@@ -53,7 +59,7 @@
 - Architecture/planning: 100%
 - Phase 1 foundation: 85% (schema, auth scaffolding, safe organization bootstrap; real-account tests pending)
 - Phase 2 workspace: 48% (project/task writes, comments, member controls, assignments, invitation acceptance; real-user testing pending)
-- Phase 3 AI/memory/approvals: 18% (private chat and memory foundation; provider secret, approvals, and tool systems pending)
+- Phase 3 AI/memory/approvals: 25% (private chat and memory foundation; provider secret, approvals, and tool systems pending)
 - Phase 4 assistant/voice: 0%
 - Phase 5 integrations: 0%
 - Phase 6 automation/hardening: 15% (MFA and RLS baseline implemented; security acceptance testing remains)
