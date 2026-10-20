@@ -7,7 +7,7 @@ WEB = ROOT / "apps" / "web"
 
 
 def compact_sql(path: str) -> str:
-    return re.sub(r"\s+, " ", (MIGRATIONS / path).read_text(encoding="utf-8").lower()).strip()
+    return re.sub(r"\s+", " ", (MIGRATIONS / path).read_text(encoding="utf-8").lower()).strip()
 
 
 def test_approval_insert_is_self_requested_and_starts_pending():
