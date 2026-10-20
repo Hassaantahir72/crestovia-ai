@@ -101,7 +101,7 @@ def test_assistant_workspace_tools_are_read_only_scoped_and_bounded():
     assert 'type ReadOnlyTool' in tools
     assert 'mode: "read_only"' in tools
     assert 'READ_ONLY_TOOL_REGISTRY.filter(tool => tool.mode === "read_only" && tool.matches(latestMessage))' in tools
-    assert tools.count('.eq("organization_id", organizationId)') == 3
+    assert tools.count('.eq("organization_id", organizationId)') == 4
     assert '.eq("assigned_to", userId)' in tools
     assert 'supabase.from("tasks").select(' in tools
     assert 'supabase.from("projects").select(' in tools
