@@ -162,7 +162,7 @@ def test_notification_table_rls_and_task_reminder_indexes_are_scoped():
     assert "enable row level security" in sql
     assert "recipient_id = (select auth.uid())" in sql
     assert "grant select, insert on public.notifications to authenticated" in sql
-    assert "grant update (read_at) on public.notifications to authenticated" in sql
+    assert "grant update (read_at) on public.notifications to authenticated" not in sql
     assert "dedupe_key = 'task_assigned:' || entity_id::text || ':' || recipient_id::text" in sql
     assert "on conflict (dedupe_key) do nothing" in sql or "dedupe_key text not null unique" in sql
     assert "task_assigned" in sql
