@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { enforceOwnerMfa } from "@/lib/security/owner-mfa";
 import { emailProviderReadiness } from "@/lib/email/provider";
 import { createApprovalRequest, reviewApprovalRequest, executeApprovedTaskRequest } from "../actions";
-import { executeApprovedEmailRequest } from "./email-actions";
+import { executeApprovedEmailRequest, testEmailProviderConnection } from "./email-actions";
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
@@ -40,6 +40,7 @@ export default async function ApprovalsPage({ searchParams }: Props) {
     invalid_decision: "Choose approve or reject.",
     request_not_pending: "That request is no longer pending or is outside your access.",
     email_provider_not_configured: "Email sending is disabled until RESEND_API_KEY and a valid RESEND_FROM_EMAIL are configured privately.",
+    email_connection_failed: "Resend connection test failed. Check the private API key and provider account configuration.",
     email_payload_invalid: "Email details must be valid JSON with one recipient, a subject, and plain-text body.",
     email_request_unavailable: "This email request is not approved, has expired, or is unavailable.",
     email_already_started: "Email execution is already in progress or unavailable.",
@@ -56,8 +57,9 @@ export default async function ApprovalsPage({ searchParams }: Props) {
     {p.reviewed === "1" ? <p className="notice notice-success">Decision recorded.</p> : null}
     {p.executed === "1" ? <p className="notice notice-success">Approved workspace task created and recorded in the audit log.</p> : null}
     {p.email_sent === "1" ? <p className="notice notice-success">The email provider accepted the approved message. This confirms provider acceptance, not inbox delivery.</p> : null}
+    {p.email_connection_ok === "1" ? <p className="notice notice-success">Resend API connection verified. This test did not send an email.</p> : null}
     {ek && errors[ek] ? <p className="notice notice-error">{errors[ek]}</p> : null}
-    {owner ? <section className="panel" style={{ marginBottom: 18 }}><h2>Email provider</h2><p className="muted">{emailReadiness.ready ? "Resend settings are present. Configure a verified sender and validate the connection before live use." : "Email sending is disabled; missing private settings: " + emailReadiness.missing.join(", ") + "."}</p><p className="muted">Required server environment variables: RESEND_API_KEY and RESEND_FROM_EMAIL. Never expose them with NEXT_PUBLIC_ prefixes.</p></section> : null}
+    {owner ? <section className="panel" style={{ marginBottom: 18 }}><h2>Email provider</h2><p className="muted">{emailReadiness.ready ? "Resend settings are present. Configure a verified sender and validate the connection before live use." : "Email sending is disabled; missing private settings: " + emailReadiness.missing.join(", ") + "."}</p><p className="muted">Required server environment variables: RESEND_API_KEY and RESEND_FROM_EMAIL. Never expose them with NEXT_PUBLIC_ prefixes.</p><form action={testEmailProviderConnection} className="approval-review"><button className="button" type="submit" disabled={!emailReadiness.ready}>Test Resend connection (no email sent)</button></form></section> : null}
     {!owner ? <section className="panel" style={{ marginBottom: 18 }}><h2>Request approval</h2><p className="muted">Nothing executes until the owner reviews and approves it. For Send email, enter JSON in Details, for example: {"{"}"to":"recipient@example.com","subject":"Subject","text":"Plain-text message"{"}"}.</p>
       <form action={createApprovalRequest} className="form-grid">
         <div><label htmlFor="action_type">Request type</label><select className="input" id="action_type" name="action_type" defaultValue="external_write"><option value="create_task">Create workspace task</option><option value="external_write">External change</option><option value="send_email">Send email</option><option value="send_message">Send message</option><option value="calendar_change">Calendar change</option><option value="data_export">Data export</option><option value="other">Other</option></select></div>
