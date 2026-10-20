@@ -1,9 +1,15 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.16  
-**Milestone:** Owner/team access controls, private AI assistant foundation, email-code MFA, approvals, and daily briefing  
+**Project version:** 0.2.17  
+**Milestone:** Department management, owner/team access controls, private AI assistant foundation, email-code MFA, approvals, and daily briefing  
 **Overall product implementation estimate:** approximately 39%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.17 — Department management and project organization
+- Added a Departments page to create, edit, and delete departments for owners, admins, and managers. Database RLS remains the final authorization boundary.
+- Added department counts, project assignment during project creation, and department labels on project cards.
+- Deleting a department preserves its projects and clears their department assignment via the existing foreign-key behavior.
+- No schema change or new secret is required; this uses the existing departments table and authenticated Supabase session.
 
 ## Version 0.2.16 — Daily briefing
 - Added a workspace-aware daily briefing that summarizes overdue work, today's deadlines, the next seven days, blocked tasks, in-progress tasks, active projects, unexpired approval requests, and recent workspace activity.
@@ -15,7 +21,7 @@
 ## Current capabilities
 - Next.js frontend, Supabase Auth, protected dashboard, sign-in, sign-out, callback, and onboarding.
 - FastAPI health and authenticated identity endpoints.
-- Owner-only project creation, task creation/status updates, task comments, member role/status controls, and project-level viewer/contributor/manager assignments.
+- Owner-only project creation with optional department assignment, department management for owner/admin/manager roles, task creation/status updates, task comments, member role/status controls, and project-level viewer/contributor/manager assignments.
 - Owner-initiated Supabase Auth invitations and an onboarding acceptance flow for invited memberships.
 - RLS-protected approval requests with owner approve/reject decisions; approvals are records only and do not execute external actions.
 - Private per-user assistant conversations and saved memories, with a server-side Groq provider adapter and chat UI.
@@ -28,7 +34,7 @@
 - Supabase security advisor last reported no security lint findings before this UI-only increment; re-check after future schema changes.
 - Organization creation uses SECURITY INVOKER with RLS-constrained bootstrap policies.
 - Python API tests: 2 passed on the prior verified increment.
-- GitHub Actions frontend lint and production build passed for the application code on commit 7d7f0e16ca8cbff6fc7b94431a118038a2425f12. Subsequent commits only synchronize the already-applied invitation migration and update documentation; they do not change application code.
+- GitHub Actions frontend lint and production build passed for the application code on commit 7d7f0e16ca8cbff6fc7b94431a118038a2425f12. Version 0.2.17 requires a fresh CI run; do not treat the prior run as validation of this increment.
 - Local npm installation timed out in this environment; no local production build is claimed.
 - No public application deployment has been created.
 
@@ -56,12 +62,13 @@
 - Finish audit coverage, rate limiting, recovery/session revocation, backup/restore drill, dependency/security review, and production acceptance tests.
 - Add a permission-checked AI tool registry and connect approvals to future allow-listed actions. No external action should execute merely because the model requested it.
 - Add reminders/notifications, voice, integrations, and automation.
+- Integrate the existing organization_invitations tracking table into invitation and acceptance workflows.
 - Complete final security and user acceptance tests before deployment. No public deployment is authorized yet.
 
 ## Phase estimates
 - Architecture/planning: 100%
 - Phase 1 foundation: 85% (schema, auth scaffolding, safe organization bootstrap; real-account tests pending)
-- Phase 2 workspace: 48% (project/task writes, comments, member controls, assignments, invitation acceptance; real-user testing pending)
+- Phase 2 workspace: 54% (project/task writes, comments, member controls, assignments, invitation acceptance; real-user testing pending)
 - Phase 3 AI/memory/approvals: 25% (private chat/memory and approval-request queue foundation; provider secret, approval execution, and tool systems pending)
 - Phase 4 assistant/voice/productivity: 8% (data-based daily briefing implemented; voice/reminders remain pending)
 - Phase 5 integrations: 0%
