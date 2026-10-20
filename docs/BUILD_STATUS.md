@@ -5,6 +5,11 @@
 **Overall product implementation estimate:** approximately 48%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
+## Version 0.2.29 — Foreign-key lookup performance (in progress)
+- Supabase performance advisor identified 19 foreign-key lookup patterns without covering indexes. Added a non-destructive migration with indexes for those patterns and a source regression test.
+- The migration is on a build branch and has not yet been applied to the connected Supabase database; CI and post-migration advisor verification are pending.
+- This is a performance-only change: no application runtime behavior, RLS policy, or data changes are intended.
+
 ## Version 0.2.28 — Authentication and audit regression coverage
 - Added source regression checks for email-MFA origin validation, owner-only access, current-session challenge binding, expiry, atomic failed-attempt RPC use, and one-time consumption before cookie issuance.
 - Added audit writer boundary tests and documented live acceptance requirements.
