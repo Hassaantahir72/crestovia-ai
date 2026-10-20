@@ -21,3 +21,7 @@ Public deployment remains deferred until the product is complete, security and a
 
 ## Assistant foundation (0.2.11)
 Private chat history and memory are stored in user-isolated tables. The Groq provider adapter and chat UI are prepared, but assistant replies require GROQ_API_KEY configured as a server-only secret. No tools or external actions are enabled in this version.
+
+
+## Invitation acceptance (0.2.13)
+Owners can initiate email invitations and invited users can accept them during onboarding. This requires SUPABASE_SERVICE_ROLE_KEY configured as a server-only secret and valid Supabase Auth email settings. Invite delivery and acceptance must be tested with real accounts before production.
