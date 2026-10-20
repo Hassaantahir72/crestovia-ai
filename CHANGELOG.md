@@ -1,5 +1,11 @@
 # Crestovia AI — Changelog
 
+## 0.2.13 — Invitation acceptance flow
+- Added owner invitation initiation through Supabase Auth using a server-only admin client.
+- Added invited-membership acceptance on onboarding and a narrow RLS policy allowing invitees to read the organization name for their pending invitation.
+- Added an audit event for invitation acceptance and kept invited members blocked from project access until their membership becomes active.
+- Invite delivery requires the private service-role key and Supabase Auth email settings; end-to-end email delivery remains unverified.
+
 ## 0.2.11 — Private assistant chat and memory foundation
 - Added private per-user assistant conversations and messages with RLS isolation.
 - Added private memory CRUD screens, also isolated by user ID.
