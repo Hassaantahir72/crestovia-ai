@@ -1,3 +1,8 @@
+## v0.2.45 — Consolidated notification insert policy
+
+- Combines task-assignment and approval-decision notification inserts into one scoped RLS policy to avoid duplicate permissive-policy evaluation.
+- Retains strict task/request matching, active membership checks, owner review checks, recipient binding, and deduplication keys.
+
 ## v0.2.44 — Approval decision notifications
 
 - Notify the requester in the in-app inbox when an organization owner approves or rejects their approval request.
