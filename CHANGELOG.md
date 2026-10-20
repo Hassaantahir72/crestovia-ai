@@ -1,6 +1,11 @@
 # Crestovia AI — Changelog
 
-## 0.2.36 — Read-only assistant tool guardrails (in progress)
+## 0.2.37 — Assistant proposals to approval queue (in progress)
+- Users can explicitly submit an assistant response as a company action approval request, choosing a request category.
+- The server verifies the response and conversation belong to the signed-in user, applies an allow-list, records an audit event, and sends the request to the existing owner-review queue. No external action is executed.
+- No database migration is required. API and web CI must pass before merge; public deployment remains deferred.
+
+## 0.2.36 — Read-only assistant tool guardrails (completed)
 - Added regression coverage to keep the assistant workspace tool registry read-only, organization-scoped, user-scoped for assigned tasks, and bounded by query limits.
 - No runtime behavior or database schema changes in this test-focused increment. CI must pass before merge; public deployment remains deferred.
 

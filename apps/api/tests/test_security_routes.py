@@ -115,3 +115,19 @@ def test_assistant_workspace_tools_are_read_only_scoped_and_bounded():
     assert ".limit(20)" in tools
     assert "function safeText" in tools
     assert "u0000" in tools
+
+
+def test_assistant_response_can_only_be_submitted_as_an_explicit_approval_request():
+    actions = read_web("app/dashboard/assistant/actions.ts")
+    page = read_web("app/dashboard/assistant/page.tsx")
+
+    assert "export async function proposeAssistantActionForApproval(data:FormData)" in actions
+    assert 'eq("id",messageId).eq("user_id",user.id).eq("role","assistant")' in actions
+    assert 'eq("id",message.conversation_id).eq("user_id",user.id)' in actions
+    assert '["external_write","send_email","send_message","calendar_change","data_export","other"].includes(actionType)' in actions
+    assert 'from("action_approval_requests").insert(' in actions
+    assert 'action:"approval.request.created_from_assistant"' in actions
+    assert 'redirect("/dashboard/assistant?conversation="+message.conversation_id+"&approval_created=1")' in actions
+    assert 'Turn this response into an approval request' in page
+    assert 'It does not execute the proposed action.' in page
+    assert 'No action has been executed.' in page
