@@ -1,9 +1,14 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.29  
-**Milestone:** Foreign-key lookup performance hardening  
+**Project version:** 0.2.30 (in progress)  
+**Milestone:** RLS policy consolidation and performance warnings  
 **Overall product implementation estimate:** approximately 48%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.30 — RLS policy consolidation (in progress)
+- Prepared migration 0019 to remove overlapping permissive policies on departments, memberships, organizations, and project assignments while preserving owner writes, bootstrap membership creation, and scoped reads.
+- Added source regression checks. CI and policy-equivalence review are pending; migration is not applied to Supabase.
+- Public deployment remains deferred.
 
 ## Version 0.2.29 — Foreign-key lookup performance (completed)
 - Added 19 non-destructive indexes covering foreign-key lookup patterns identified by Supabase's performance advisor. API tests and web lint/production build passed in GitHub Actions; PR #3 merged to `main`.
