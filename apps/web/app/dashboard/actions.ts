@@ -110,7 +110,7 @@ export async function deleteTaskComment(data:FormData){
 }
 
 export async function inviteTeamMember(data:FormData){
- const {supabase,membership}=await context();if(membership.role!=="owner")redirect("/dashboard/team?error=owner_only");
+ const {supabase,user,membership}=await context();if(membership.role!=="owner")redirect("/dashboard/team?error=owner_only");
  const email=value(data,"email",254).toLowerCase(),role=value(data,"role",20)||"member";
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))redirect("/dashboard/team?error=invalid_email");
  if(!["admin","manager","member","guest"].includes(role))redirect("/dashboard/team?error=invalid_role");
@@ -123,7 +123,22 @@ export async function inviteTeamMember(data:FormData){
  if(existing?.status==="active")redirect("/dashboard/team?error=already_member");
  const {error:membershipError}=await supabase.from("memberships").upsert({organization_id:membership.organization_id,user_id:invitedId,role,status:"invited"},{onConflict:"organization_id,user_id"});
  if(membershipError)redirect("/dashboard/team?error=membership_invite_failed");
+ const {error:trackingError}=await adminClient.from("organization_invitations").upsert({organization_id:membership.organization_id,invited_email:email,invited_user_id:invitedId,invited_by:user.id,role,status:"pending",accepted_at:null},{onConflict:"organization_id,invited_email"});
+ if(trackingError)redirect("/dashboard/team?error=invite_tracking_failed");
+ await adminClient.from("audit_logs").insert({organization_id:membership.organization_id,actor_id:user.id,action:"membership.invitation.sent",entity_type:"organization_invitation",entity_id:invitedId});
  revalidatePath("/dashboard/team");redirect("/dashboard/team?invited=1");
+}
+
+export async function revokeTeamInvitation(data:FormData){
+ const {supabase,user,membership}=await context();if(membership.role!=="owner")redirect("/dashboard/team?error=owner_only");
+ const id=value(data,"invitation_id",64);if(!id)redirect("/dashboard/team?error=invalid_invitation");
+ let adminClient:ReturnType<typeof import("@/lib/supabase/admin").createAdminClient>;
+ try{const {createAdminClient}=await import("@/lib/supabase/admin");adminClient=createAdminClient()}catch{redirect("/dashboard/team?error=admin_secret_missing")}
+ const {data:invitation,error}=await adminClient.from("organization_invitations").update({status:"revoked"}).eq("id",id).eq("organization_id",membership.organization_id).eq("status","pending").select("id,invited_user_id").maybeSingle();
+ if(error||!invitation)redirect("/dashboard/team?error=invitation_unavailable");
+ if(invitation.invited_user_id){await adminClient.from("memberships").update({status:"suspended"}).eq("organization_id",membership.organization_id).eq("user_id",invitation.invited_user_id).eq("status","invited");}
+ await adminClient.from("audit_logs").insert({organization_id:membership.organization_id,actor_id:user.id,action:"membership.invitation.revoked",entity_type:"organization_invitation",entity_id:invitation.id});
+ revalidatePath("/dashboard/team");redirect("/dashboard/team?revoked=1");
 }
 
 export async function createApprovalRequest(data:FormData){
