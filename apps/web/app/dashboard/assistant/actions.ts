@@ -18,17 +18,17 @@ export async function createConversation(){
 export async function sendAssistantMessage(data:FormData){
  const {supabase,user,membership}=await getUserContext();const id=field(data,"conversation_id",64),content=field(data,"content",12000);
  if(!id||!content)redirect("/dashboard/assistant?error=empty_message");
- const {data:conversation}=await supabase.from("assistant_conversations").select("id,title").eq("id",id).maybeSingle();if(!conversation)redirect("/dashboard/assistant?error=conversation_not_found");
- const {data:prior,error:historyError}=await supabase.from("assistant_messages").select("role,content").eq("conversation_id",id).order("created_at",{ascending:true}).limit(20);
+ const {data:conversation}=await supabase.from("assistant_conversations").select("id,title").eq("id",id).eq("user_id",user.id).maybeSingle();if(!conversation)redirect("/dashboard/assistant?error=conversation_not_found");
+ const {data:prior,error:historyError}=await supabase.from("assistant_messages").select("role,content").eq("conversation_id",id).eq("user_id",user.id).order("created_at",{ascending:true}).limit(20);
  if(historyError)redirect("/dashboard/assistant?conversation="+id+"&error=history_failed");
- const {data:savedMemories}=await supabase.from("assistant_memories").select("category,title,content").order("updated_at",{ascending:false}).limit(8);
+ const {data:savedMemories}=await supabase.from("assistant_memories").select("category,title,content").eq("user_id",user.id).order("updated_at",{ascending:false}).limit(8);
  let answer="";
  try{const workspaceContext=await runReadOnlyAssistantTools(supabase,membership.organization_id,user.id,content);answer=await generateAssistantReply([...(prior??[]) as AssistantMessage[],{role:"user",content}],savedMemories??[],workspaceContext)}
  catch(e){const code=e instanceof Error?e.message:"AI_PROVIDER_REQUEST_FAILED";const allowed=["AI_PROVIDER_NOT_CONFIGURED","AI_PROVIDER_AUTH_FAILED","AI_PROVIDER_RATE_LIMITED","AI_PROVIDER_REQUEST_FAILED","AI_PROVIDER_EMPTY_RESPONSE"];redirect("/dashboard/assistant?conversation="+id+"&error="+(allowed.includes(code)?code.toLowerCase():"ai_provider_request_failed"))}
  const {error:userErr}=await supabase.from("assistant_messages").insert({conversation_id:id,user_id:user.id,role:"user",content});if(userErr)redirect("/dashboard/assistant?conversation="+id+"&error=message_save_failed");
  const {error:assistantErr}=await supabase.from("assistant_messages").insert({conversation_id:id,user_id:user.id,role:"assistant",content:answer});if(assistantErr)redirect("/dashboard/assistant?conversation="+id+"&error=reply_save_failed");
  const title=conversation.title==="New conversation"?content.slice(0,60):conversation.title;
- await supabase.from("assistant_conversations").update({title,updated_at:new Date().toISOString()}).eq("id",id);
+ await supabase.from("assistant_conversations").update({title,updated_at:new Date().toISOString()}).eq("id",id).eq("user_id",user.id);
  revalidatePath("/dashboard/assistant");redirect("/dashboard/assistant?conversation="+id);
 }
 export async function deleteConversation(data:FormData){
