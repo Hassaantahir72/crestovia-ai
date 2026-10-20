@@ -1,5 +1,14 @@
 # Crestovia AI — Changelog
 
+## 0.2.19 — Permission-aware read-only assistant tools
+- Added an explicit allow-list of read-only workspace tools for workspace overview and the signed-in user's assigned tasks.
+- Assistant context uses the authenticated Supabase client and existing row-level security; query results are bounded and labeled as partial where applicable.
+- Workspace context is only fetched when the user's latest message asks about workspace/company work, projects, tasks, deadlines, approvals, or their assigned tasks.
+- Tool results are passed as untrusted data to the model. No write tools, arbitrary SQL, shell, external integrations, or approval execution are available.
+- Updated assistant UI language to describe the read-only capability accurately. No schema migration, new API key, or deployment was required.
+- Validation and real-account acceptance tests remain required; no public deployment was performed.
+
+
 ## 0.2.18 — Invitation tracking, acceptance, and revocation
 - Connected the existing organization_invitations table to the owner invitation workflow, recording email, invited user, inviter, organization role, and status.
 - Added a Pending Invitations table to Team Access with owner-only revocation controls.

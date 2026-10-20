@@ -1,9 +1,16 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.18  
-**Milestone:** Tracked invitations and revocation, department management, owner/team access controls, private AI assistant foundation, email-code MFA, approvals, and daily briefing  
-**Overall product implementation estimate:** approximately 41%  
+**Project version:** 0.2.19  
+**Milestone:** Read-only permission-aware assistant tools, tracked invitations and revocation, department management, owner/team access controls, private AI assistant, email-code MFA, approvals, and daily briefing  
+**Overall product implementation estimate:** approximately 43%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.19 — Permission-aware read-only assistant tools
+- Added a typed, explicit allow-list for workspace overview and current-user assigned-task lookups.
+- Assistant only requests workspace context when the latest user message indicates relevant company/workspace intent.
+- All tool reads use the authenticated Supabase client and therefore remain subject to existing RLS; output is bounded and includes caveats about partial result sets.
+- Tool output is treated as untrusted data. No write-capable tools, arbitrary SQL, shell, integrations, or approval execution were added.
+- No database migration, new API key, or public deployment was needed. CI and real-account acceptance tests must verify this increment.
 
 ## Version 0.2.18 — Invitation tracking, acceptance, and revocation
 - Connected owner-created Supabase Auth invitations to the existing `organization_invitations` table with organization, email, invited user, inviter, role, and pending status.
@@ -52,7 +59,7 @@
 - Successful email verification creates a signed HttpOnly cookie bound to the current Supabase session.
 - Email challenge records are RLS-enabled, have no browser grants, and have an explicit deny policy for anon/authenticated roles. Only the server-side service-role client can access them.
 - Invitation acceptance is restricted to the authenticated user's own invited membership; invited users remain blocked from workspace data until acceptance.
-- Assistant chat has no tools or external-action capability. If enabled, recent chat and selected saved memories are sent to Groq for reply generation.
+- Assistant has an explicit allow-list of read-only workspace overview and assigned-task tools. Reads use the authenticated client and inherit RLS. No write-capable tools or external-action capability is enabled. If configured, recent chat and selected saved memories are sent to Groq for reply generation.
 - Daily briefing uses normal authenticated Supabase queries and inherits RLS; it does not use service-role access.
 
 ## Required private configuration before real-world use
@@ -68,7 +75,7 @@
 - Verify invitations end-to-end using a new test email and ensure Supabase Auth redirect URLs/email delivery are configured.
 - Test owner, unassigned member, viewer, contributor, manager, and suspended-member access across at least two projects and multiple organizations.
 - Finish audit coverage, rate limiting, recovery/session revocation, backup/restore drill, dependency/security review, and production acceptance tests.
-- Add a permission-checked AI tool registry and connect approvals to future allow-listed actions. No external action should execute merely because the model requested it.
+- Expand the permission-checked AI tool registry with tested, narrowly scoped read-only tools; connect approvals to future allow-listed actions only after a separate secure execution design. No external action should execute merely because the model requested it.
 - Add reminders/notifications, voice, integrations, and automation.
 - Complete final security and user acceptance tests before deployment. No public deployment is authorized yet.
 
@@ -76,8 +83,8 @@
 - Architecture/planning: 100%
 - Phase 1 foundation: 85% (schema, auth scaffolding, safe organization bootstrap; real-account tests pending)
 - Phase 2 workspace: 58% (project/task writes, comments, member controls, assignments, invitation acceptance; real-user testing pending)
-- Phase 3 AI/memory/approvals: 25% (private chat/memory and approval-request queue foundation; provider secret, approval execution, and tool systems pending)
-- Phase 4 assistant/voice/productivity: 8% (data-based daily briefing implemented; voice/reminders remain pending)
+- Phase 3 AI/memory/approvals: 30% (private chat/memory and approval-request queue foundation; provider secret, approval execution, and tool systems pending)
+- Phase 4 assistant/voice/productivity: 10% (data-based daily briefing implemented; voice/reminders remain pending)
 - Phase 5 integrations: 0%
 - Phase 6 automation/hardening: 15% (MFA and RLS baseline implemented; security acceptance testing remains)
 
