@@ -1,5 +1,13 @@
 # Crestovia AI — Changelog
 
+## 0.2.20 — Audit history and workspace event logging
+- Added an owner/admin-only audit history page with action filtering and a bounded recent-event view.
+- Added best-effort server-side audit events for project/task/department changes, task comments, project membership changes, team access changes, and approval request creation/review.
+- Audit writes use the server-only Supabase admin client and never include comment bodies or long free-text content in metadata.
+- Existing organization and invitation events remain available. The viewer warns that early history may not cover every prior change.
+- No schema migration or public deployment was performed. Audit event writes require private service-role configuration; real-account verification remains required.
+
+
 ## 0.2.19 — Permission-aware read-only assistant tools
 - Added an explicit allow-list of read-only workspace tools for workspace overview and the signed-in user's assigned tasks.
 - Assistant context uses the authenticated Supabase client and existing row-level security; query results are bounded and labeled as partial where applicable.

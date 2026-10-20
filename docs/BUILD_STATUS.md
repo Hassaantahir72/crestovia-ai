@@ -1,9 +1,16 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.19  
-**Milestone:** Read-only permission-aware assistant tools, tracked invitations and revocation, department management, owner/team access controls, private AI assistant, email-code MFA, approvals, and daily briefing  
-**Overall product implementation estimate:** approximately 43%  
+**Project version:** 0.2.20  
+**Milestone:** Audit history and workspace event logging, permission-aware read-only assistant tools, tracked invitations, department management, owner/team access controls, private AI assistant, email-code MFA, approvals, and daily briefing  
+**Overall product implementation estimate:** approximately 45%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.20 — Audit history and workspace event logging
+- Added an owner/admin-only audit history page, with action filtering and the latest 100 matching records.
+- Added server-side audit events for project/task/department changes, task comments, project membership changes, team membership access changes, and approval request creation/review.
+- Audit writes are best-effort through the server-only admin client. The service-role secret must be configured privately for reliable writes; no secrets are exposed to the browser.
+- Metadata is limited to identifiers and short labels; comment bodies and long free-text details are not copied into audit records.
+- Historical event coverage can be incomplete. No database migration or public deployment was performed; real-account verification remains required.
 
 ## Version 0.2.19 — Permission-aware read-only assistant tools
 - Added a typed, explicit allow-list for workspace overview and current-user assigned-task lookups.
@@ -83,7 +90,7 @@
 - Architecture/planning: 100%
 - Phase 1 foundation: 85% (schema, auth scaffolding, safe organization bootstrap; real-account tests pending)
 - Phase 2 workspace: 58% (project/task writes, comments, member controls, assignments, invitation acceptance; real-user testing pending)
-- Phase 3 AI/memory/approvals: 30% (private chat/memory and approval-request queue foundation; provider secret, approval execution, and tool systems pending)
+- Phase 3 AI/memory/approvals: 32% (private chat/memory and approval-request queue foundation; provider secret, approval execution, and tool systems pending)
 - Phase 4 assistant/voice/productivity: 10% (data-based daily briefing implemented; voice/reminders remain pending)
 - Phase 5 integrations: 0%
 - Phase 6 automation/hardening: 15% (MFA and RLS baseline implemented; security acceptance testing remains)
