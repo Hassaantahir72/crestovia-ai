@@ -3,7 +3,9 @@
 ## 0.2.29 — Foreign-key lookup performance
 - Added additive indexes for 19 foreign-key lookup patterns flagged by the Supabase performance advisor, including organization-scoped composite relationships.
 - Added a source regression test that verifies each expected index is represented and the migration is non-destructive.
-- Migration is prepared in source and must pass CI before being applied to the connected Supabase project.
+- API tests and web lint/production build passed in GitHub Actions; PR #3 was merged to `main`.
+- Applied the additive migration to the connected Supabase project and verified all 19 indexes exist. The performance advisor no longer reports unindexed foreign keys; security advisor remains clear.
+- Remaining performance advisor findings include multiple permissive RLS policies and unused-index notices. No policies or existing indexes were changed; unused-index warnings require real workload data before any removal.
 - No application runtime changes, data rewrites, or public deployment.
 
 ## 0.2.28 — Authentication and audit regression coverage
