@@ -1,3 +1,10 @@
+## v0.2.42 — In-app notifications and reminder worker
+
+- Adds an organization-scoped notification inbox with unread counts and mark-read/mark-all-read actions.
+- Creates a notification when a task is assigned to another active workspace member; the insert policy requires a matching task and organization.
+- Adds a bearer-secret-protected cron endpoint that queues idempotent daily due-soon and overdue reminders for assigned, unfinished tasks. Requires `CRON_SECRET` and `SUPABASE_SERVICE_ROLE_KEY`; configure a trusted scheduler privately to activate it.
+- Adds RLS and regression tests; notifications are private to the recipient and active organization membership.
+
 ## v0.2.41 — Explicit organization scope for task execution
 
 - Passes the current organization ID to the execution RPC and filters the locked approval row by both request ID and organization ID.
