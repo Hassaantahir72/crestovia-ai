@@ -51,7 +51,7 @@ export default async function ApprovalsPage({ searchParams }: Props) {
   const ek = typeof p.error === "string" ? p.error : "";
   return <main className="container">
     <nav className="workspace-nav"><Link href="/dashboard">← Dashboard</Link><Link href="/dashboard/assistant">AI assistant</Link><Link href="/dashboard/team">Team access</Link></nav>
-    <header className="page-header"><div><p className="brand">CRESTOVIA AI / APPROVALS</p><h1>Action approvals</h1><p className="muted">{org?.name ?? "Workspace"} · Consequential actions require owner review. Email sends are enabled only when the private provider is configured.</p></div></header>
+    <header className="page-header"><div><p className="brand">CRESTOVIA AI / APPROVALS</p><h1>Action approvals</h1><p className="muted">{org?.name ?? "Workspace"} · Unsupported external actions remain disabled; the only external action currently implemented is owner-approved email delivery.</p></div></header>
     {p.created === "1" ? <p className="notice notice-success">Approval request submitted to the owner.</p> : null}
     {p.reviewed === "1" ? <p className="notice notice-success">Decision recorded.</p> : null}
     {p.executed === "1" ? <p className="notice notice-success">Approved workspace task created and recorded in the audit log.</p> : null}
