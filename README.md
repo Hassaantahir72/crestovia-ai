@@ -2,55 +2,21 @@
 
 A free-first starter for Crestovia AI: a shared company workspace with a Next.js frontend, FastAPI backend, and Supabase/PostgreSQL authentication and data foundation.
 
-## What is included
-- Next.js App Router + TypeScript frontend
-- Supabase Auth browser/server helpers
-- Protected dashboard, sign-in page, and first-organization onboarding
+## Included
+- Next.js App Router + TypeScript frontend and Supabase Auth helpers
+- Protected dashboard, sign-in, callback, sign-out, and organization onboarding
 - FastAPI health and authenticated /api/v1/me endpoints
-- Supabase SQL migrations for organizations, memberships, profiles, audit events, departments, projects, tasks, comments, and activity
-- Initial Row Level Security (RLS) policies and secure first-organization creation RPC
-- Environment templates, tests, and free preview deployment instructions
+- Supabase migrations for organizations, memberships, profiles, audit events, departments, projects, tasks, comments, activity, project assignments, and owner-private items
+- Row Level Security policies, environment templates, tests, and free preview deployment instructions
 
-## Important status
-This is foundation starter code, not a fully deployed production system. Authentication and database access require environment configuration. Review and test RLS with multiple test users before adding real company data. The API validates Supabase access tokens against the project's JWKS endpoint.
-
-## Requirements
-- Node.js 20.9+ (use a currently supported LTS release)
-- Python 3.11+
-- Supabase project
-- Git
+## Status
+This is foundation starter code, not a fully deployed production system. Real-user authentication, frontend build, cross-tenant security tests, MFA enforcement, and deployment remain pending. Review and test RLS with multiple test users before adding real company data.
 
 ## Setup
-Read docs/supabase/BEGINNER_SETUP.md and docs/deployment/LIVE_PREVIEW_SETUP.md. Configure apps/web/.env.local and apps/api/.env using the example files. Never commit secrets.
+Read docs/supabase/BEGINNER_SETUP.md and docs/deployment/LIVE_PREVIEW_SETUP.md. Configure local environment files from examples. Never commit secrets.
 
-### Frontend
-```bash
-cd apps/web
-npm install
-npm run dev
-```
+## Owner and team security
+Read docs/security/SECURITY_AND_RELEASE_PLAN.md and docs/security/TEAM_ACCESS_MODEL.md. Owner-private data is isolated from the shared company workspace. Team access to projects is explicitly assigned with viewer/contributor/manager levels. Assignment UI, MFA enforcement, and multi-user security tests are still pending.
 
-### API
-```bash
-cd apps/api
-python -m venv .venv
-# Activate the environment, then:
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
-```
-Check http://localhost:8000/health.
-
-## Security and release policy
-Read docs/security/SECURITY_AND_RELEASE_PLAN.md for the security requirements and launch gates. The operational app must be owner-controlled, with MFA enforced, organization isolation tested, and no public deployment until the project is complete and the owner approves launch. These controls are a plan; not all are implemented yet.
-
-## Security notes
-- Supabase publishable keys may be used in the browser; never expose a secret/service-role key in client code.
-- Keep API secrets server-side and out of Git.
-- RLS is defense in depth, not a substitute for testing.
-- Do not add real employee/client data until authentication and organization isolation are verified.
-
-## Workspace increment
-See docs/phase-2/WORKSPACE_SETUP.md. Projects and Tasks pages are currently read-only; create/edit flows and realtime updates are not yet implemented.
-
-## Free-first preview
-The current deployment blueprint is render.yaml. Follow docs/deployment/LIVE_PREVIEW_SETUP.md for a user-owned GitHub + Render + Supabase preview. Render Free sleeps after inactivity and is for preview/testing, not production uptime. Public deployment is intentionally deferred until the project is complete, security and acceptance tests pass, and the owner explicitly approves launch. The current blueprint is preparation only.
+## Deployment
+The current blueprint is render.yaml. Public deployment is intentionally deferred until the project is complete, security and acceptance tests pass, and the owner explicitly approves launch.
