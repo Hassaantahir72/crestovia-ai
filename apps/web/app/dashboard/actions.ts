@@ -109,6 +109,6 @@ export async function reviewApprovalRequest(data:FormData){
  const {supabase,user,membership}=await context();if(membership.role!=="owner")redirect("/dashboard/approvals?error=owner_only");
  const id=value(data,"request_id",64),decision=value(data,"decision",16),reviewNote=value(data,"review_note",1000);
  if(!id||!["approved","rejected"].includes(decision))redirect("/dashboard/approvals?error=invalid_decision");
- const {data:request,error}=await supabase.from("action_approval_requests").update({status:decision,reviewed_by:user.id,reviewed_at:new Date().toISOString(),review_note:reviewNote}).eq("id",id).eq("organization_id",membership.organization_id).eq("status","pending").select("id").maybeSingle();
+ const {data:request,error}=await supabase.from("action_approval_requests").update({status:decision,reviewed_by:user.id,reviewed_at:new Date().toISOString(),review_note:reviewNote}).eq("id",id).eq("organization_id",membership.organization_id).eq("status","pending").gt("expires_at",new Date().toISOString()).select("id").maybeSingle();
  if(error||!request)redirect("/dashboard/approvals?error=request_not_pending");revalidatePath("/dashboard/approvals");redirect("/dashboard/approvals?reviewed=1");
 }
