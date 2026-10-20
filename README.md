@@ -17,3 +17,7 @@ See docs/supabase/BEGINNER_SETUP.md, docs/security/TEAM_ACCESS_MODEL.md, docs/se
 
 ## Deployment policy
 Public deployment remains deferred until the product is complete, security and acceptance tests pass, and the owner explicitly approves launch. No public deployment has been created.
+
+
+## Assistant foundation (0.2.11)
+Private chat history and memory are stored in user-isolated tables. The Groq provider adapter and chat UI are prepared, but assistant replies require GROQ_API_KEY configured as a server-only secret. No tools or external actions are enabled in this version.
