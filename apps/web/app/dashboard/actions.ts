@@ -175,7 +175,7 @@ export async function executeApprovedTaskRequest(data:FormData){
  if(membership.role!=="owner")redirect("/dashboard/approvals?error=owner_only");
  const id=value(data,"request_id",64);
  if(!id)redirect("/dashboard/approvals?error=execution_unavailable");
- const {data:result,error}=await supabase.rpc("execute_approved_task_request",{p_request_id:id});
+ const {data:result,error}=await supabase.rpc("execute_approved_task_request",{p_request_id:id,p_organization_id:membership.organization_id});
  if(error||!Array.isArray(result)||!result[0]?.task_id){
   const reason=error?.message??"unexpected_result";
   await recordAuditEvent({organizationId:membership.organization_id,actorId:user.id,action:"approval.request.execution_failed",entityType:"action_approval_request",entityId:id,metadata:{action_type:"create_task",reason:reason.includes("already_started")?"already_started":reason.includes("expired")?"expired":reason.includes("not_approved")?"not_approved":"execution_error"}});
