@@ -6,10 +6,10 @@
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
 ## Version 0.2.24 — Atomic email-MFA challenge issuance
-- Added migration 0016 with a SECURITY INVOKER database function that serializes challenge issuance per user using a PostgreSQL transaction advisory lock.
+- Added migration 0016 with a SECURITY INVOKER database function that serializes challenge issuance per user using a PostgreSQL transaction advisory lock. Applied to Supabase; verified the function is not SECURITY DEFINER and EXECUTE is granted only to postgres/service_role.
 - The function atomically checks the five-per-hour limit and 60-second cooldown, invalidates older unused challenges for the same session, and inserts the new challenge.
 - Function EXECUTE is revoked from PUBLIC, anon, and authenticated and granted only to service_role; the request endpoint calls it through the server-only admin client.
-- CI includes static regression checks. Live email delivery and concurrency testing still require configured provider secrets and a real test account.
+- CI regression checks passed (7 pytest tests; frontend lint and production build also passed). Live email delivery and concurrency testing still require configured provider secrets and a real test account.
 
 ## Version 0.2.23 — Concurrent email MFA attempt hardening
 - Failed email-code attempts now use a compare-and-set database update, matching the challenge's previously read attempt count and requiring it to remain unused.
@@ -80,13 +80,13 @@
 - Private GitHub repository: https://github.com/Hassaantahir72/crestovia-ai
 - Supabase security advisor returned no security lint findings after migrations 0014–0015; re-check after future schema changes.
 - Organization creation uses SECURITY INVOKER with RLS-constrained bootstrap policies.
-- Python/API CI tests passed on v0.2.23; v0.2.24 adds issuance-rate-limit regression checks and is awaiting its own CI run.
+- Python/API CI: 7 tests passed on v0.2.24. Frontend ESLint and Next.js production build passed in GitHub Actions for the v0.2.24 source commit.
 - GitHub Actions frontend lint and production build passed for v0.2.18 application source at commit 2234cbe80a5443a0548ede2778bb6f77dc0582fc. The following commit only refreshes this status documentation.
 - Local npm installation timed out in this environment; no local production build is claimed.
 - No public application deployment has been created.
 
 ## Security implementation notes
-- Owner dashboard, project, team, assistant, memory, approval, and write-action paths require email-MFA verification or a verified TOTP factor at AAL2.
+- Owner dashboard, project, team, assistant, memory, approval, and write-action paths require the session-bound email-MFA verification cookie or a verified TOTP factor with AAL2 assurance.
 - Email OTP codes are random six-digit values, hashed with a server-only secret, expire after 10 minutes, are invalidated after use, have a 60-second resend cooldown, a per-account hourly send limit, and a five-attempt cap.
 - Successful email verification creates a signed HttpOnly cookie bound to the current Supabase session.
 - Email challenge records are RLS-enabled, have no browser grants, and have an explicit deny policy for anon/authenticated roles. Only the server-side service-role client can access them.
