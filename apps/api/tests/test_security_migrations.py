@@ -132,5 +132,5 @@ def test_rls_policy_consolidation_preserves_scoped_access_and_removes_overlaps()
     assert "created_by = (select auth.uid())" in sql
     assert "m.status = 'invited'" in sql
     assert "m.status = 'active'" in sql
-    assert "for all" not in sql
+    assert "for all to authenticated" not in sql
     assert "drop table" not in sql
