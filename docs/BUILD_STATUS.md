@@ -10,10 +10,11 @@
 - FastAPI health and authenticated identity endpoints.
 - Owner-only project creation, task creation/status updates, task comments, and owner controls for project assignments and existing member roles/status.
 - Owner-initiated Supabase Auth invitations and an onboarding acceptance flow for invited memberships.
+- RLS-protected approval queue for team requests and owner approve/reject decisions; approvals do not execute external actions.
 - Project-level viewer, contributor, and manager assignments; owner-private records are isolated from team data.
 - Private per-user assistant conversations and saved memories, with a server-side Groq provider adapter and chat UI.
 - Owner account security supports email-code second factor when provider secrets are configured, with authenticator-app TOTP as fallback.
-- Supabase schema migrations through 0010 are applied; all 15 public tables have RLS enabled.
+- Supabase schema migrations through 0011 are applied; all 16 public tables have RLS enabled.
 
 ## Verification
 - Private GitHub repository: https://github.com/Hassaantahir72/crestovia-ai
