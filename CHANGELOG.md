@@ -1,5 +1,10 @@
 # Crestovia AI — Changelog
 
+## 0.2.15 — Owner approval queue foundation
+- Added an RLS-protected action approval request queue for team members to request owner review.
+- Added owner approve/reject decisions with optional review notes and expiry metadata.
+- Added a dashboard approvals page. Approval decisions are records only; no external actions execute from this queue yet.
+
 ## 0.2.14 — Email-code owner MFA
 - Added a custom email second-factor challenge for the verified owner email, with 6-digit codes, 10-minute expiry, one-minute resend cooldown, five-attempt hourly limit, keyed code hashes, one-time consumption, and session-bound HttpOnly signed cookies.
 - Added server-only challenge storage with RLS and explicit deny policies for browser roles.
