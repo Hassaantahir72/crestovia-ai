@@ -90,5 +90,5 @@ def test_ai_provider_connection_test_is_owner_only_bounded_and_secret_safe():
     assert 'max_tokens:8' in actions
     assert 'cache:"no-store"' in actions
     assert 'Authorization:"Bearer "+apiKey' in actions
-    assert "The API key was not exposed." in page
+    assert "the API key was not exposed." in page
     assert "GROQ_API_KEY" not in actions[actions.index("export async function testAssistantProvider()"):actions.index("export async function createConversation()")].replace('const apiKey=process.env.GROQ_API_KEY','')
