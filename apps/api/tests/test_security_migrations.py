@@ -100,3 +100,37 @@ def test_foreign_key_lookup_indexes_cover_advisor_findings():
 
     assert "drop index" not in sql
     assert "drop table" not in sql
+
+
+def test_rls_policy_consolidation_preserves_scoped_access_and_removes_overlaps():
+    sql = compact_sql("0019_consolidate_permissive_rls_policies.sql")
+
+    # Departments and project assignments retain owner writes while SELECT remains scoped.
+    assert 'drop policy if exists "only owner manages departments"' in sql
+    assert 'create policy "owners insert departments"' in sql
+    assert 'create policy "owners update departments"' in sql
+    assert 'create policy "owners delete departments"' in sql
+    assert 'drop policy if exists "organization owners manage project assignments"' in sql
+    assert 'create policy "owners insert project assignments"' in sql
+    assert 'create policy "owners update project assignments"' in sql
+    assert 'create policy "owners delete project assignments"' in sql
+
+    # Bootstrap membership creation remains restricted to the authenticated creator.
+    assert 'create policy "owners or creators insert memberships"' in sql
+    assert "user_id = (select auth.uid())" in sql
+    assert "role = 'owner'" in sql
+    assert "status = 'active'" in sql
+    assert "o.created_by = (select auth.uid())" in sql
+    assert 'create policy "organization owners update memberships"' in sql
+    assert 'create policy "organization owners delete memberships"' in sql
+
+    # Organization reads preserve all three original relationship cases in one policy.
+    assert 'drop policy if exists "creators read own organizations during bootstrap"' in sql
+    assert 'drop policy if exists "invitees can read invited organizations"' in sql
+    assert 'drop policy if exists "members can read their organizations"' in sql
+    assert 'create policy "users read organizations by relationship"' in sql
+    assert "created_by = (select auth.uid())" in sql
+    assert "m.status = 'invited'" in sql
+    assert "m.status = 'active'" in sql
+    assert "for all" not in sql
+    assert "drop table" not in sql
