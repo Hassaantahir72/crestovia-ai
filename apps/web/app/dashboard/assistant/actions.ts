@@ -88,7 +88,7 @@ export async function deleteMemory(data:FormData){
 export async function proposeAssistantActionForApproval(data:FormData){
  const {supabase,user,membership}=await getUserContext();
  const messageId=field(data,"message_id",64),actionType=field(data,"action_type",32)||"other";
- if(!messageId||!["external_write","send_email","send_message","calendar_change","data_export","other"].includes(actionType))redirect("/dashboard/assistant?error=invalid_approval_proposal");
+ if(!messageId||!["create_task","external_write","send_email","send_message","calendar_change","data_export","other"].includes(actionType))redirect("/dashboard/assistant?error=invalid_approval_proposal");
  const {data:message,error:messageError}=await supabase.from("assistant_messages").select("id,conversation_id,content,role").eq("id",messageId).eq("user_id",user.id).eq("role","assistant").maybeSingle();
  if(messageError||!message)redirect("/dashboard/assistant?error=approval_proposal_unavailable");
  const {data:conversation,error:conversationError}=await supabase.from("assistant_conversations").select("id").eq("id",message.conversation_id).eq("user_id",user.id).maybeSingle();
