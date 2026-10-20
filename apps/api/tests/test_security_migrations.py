@@ -69,3 +69,34 @@ def test_email_mfa_failed_attempt_rpc_is_atomic_and_service_role_only():
     assert "to service_role" in sql
     assert 'admin.rpc("record_email_mfa_failed_attempt"' in route
     assert "challenge.attempt_count+1" not in route
+
+def test_foreign_key_lookup_indexes_cover_advisor_findings():
+    sql = compact_sql("0018_foreign_key_lookup_indexes.sql")
+
+    expected_indexes = [
+        "action_approval_requests_org_requested_by_idx",
+        "action_approval_requests_reviewed_by_idx",
+        "assistant_messages_conversation_user_idx",
+        "assistant_messages_user_id_idx",
+        "audit_logs_actor_id_idx",
+        "departments_created_by_idx",
+        "organization_invitations_invited_by_idx",
+        "organizations_created_by_idx",
+        "project_memberships_assigned_by_idx",
+        "project_memberships_org_user_idx",
+        "projects_created_by_idx",
+        "projects_org_department_idx",
+        "task_comments_org_task_idx",
+        "task_comments_author_id_idx",
+        "task_comments_organization_id_idx",
+        "tasks_org_assignee_idx",
+        "tasks_created_by_idx",
+        "tasks_org_project_idx",
+        "workspace_activity_actor_id_idx",
+    ]
+
+    for index_name in expected_indexes:
+        assert f"create index if not exists {index_name}" in sql
+
+    assert "drop index" not in sql
+    assert "drop table" not in sql
