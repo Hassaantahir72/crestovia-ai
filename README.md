@@ -29,3 +29,7 @@ Owners can initiate email invitations and invited users can accept them during o
 
 ## Email-code owner MFA (0.2.14)
 The code now supports a short-lived, rate-limited email second factor with a TOTP fallback. To activate email delivery, configure SUPABASE_SERVICE_ROLE_KEY, APP_MFA_SECRET, RESEND_API_KEY, and RESEND_FROM_EMAIL as server-only secrets. Email delivery and real-account acceptance tests remain pending until those secrets and the sender are configured. Never share secrets in chat.
+
+
+## Approval queue (0.2.15)
+Team members can submit requests for owner review; owners can approve or reject with notes. This records the decision only. It does not execute external actions or grant AI tools.
