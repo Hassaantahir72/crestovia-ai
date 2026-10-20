@@ -1,9 +1,15 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.27  
-**Milestone:** Approval workflow guardrails and source-level security regression tests  
-**Overall product implementation estimate:** approximately 47%  
+**Project version:** 0.2.28  
+**Milestone:** Authentication, MFA, and audit regression coverage  
+**Overall product implementation estimate:** approximately 48%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.28 — Authentication and audit regression coverage
+- Added source regression checks for email-MFA origin validation, owner-only access, current-session challenge binding, expiry, atomic failed-attempt RPC use, and one-time consumption before cookie issuance.
+- Added audit writer boundary tests and documented live acceptance requirements.
+- Fixed the approval test whitespace normalizer; it now collapses SQL whitespace correctly.
+- No runtime behavior or database schema changed. Real multi-user, email-provider, and concurrent-request tests remain outstanding.
 
 ## Version 0.2.27 — Approval workflow guardrails
 - Added automated source regression tests for active-member self-request, owner-only review, pending/unexpired request constraints, audit events, and the no-external-execution boundary.
