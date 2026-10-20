@@ -1,9 +1,15 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.23  
+**Project version:** 0.2.24  
 **Milestone:** Audit history permission alignment, workspace event logging, permission-aware read-only assistant tools, tracked invitations, department management, owner/team access controls, private AI assistant, email-code MFA, approvals, and daily briefing  
 **Overall product implementation estimate:** approximately 46%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.24 — Atomic email-MFA challenge issuance
+- Added migration 0016 with a SECURITY INVOKER database function that serializes challenge issuance per user using a PostgreSQL transaction advisory lock.
+- The function atomically checks the five-per-hour limit and 60-second cooldown, invalidates older unused challenges for the same session, and inserts the new challenge.
+- Function EXECUTE is revoked from PUBLIC, anon, and authenticated and granted only to service_role; the request endpoint calls it through the server-only admin client.
+- CI includes static regression checks. Live email delivery and concurrency testing still require configured provider secrets and a real test account.
 
 ## Version 0.2.23 — Concurrent email MFA attempt hardening
 - Failed email-code attempts now use a compare-and-set database update, matching the challenge's previously read attempt count and requiring it to remain unused.
@@ -68,13 +74,13 @@
 - Private per-user assistant conversations and saved memories, with a server-side Groq provider adapter and chat UI.
 - Owner email-code second factor when private provider settings are configured, with authenticator-app TOTP as fallback.
 - Data-based daily briefing with deadline, blocked-work, project, approval, and recent-activity summaries.
-- Supabase schema migrations through 0015 are represented in source; all 17 public tables had RLS enabled at the last full-table check; migrations 0014–0015 additionally harden audit-log grants. The organization_invitations table is wired into owner invite, acceptance, and revocation workflows; membership status remains the authorization gate for workspace access.
+- Supabase schema migrations through 0016 are represented in source; all 17 public tables had RLS enabled at the last full-table check; migrations 0014–0015 additionally harden audit-log grants. The organization_invitations table is wired into owner invite, acceptance, and revocation workflows; membership status remains the authorization gate for workspace access.
 
 ## Verification
 - Private GitHub repository: https://github.com/Hassaantahir72/crestovia-ai
 - Supabase security advisor returned no security lint findings after migrations 0014–0015; re-check after future schema changes.
 - Organization creation uses SECURITY INVOKER with RLS-constrained bootstrap policies.
-- Python/API CI tests passed on v0.2.22; v0.2.23 adds a compare-and-set MFA regression check and is awaiting its own CI run.
+- Python/API CI tests passed on v0.2.23; v0.2.24 adds issuance-rate-limit regression checks and is awaiting its own CI run.
 - GitHub Actions frontend lint and production build passed for v0.2.18 application source at commit 2234cbe80a5443a0548ede2778bb6f77dc0582fc. The following commit only refreshes this status documentation.
 - Local npm installation timed out in this environment; no local production build is claimed.
 - No public application deployment has been created.
@@ -98,7 +104,7 @@
 
 ## Remaining work
 - Complete owner/admin/member audit-history access tests using separate real accounts and verify cross-organization records remain invisible; source-migration regression tests now run in CI.
-- Verify email delivery, expiry, replay rejection, resend limits, wrong-code lockout, simultaneous wrong-code submissions, session binding, sign-out/session rotation, and TOTP fallback using real accounts.
+- Verify email delivery, expiry, replay rejection, resend limits under parallel requests, wrong-code lockout under parallel submissions, session binding, sign-out/session rotation, and TOTP fallback using real accounts.
 - Verify invitations end-to-end using a new test email and ensure Supabase Auth redirect URLs/email delivery are configured.
 - Test owner, unassigned member, viewer, contributor, manager, and suspended-member access across at least two projects and multiple organizations.
 - Finish audit coverage, rate limiting, recovery/session revocation, backup/restore drill, dependency/security review, and production acceptance tests.

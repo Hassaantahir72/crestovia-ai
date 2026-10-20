@@ -48,3 +48,19 @@ def test_email_mfa_failed_attempts_use_compare_and_set():
     assert '.select("id").maybeSingle()' in invalid_branch
     assert "if(!attemptUpdated)" in invalid_branch
     assert "challenge_already_used_or_updated" in invalid_branch
+
+def test_email_mfa_issuance_is_serialized_and_service_role_only():
+    sql = compact_sql("0016_atomic_email_mfa_challenge_issuance.sql")
+    route = (ROOT / "apps" / "web" / "app" / "api" / "security" / "email-mfa" / "request" / "route.ts").read_text(
+        encoding="utf-8"
+    )
+
+    assert "pg_advisory_xact_lock" in sql
+    assert "hashtextextended(p_user_id::text, 0)" in sql
+    assert "v_recent_count >= 5" in sql
+    assert "interval '60 seconds'" in sql
+    assert "security invoker" in sql
+    assert "from public, anon, authenticated" in sql
+    assert "to service_role" in sql
+    assert 'admin.rpc("issue_email_mfa_challenge"' in route
+    assert "recentChallenges" not in route

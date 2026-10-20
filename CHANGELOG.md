@@ -1,5 +1,11 @@
 # Crestovia AI — Changelog
 
+## 0.2.24 — Atomic email-MFA challenge issuance
+- Moved the per-user hourly limit, resend cooldown, prior-challenge invalidation, and challenge insertion into one PostgreSQL transaction guarded by a per-user advisory lock.
+- Restricted the new SECURITY INVOKER RPC to the server-side service_role; anon and authenticated cannot execute it.
+- This closes a race where simultaneous challenge requests could pass the previous read-then-insert rate-limit checks.
+- Applied migration 0016 to the connected Supabase project and verified function privileges and security advisor results. Real email delivery tests remain pending.
+
 ## 0.2.23 — Concurrent email MFA attempt hardening
 - Changed failed email-code attempts to use a database compare-and-set update keyed by the previously observed attempt count.
 - Concurrent failed verification requests can no longer silently overwrite the same attempt counter; stale competing updates receive a conflict response.
