@@ -67,3 +67,16 @@ export async function updateMemberAccess(data:FormData){
  if(error)redirect("/dashboard/team?error=member_update_failed");
  revalidatePath("/dashboard/team");revalidatePath("/dashboard/projects");revalidatePath("/dashboard/tasks");redirect("/dashboard/team?member_updated=1");
 }
+
+export async function addTaskComment(data:FormData){
+ const {supabase,user,membership}=await context();const taskId=value(data,"task_id",64),body=value(data,"body",10000);
+ if(!taskId||!body)redirect("/dashboard/tasks?error=invalid_comment");
+ const {data:task}=await supabase.from("tasks").select("id").eq("id",taskId).eq("organization_id",membership.organization_id).maybeSingle();if(!task)redirect("/dashboard/tasks?error=task_not_available");
+ const {error}=await supabase.from("task_comments").insert({organization_id:membership.organization_id,task_id:taskId,author_id:user.id,body});
+ if(error)redirect("/dashboard/tasks?error=comment_not_allowed");revalidatePath("/dashboard/tasks");redirect("/dashboard/tasks?comment_added=1");
+}
+export async function deleteTaskComment(data:FormData){
+ const {supabase,user,membership}=await context();const id=value(data,"comment_id",64);if(!id)redirect("/dashboard/tasks?error=invalid_comment");
+ const {error}=await supabase.from("task_comments").delete().eq("id",id).eq("organization_id",membership.organization_id).eq("author_id",user.id);
+ if(error)redirect("/dashboard/tasks?error=comment_delete_failed");revalidatePath("/dashboard/tasks");redirect("/dashboard/tasks?comment_deleted=1");
+}
