@@ -1,11 +1,16 @@
 # Crestovia AI — Changelog
 
+## 0.2.28 — Authentication and audit regression coverage
+- Added source regression checks for cross-origin rejection, authenticated owner-only email-MFA request/verification, user/session-bound challenge lookup, expiry, atomic failed-attempt counting, and one-time challenge consumption before cookie issuance.
+- Added audit-writer boundary checks and documented the live acceptance tests still required.
+- Corrected approval regression test whitespace normalization so it actually normalizes SQL whitespace rather than matching a literal backslash sequence.
+- No runtime behavior or database schema changed. Live multi-user and concurrency tests remain outstanding.
+
+## 0.2.27 — Approval workflow guardrails
 ## 0.2.27 — Approval workflow guardrails
 - Added automated regression checks for self-requested pending approvals, active membership checks, owner-only review, pending/unexpired request constraints, audit events, and the no-execution boundary.
 - Added a security contract and real-account acceptance checklist for approval workflows.
 - No database migration, external API key, or public deployment is needed for this increment. Live role-isolation acceptance tests remain required.
-
-# Crestovia AI — Changelog
 
 ## 0.2.26 — Update MFA regression tests for atomic RPC
 - Replaced an obsolete compare-and-set source test with checks for the server-only atomic failed-attempt RPC now used by the verification route.
