@@ -1,14 +1,19 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.32 (in progress)  
-**Milestone:** Assistant account-isolation hardening  
+**Project version:** 0.2.33 (in progress)  
+**Milestone:** Editable private memory  
 **Overall product implementation estimate:** approximately 48%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.32 — Assistant account-isolation hardening (in progress)
+## Version 0.2.33 — Editable private memory (in progress)
+- Added a private-memory edit workflow with bounded title/content, an allow-list for categories, explicit user_id predicates on lookup and update, and updated timestamps.
+- Added regression coverage for account scoping and validation. API tests, web lint, and production build are pending.
+- No schema migration or new secret is needed. Public deployment remains deferred.
+
+## Version 0.2.32 — Assistant account-isolation hardening (completed)
 - Added explicit user_id filters to assistant conversations, messages, saved memories, and title updates as defense in depth alongside Supabase RLS.
-- Added source regression coverage. API tests, web lint, and production build are pending.
-- Public deployment remains deferred.
+- API tests, web lint, and Next.js production build passed; PR #6 merged into main.
+- Live multi-account/cross-organization acceptance tests remain required. Public deployment remains deferred.
 
 ## Version 0.2.31 — Membership policy hotfix (completed)
 - Applied migration 0020 to remove the duplicate legacy membership bootstrap INSERT policy. The policy catalog confirms one INSERT policy on memberships.
