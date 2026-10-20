@@ -155,7 +155,7 @@ export async function revokeTeamInvitation(data:FormData){
 
 export async function createApprovalRequest(data:FormData){
  const {supabase,user,membership}=await context();const actionType=value(data,"action_type",32)||"other",summary=value(data,"summary",200),details=value(data,"details",4000);
- if(!["external_write","send_email","send_message","calendar_change","data_export","other"].includes(actionType))redirect("/dashboard/approvals?error=invalid_action_type");
+ if(!["create_task","external_write","send_email","send_message","calendar_change","data_export","other"].includes(actionType))redirect("/dashboard/approvals?error=invalid_action_type");
  if(summary.length<3)redirect("/dashboard/approvals?error=invalid_summary");
  const {data:created,error}=await supabase.from("action_approval_requests").insert({organization_id:membership.organization_id,requested_by:user.id,action_type:actionType,summary,details}).select("id").single();
  if(error||!created)redirect("/dashboard/approvals?error=request_failed");
