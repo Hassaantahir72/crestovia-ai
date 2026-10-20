@@ -9,7 +9,7 @@
 ## Multi-factor authentication
 - TOTP authenticator enrollment, verification, and removal are available in Account security.
 - Owner workspace pages and server actions require a verified TOTP factor and an AAL2 session.
-- The requested email-delivered second-factor code is not implemented in this release. A secure custom email OTP factor must use a trusted email provider and server-only key, short expiry, hashed one-time codes, rate limits, resend cooldowns, brute-force protection, audit events, and replay prevention. Do not treat the primary email login code as a second factor.
+- At milestone 0.2.9 the email code was not implemented; it is now implemented in code as of 0.2.14, but provider configuration and real-account tests remain required. A secure custom email OTP factor must use a trusted email provider and server-only key, short expiry, hashed one-time codes, rate limits, resend cooldowns, brute-force protection, audit events, and replay prevention. Do not treat the primary email login code as a second factor.
 - The owner mailbox itself should have its own MFA enabled.
 
 ## Required before release
@@ -33,3 +33,10 @@
 - Assistant conversations, messages, and saved memories are user-owned and protected by RLS; team members cannot read one another's assistant data.
 - The Groq provider adapter only receives the recent conversation history for the current user's conversation. It has no tools or external-action capability in this version.
 - Configure GROQ_API_KEY only as a server-side secret. Never place it in a NEXT_PUBLIC variable or commit a real key.
+
+
+## Email-code second-factor implementation (0.2.14)
+- Email codes are random, hashed with a server-only secret, expire after 10 minutes, and are invalidated after use. Requests have a 60-second resend cooldown and a per-user hourly limit; each code permits at most five attempts.
+- Verification creates a signed HttpOnly cookie bound to the authenticated Supabase session, and the owner gate accepts it or a verified TOTP/AAL2 session.
+- Required private settings: SUPABASE_SERVICE_ROLE_KEY, APP_MFA_SECRET (at least 32 characters), RESEND_API_KEY, and RESEND_FROM_EMAIL from a verified sender. Configure only in server secret settings.
+- Before launch, test email delivery, expiry, replay rejection, resend limits, wrong-code lockout, session binding, sign-out/session rotation, and TOTP fallback with real test accounts.
