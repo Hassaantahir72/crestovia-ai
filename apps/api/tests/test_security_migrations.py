@@ -37,18 +37,6 @@ def test_audit_privilege_hardening_migrations_are_ordered():
         "0015_audit_logs_browser_read_only.sql"
     )
 
-def test_email_mfa_failed_attempts_use_compare_and_set():
-    route = (ROOT / "apps" / "web" / "app" / "api" / "security" / "email-mfa" / "verify" / "route.ts").read_text(
-        encoding="utf-8"
-    )
-    invalid_branch = route.split("if(!valid){", 1)[1].split("const {data:consumed", 1)[0]
-
-    assert '.eq("attempt_count",challenge.attempt_count)' in invalid_branch
-    assert '.is("used_at",null)' in invalid_branch
-    assert '.select("id").maybeSingle()' in invalid_branch
-    assert "if(!attemptUpdated)" in invalid_branch
-    assert "challenge_already_used_or_updated" in invalid_branch
-
 def test_email_mfa_issuance_is_serialized_and_service_role_only():
     sql = compact_sql("0016_atomic_email_mfa_challenge_issuance.sql")
     route = (ROOT / "apps" / "web" / "app" / "api" / "security" / "email-mfa" / "request" / "route.ts").read_text(

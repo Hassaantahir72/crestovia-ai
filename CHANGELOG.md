@@ -1,5 +1,10 @@
 # Crestovia AI — Changelog
 
+## 0.2.26 — Update MFA regression tests for atomic RPC
+- Replaced an obsolete compare-and-set source test with checks for the server-only atomic failed-attempt RPC now used by the verification route.
+- CI had correctly caught the stale assertion after v0.2.25; this increment fixes the test rather than weakening the runtime protection.
+- No new database migration or secret is needed. No public deployment occurred.
+
 ## 0.2.25 — Atomic email-MFA failed-attempt counting
 - Added a server-only PostgreSQL RPC to atomically increment failed email-code attempts and mark a challenge used at the fifth failure.
 - Updated verification to use the RPC instead of compare-and-set updates; concurrent incorrect guesses now each count against the limit rather than one request losing a race.

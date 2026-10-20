@@ -1,9 +1,14 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.25  
+**Project version:** 0.2.26  
 **Milestone:** Audit history permission alignment, workspace event logging, permission-aware read-only assistant tools, tracked invitations, department management, owner/team access controls, private AI assistant, email-code MFA, approvals, and daily briefing  
 **Overall product implementation estimate:** approximately 46%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.26 — MFA regression test alignment
+- Replaced the obsolete compare-and-set assertion with regression checks for the atomic failed-attempt RPC introduced in 0017.
+- The first v0.2.25 API CI run correctly failed on the outdated test, not on an application runtime test; the new commit updates the test to match the new RPC design.
+- Re-running API and frontend CI before considering this increment verified.
 
 ## Version 0.2.25 — Atomic email-MFA failed-attempt counting
 - Added migration 0017 with a SECURITY INVOKER RPC that atomically increments failed email-code attempts and locks the challenge on the fifth failure.
@@ -87,7 +92,7 @@
 - Private GitHub repository: https://github.com/Hassaantahir72/crestovia-ai
 - Supabase security advisor returned no security lint findings after migrations 0014–0015; re-check after future schema changes.
 - Organization creation uses SECURITY INVOKER with RLS-constrained bootstrap policies.
-- Python/API CI: 7 tests passed on v0.2.24; v0.2.25 adds the atomic failed-attempt regression check and awaits its own CI run. Frontend ESLint and Next.js production build passed in GitHub Actions for the v0.2.24 source commit.
+- Python/API CI: v0.2.25 caught an obsolete regression assertion; v0.2.26 updates the test to the atomic RPC and awaits a clean CI run. Frontend ESLint and Next.js production build passed in GitHub Actions for the v0.2.24 source commit.
 - GitHub Actions frontend lint and production build passed for v0.2.18 application source at commit 2234cbe80a5443a0548ede2778bb6f77dc0582fc. The following commit only refreshes this status documentation.
 - Local npm installation timed out in this environment; no local production build is claimed.
 - No public application deployment has been created.
