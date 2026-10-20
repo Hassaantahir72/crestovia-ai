@@ -1,5 +1,12 @@
 # Crestovia AI — Changelog
 
+## 0.2.33 — Editable private memory
+- Added owner-session-checked memory editing with title/content length limits, category allow-list validation, explicit user-scoped lookup/update predicates, and timestamp refresh.
+- Added an inline edit form to the private-memory page and regression coverage for account scoping and validation.
+- Assistant reads the updated saved-memory content on subsequent replies; no database migration or new secret is required.
+- CI and production build must pass before merge. Public deployment remains deferred.
+
+
 ## 0.2.32 — Assistant account-isolation hardening
 - Added explicit signed-in user filters to assistant conversation, message-history, and saved-memory reads, plus the conversation-title update. Supabase RLS remains the primary access-control boundary.
 - Added source regression coverage to prevent these explicit account-scoping predicates from being accidentally removed.

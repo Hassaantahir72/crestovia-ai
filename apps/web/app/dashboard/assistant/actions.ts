@@ -42,6 +42,16 @@ export async function createMemory(data:FormData){
  const {error}=await supabase.from("assistant_memories").insert({user_id:user.id,title,category,content});if(error)redirect("/dashboard/memory?error=memory_save_failed");
  revalidatePath("/dashboard/memory");redirect("/dashboard/memory?saved=1");
 }
+export async function updateMemory(data:FormData){
+ const {supabase,user}=await getUserContext();const id=field(data,"memory_id",64),title=field(data,"title",160),category=field(data,"category",80),content=field(data,"content",12000);
+ const allowedCategories=["general","work","preference","project","process"];
+ if(!id||!title||!content||!allowedCategories.includes(category))redirect("/dashboard/memory?error=invalid_memory");
+ const {data:existing,error:lookupError}=await supabase.from("assistant_memories").select("id").eq("id",id).eq("user_id",user.id).maybeSingle();
+ if(lookupError||!existing)redirect("/dashboard/memory?error=memory_not_found");
+ const {error}=await supabase.from("assistant_memories").update({title,category,content,updated_at:new Date().toISOString()}).eq("id",id).eq("user_id",user.id);
+ if(error)redirect("/dashboard/memory?error=memory_update_failed");
+ revalidatePath("/dashboard/memory");revalidatePath("/dashboard/assistant");redirect("/dashboard/memory?updated=1");
+}
 export async function deleteMemory(data:FormData){
  const {supabase,user}=await getUserContext();const id=field(data,"memory_id",64);if(!id)redirect("/dashboard/memory?error=memory_not_found");
  const {error}=await supabase.from("assistant_memories").delete().eq("id",id).eq("user_id",user.id);if(error)redirect("/dashboard/memory?error=memory_delete_failed");
