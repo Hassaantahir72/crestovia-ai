@@ -2,12 +2,14 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { enforceOwnerMfa } from "@/lib/security/owner-mfa";
 async function context() {
   const supabase = await createClient();
   const {data:{user},error}=await supabase.auth.getUser();
   if(error||!user) redirect("/login");
   const {data: memberships}=await supabase.from("memberships").select("organization_id,role,status").eq("user_id",user.id).eq("status","active").limit(1);
   if(!memberships?.length) redirect("/onboarding");
+  await enforceOwnerMfa(supabase,memberships[0].role);
   return {supabase,user,membership:memberships[0]};
 }
 function value(data:FormData,key:string,max:number){return String(data.get(key)??"").trim().slice(0,max)}
