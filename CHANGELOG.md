@@ -1,5 +1,11 @@
 # Crestovia AI — Changelog
 
+## 0.2.25 — Atomic email-MFA failed-attempt counting
+- Added a server-only PostgreSQL RPC to atomically increment failed email-code attempts and mark a challenge used at the fifth failure.
+- Updated verification to use the RPC instead of compare-and-set updates; concurrent incorrect guesses now each count against the limit rather than one request losing a race.
+- Applied migration 0017 and verified it is SECURITY INVOKER, executable only by service_role, and the Supabase security advisor reports no findings.
+- Added source regression tests. Real concurrent HTTP tests and email delivery checks remain pending; no public deployment occurred.
+
 ## 0.2.24 — Atomic email-MFA challenge issuance
 - Moved the per-user hourly limit, resend cooldown, prior-challenge invalidation, and challenge insertion into one PostgreSQL transaction guarded by a per-user advisory lock.
 - Restricted the new SECURITY INVOKER RPC to the server-side service_role; anon and authenticated cannot execute it.

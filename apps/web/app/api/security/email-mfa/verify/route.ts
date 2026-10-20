@@ -19,15 +19,14 @@ export async function POST(request:Request){
  let candidate:string;try{candidate=hashEmailCode(user.id,sessionId,code)}catch{return NextResponse.json({error:"email_mfa_not_configured"},{status:503})}
  const expected=Buffer.from(challenge.code_hash),actual=Buffer.from(candidate),valid=expected.length===actual.length&&timingSafeEqual(expected,actual);
  if(!valid){
-  const attempts=challenge.attempt_count+1;
-  // Compare-and-set prevents simultaneous invalid-code requests from overwriting the attempt counter.
-  const {data:attemptUpdated,error:attemptUpdateError}=await admin.from("email_mfa_challenges")
-   .update({attempt_count:attempts,used_at:attempts>=5?now:null})
-   .eq("id",challenge.id).eq("attempt_count",challenge.attempt_count).is("used_at",null)
-   .select("id").maybeSingle();
-  if(attemptUpdateError)return NextResponse.json({error:"challenge_update_failed"},{status:500});
-  if(!attemptUpdated)return NextResponse.json({error:"challenge_already_used_or_updated"},{status:409});
-  return NextResponse.json({error:attempts>=5?"too_many_attempts":"invalid_code"},{status:attempts>=5?429:400});
+  // A server-only PostgreSQL RPC increments the counter atomically, including concurrent requests.
+  const {data:attemptRows,error:attemptError}=await admin.rpc("record_email_mfa_failed_attempt",{p_challenge_id:challenge.id});
+  if(attemptError)return NextResponse.json({error:"challenge_update_failed"},{status:500});
+  const attempt=Array.isArray(attemptRows)?attemptRows[0]:null;
+  if(!attempt||attempt.outcome==="unavailable")return NextResponse.json({error:"challenge_already_used_or_updated"},{status:409});
+  const locked=attempt.outcome==="locked";
+  if(attempt.outcome!=="incremented"&&!locked)return NextResponse.json({error:"challenge_update_failed"},{status:500});
+  return NextResponse.json({error:locked?"too_many_attempts":"invalid_code"},{status:locked?429:400});
 }
  const {data:consumed,error:consumeError}=await admin.from("email_mfa_challenges").update({used_at:now}).eq("id",challenge.id).is("used_at",null).select("id").maybeSingle();if(consumeError||!consumed)return NextResponse.json({error:"challenge_already_used"},{status:409});
  let token:string;try{token=createEmailMfaToken(user.id,sessionId)}catch{return NextResponse.json({error:"email_mfa_not_configured"},{status:503})}

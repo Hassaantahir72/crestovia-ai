@@ -64,3 +64,20 @@ def test_email_mfa_issuance_is_serialized_and_service_role_only():
     assert "to service_role" in sql
     assert 'admin.rpc("issue_email_mfa_challenge"' in route
     assert "recentChallenges" not in route
+
+def test_email_mfa_failed_attempt_rpc_is_atomic_and_service_role_only():
+    sql = compact_sql("0017_atomic_email_mfa_failed_attempts.sql")
+    route = (ROOT / "apps" / "web" / "app" / "api" / "security" / "email-mfa" / "verify" / "route.ts").read_text(
+        encoding="utf-8"
+    )
+
+    assert "create or replace function public.record_email_mfa_failed_attempt" in sql
+    assert "security invoker" in sql
+    assert "set search_path = ''" in sql
+    assert "attempt_count = c.attempt_count + 1" in sql
+    assert "c.attempt_count < 5" in sql
+    assert "when c.attempt_count + 1 >= 5" in sql
+    assert "from public, anon, authenticated" in sql
+    assert "to service_role" in sql
+    assert 'admin.rpc("record_email_mfa_failed_attempt"' in route
+    assert "challenge.attempt_count+1" not in route
