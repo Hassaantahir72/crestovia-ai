@@ -1,5 +1,11 @@
 # Crestovia AI — Changelog
 
+## 0.2.34 — AI provider readiness visibility (in progress)
+- The assistant page now reports whether a server-side GROQ_API_KEY is present without exposing the secret; it explicitly says that presence does not verify provider connectivity or credentials.
+- Added private configuration instructions and source regression coverage. No external account or database migration is needed for this code increment.
+- CI and production build must pass before merge. Public deployment remains deferred.
+
+
 ## 0.2.33 — Editable private memory
 - Added owner-session-checked memory editing with title/content length limits, category allow-list validation, explicit user-scoped lookup/update predicates, and timestamp refresh.
 - Added an inline edit form to the private-memory page and regression coverage for account scoping and validation.
