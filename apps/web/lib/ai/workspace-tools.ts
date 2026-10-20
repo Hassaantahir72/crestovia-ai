@@ -24,16 +24,19 @@ async function workspaceOverview({ supabase, organizationId }: ToolContext): Pro
   const now = Date.now();
   const activeApprovals = (approvalsResult.data ?? []).filter(item => new Date(item.expires_at).getTime() > now);
   const overdue = tasks.filter(task => task.due_at && new Date(task.due_at).getTime() < now && !["done", "cancelled"].includes(task.status));
+  const unavailableSections = [tasksResult.error ? "tasks" : "", projectsResult.error ? "projects" : "", approvalsResult.error ? "pending approvals" : ""].filter(Boolean);
   const payload = {
     tool: "workspace_overview",
+    unavailable_sections: unavailableSections,
+    warning: unavailableSections.length ? "Some workspace sections could not be read under the current permissions. Do not treat missing sections as zero." : undefined,
     access: "authenticated Supabase client; database row-level security applies",
     counts: {
-      visible_open_tasks_in_result_window: tasks.length,
-      overdue_tasks_in_returned_window: overdue.length,
-      blocked_tasks: tasks.filter(task => task.status === "blocked").length,
-      in_progress_tasks: tasks.filter(task => task.status === "in_progress").length,
-      visible_open_projects_in_result_window: projects.length,
-      unexpired_pending_approval_requests: activeApprovals.length,
+      visible_open_tasks_in_result_window: tasksResult.error ? null : tasks.length,
+      overdue_tasks_in_returned_window: tasksResult.error ? null : overdue.length,
+      blocked_tasks: tasksResult.error ? null : tasks.filter(task => task.status === "blocked").length,
+      in_progress_tasks: tasksResult.error ? null : tasks.filter(task => task.status === "in_progress").length,
+      visible_open_projects_in_result_window: projectsResult.error ? null : projects.length,
+      unexpired_pending_approval_requests: approvalsResult.error ? null : activeApprovals.length,
     },
     tasks: tasks.slice(0, 12).map(task => ({ title: safeText(task.title), status: task.status, priority: task.priority, due_at: task.due_at })),
     projects: projects.slice(0, 8).map(project => ({ name: safeText(project.name), status: project.status, priority: project.priority, due_date: project.due_date })),
