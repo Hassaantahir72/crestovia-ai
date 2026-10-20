@@ -2,10 +2,11 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {createTask,updateTaskStatus} from "../actions";
+import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
 type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
 export default async function TasksPage({searchParams}:Props){
  const p=await searchParams,supabase=await createClient();const {data:{user},error:authError}=await supabase.auth.getUser();if(authError||!user)redirect("/login");
- const {data:ms}=await supabase.from("memberships").select("organization_id,role,organizations(name)").eq("user_id",user.id).eq("status","active").limit(1);const m=ms?.[0];if(!m)redirect("/onboarding");
+ const {data:ms}=await supabase.from("memberships").select("organization_id,role,organizations(name)").eq("user_id",user.id).eq("status","active").limit(1);const m=ms?.[0];if(!m)redirect("/onboarding");await enforceOwnerMfa(supabase,m.role);
  const org=Array.isArray(m.organizations)?m.organizations[0]:m.organizations;
  const [{data:tasks,error},{data:projects},{data:people}]=await Promise.all([
   supabase.from("tasks").select("id,title,description,status,priority,due_at,project_id,projects(name)").eq("organization_id",m.organization_id).order("created_at",{ascending:false}).limit(100),

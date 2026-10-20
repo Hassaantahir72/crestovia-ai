@@ -2,10 +2,11 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {createProject} from "../actions";
+import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
 type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
 export default async function ProjectsPage({searchParams}:Props){
  const p=await searchParams,supabase=await createClient();const {data:{user},error:authError}=await supabase.auth.getUser();if(authError||!user)redirect("/login");
- const {data:ms}=await supabase.from("memberships").select("organization_id,role,organizations(name)").eq("user_id",user.id).eq("status","active").limit(1);const m=ms?.[0];if(!m)redirect("/onboarding");
+ const {data:ms}=await supabase.from("memberships").select("organization_id,role,organizations(name)").eq("user_id",user.id).eq("status","active").limit(1);const m=ms?.[0];if(!m)redirect("/onboarding");await enforceOwnerMfa(supabase,m.role);
  const org=Array.isArray(m.organizations)?m.organizations[0]:m.organizations;
  const {data:projects,error}=await supabase.from("projects").select("id,name,description,status,priority,due_date").eq("organization_id",m.organization_id).order("updated_at",{ascending:false});
  return <main className="container"><nav className="workspace-nav"><Link href="/dashboard">← Dashboard</Link><Link href="/dashboard/tasks">Tasks</Link>{m.role==="owner"?<Link href="/dashboard/team">Team access</Link>:null}</nav>
