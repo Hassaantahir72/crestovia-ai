@@ -1,3 +1,8 @@
+## v0.2.43 — Notification foreign-key index
+
+- Adds a covering index for the notification creator foreign key flagged by the Supabase performance advisor.
+- No application behavior changes.
+
 ## v0.2.42 — In-app notifications and reminder worker
 
 - Adds an organization-scoped notification inbox with unread counts and mark-read/mark-all-read actions.
