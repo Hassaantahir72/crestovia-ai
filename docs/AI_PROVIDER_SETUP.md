@@ -25,6 +25,10 @@ Crestovia AI uses a server-side Groq-compatible chat-completions adapter for ass
 - Rotate the key immediately if it is accidentally exposed.
 - A missing key does not disable the rest of the company workspace. Assistant replies require it; read-only dashboard features do not.
 
+## Run the built-in connection test
+
+When signed in as the organization owner, open Dashboard → AI assistant and select **Test AI connection**. The test sends one short prompt from the server with a 10-second timeout and a small token limit. It does not save a chat message or change company records. The result confirms that the configured model answered at that moment; it does not prove production capacity or long-term availability. Only the owner can trigger this test, and the API key is never returned to the browser.
+
 ## What remains to validate
 
 The readiness notice is a presence check only. A real successful request, provider error behavior, quota limits, and secret configuration must still be verified in a private test environment before production launch. Public deployment remains deferred until the owner approves it.
