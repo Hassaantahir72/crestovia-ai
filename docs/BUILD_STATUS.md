@@ -7,9 +7,9 @@
 
 ## Version 0.2.21 — Audit history permission alignment
 - Fixed a policy mismatch: the audit page supports owner/admin viewing, but the database previously restricted SELECT access to owners only.
-- Added migration `0014_audit_log_admin_read_access.sql`; active owners and admins can now read audit records for their own organization.
-- The policy adds read access only. Browser clients still have no audit insert/update/delete policy; trusted server-side writes remain separate.
-- Applied the migration to the connected Supabase project. Verified the resulting `pg_policies` entry and the Supabase security advisor returned no security lint findings.
+- Added migration `0014_audit_log_admin_read_access.sql`; active owners and admins can read audit records for their own organization.
+- Added migration `0015_audit_logs_browser_read_only.sql` to revoke all browser-role table privileges and grant authenticated SELECT only. Live privilege checks confirmed anon has no SELECT, authenticated cannot INSERT/UPDATE/DELETE, and service_role retains INSERT.
+- Applied migrations 0014–0015 to the connected Supabase project. Verified the resulting `pg_policies` entry, browser-role grants, and that the Supabase security advisor returned no security lint findings.
 - Real-account owner/admin/member isolation tests remain required. No public app deployment was performed.
 
 ## Version 0.2.20 — Audit history and workspace event logging

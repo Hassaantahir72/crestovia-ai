@@ -2,7 +2,8 @@
 
 ## 0.2.21 — Align audit history database permissions
 - Fixed the mismatch between the audit page's owner/admin role check and the database policy that allowed only owners to read audit logs.
-- Added migration 0014 to allow active organization owners and admins to read their organization's audit records; browser clients receive no insert/update/delete policy from this change.
+- Added migration 0014 to allow active organization owners and admins to read their organization's audit records.
+- Added migration 0015 to explicitly revoke all table privileges from anon/authenticated and grant authenticated SELECT only; the server-side service role retains write access.
 - Applied the migration to the connected Supabase project and verified the active policy and security advisor.
 - No public application deployment was performed. End-to-end role testing with separate owner/admin/member accounts remains required.
 
