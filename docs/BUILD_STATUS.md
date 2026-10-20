@@ -1,8 +1,14 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.10  
+**Project version:** 0.2.11  
 **Milestone:** Owner privacy, scoped team access, workspace write flows, owner membership controls, and TOTP MFA enforcement  
 **Status:** Source updates are pushed to the private GitHub repository. Supabase schema and RLS are applied. Real-user end-to-end permission tests and frontend production build remain in progress. Deployment is intentionally deferred until project completion and owner approval.
+
+## Version 0.2.11 assistant increment
+
+- Added private assistant conversations/messages and private memory tables with RLS enabled and authenticated-only grants.
+- Added assistant chat and private memory UI, plus a server-side Groq provider adapter.
+- AI replies remain inactive until GROQ_API_KEY is configured privately in the server environment. No tools/actions are enabled.
 
 ## Included
 - Next.js frontend with Supabase Auth, sign-in, protected dashboard, callback, sign-out, and organization onboarding.
@@ -26,6 +32,11 @@
 - Invitation email, account invitation, real-user owner/member isolation, and session revocation workflows remain pending.
 - Supabase security advisor returned no current security lint findings after migration 0006 converted the organization-creation RPC to SECURITY INVOKER and added RLS-constrained bootstrap policies. Real authenticated bootstrap testing is still required.
 
+## Verified latest increment
+- Migration 0007_private_assistant_conversations_and_memory is applied; all three assistant tables have RLS enabled and authenticated-only grants.
+- Supabase security advisor currently returns no security lint findings after migration 0006.
+- Frontend lint passed in GitHub Actions; production build type checking is being fixed and must pass before release.
+
 ## Still pending
 - Verify latest frontend lint and production build in GitHub Actions and fix any reported issues.
 - Test with separate owner, unassigned member, viewer, contributor, and manager accounts across at least two projects.
@@ -38,10 +49,10 @@
 - Architecture/planning: 100%
 - Phase 1 foundation: 80%
 - Phase 2 workspace: 35%
-- Phase 3 AI/memory/approvals: 0%
+- Phase 3 AI/memory/approvals: 12% (private chat and memory foundation; provider key and approval/tool systems pending)
 - Phase 4 assistant/voice: 0%
 - Phase 5 integrations: 0%
 - Phase 6 automation/hardening: 0%
-- Overall product implementation: approximately 28%
+- Overall product implementation: approximately 32%
 
 These are implementation estimates, not production-readiness claims. Public deployment is intentionally deferred until completion and owner approval.
