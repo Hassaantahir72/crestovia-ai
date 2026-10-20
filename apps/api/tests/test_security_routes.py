@@ -92,3 +92,26 @@ def test_ai_provider_connection_test_is_owner_only_bounded_and_secret_safe():
     assert 'Authorization:"Bearer "+apiKey' in actions
     assert "the API key was not exposed." in page
     assert "GROQ_API_KEY" not in actions[actions.index("export async function testAssistantProvider()"):actions.index("export async function createConversation()")].replace('const apiKey=process.env.GROQ_API_KEY','')
+
+
+
+def test_assistant_workspace_tools_are_read_only_scoped_and_bounded():
+    tools = read_web("lib/ai/workspace-tools.ts")
+
+    assert 'type ReadOnlyTool' in tools
+    assert 'mode: "read_only"' in tools
+    assert 'READ_ONLY_TOOL_REGISTRY.filter(tool => tool.mode === "read_only" && tool.matches(latestMessage))' in tools
+    assert tools.count('.eq("organization_id", organizationId)') == 3
+    assert '.eq("assigned_to", userId)' in tools
+    assert 'supabase.from("tasks").select(' in tools
+    assert 'supabase.from("projects").select(' in tools
+    assert 'supabase.from("action_approval_requests").select(' in tools
+    assert ".insert(" not in tools
+    assert ".update(" not in tools
+    assert ".delete(" not in tools
+    assert ".upsert(" not in tools
+    assert ".limit(100)" in tools
+    assert ".limit(40)" in tools
+    assert ".limit(20)" in tools
+    assert r"replace(/[\u0000-\u001f]/g, \" \" )" not in tools  # sanitization is checked below
+    assert r"replace(/[\u0000-\u001f]/g, \" \")" in tools
