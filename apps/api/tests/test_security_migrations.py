@@ -134,3 +134,10 @@ def test_rls_policy_consolidation_preserves_scoped_access_and_removes_overlaps()
     assert "m.status = 'active'" in sql
     assert "for all to authenticated" not in sql
     assert "drop table" not in sql
+
+
+def test_membership_bootstrap_policy_hotfix_removes_duplicate_insert_policy():
+    sql = compact_sql("0020_remove_duplicate_membership_bootstrap_policy.sql")
+
+    assert 'drop policy if exists "users bootstrap their own owner membership" on public.memberships' in sql
+    assert "drop table" not in sql
