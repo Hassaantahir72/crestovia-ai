@@ -2,7 +2,7 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
-import {createConversation,deleteConversation,sendAssistantMessage} from "./actions";
+import {createConversation,deleteConversation,sendAssistantMessage,testAssistantProvider} from "./actions";
 type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
 const errorText:Record<string,string>={
  ai_provider_not_configured:"AI replies are prepared but not active yet. GROQ_API_KEY must be configured as a server-only secret before the assistant can answer.",
@@ -10,7 +10,14 @@ const errorText:Record<string,string>={
  ai_provider_rate_limited:"The AI provider is rate-limiting requests. Wait and try again.",
  ai_provider_request_failed:"The AI provider request failed. No message was saved; please try again later.",
  ai_provider_empty_response:"The AI provider returned an empty response.",
- conversation_create_failed:"Could not create a conversation.",conversation_not_found:"That conversation is unavailable or belongs to another account.",empty_message:"Write a message before sending.",history_failed:"Could not load the conversation history.",message_save_failed:"The message could not be saved.",reply_save_failed:"The AI reply could not be saved.",conversation_delete_failed:"Could not delete that conversation."
+ conversation_create_failed:"Could not create a conversation.",conversation_not_found:"That conversation is unavailable or belongs to another account.",empty_message:"Write a message before sending.",history_failed:"Could not load the conversation history.",message_save_failed:"The message could not be saved.",reply_save_failed:"The AI reply could not be saved.",conversation_delete_failed:"Could not delete that conversation.",
+  provider_test_owner_only:"Only the organization owner can run the provider connection test.",
+ provider_test_not_configured:"GROQ_API_KEY is not configured as a server-only secret.",
+ provider_test_auth_failed:"Groq rejected the configured credentials. Check the key privately; it is never displayed here.",
+ provider_test_rate_limited:"Groq rate-limited the connection test. Wait before trying again.",
+ provider_test_request_failed:"The connection test could not complete. Check the selected model and provider status.",
+ provider_test_empty_response:"Groq accepted the request but returned no assistant text.",
+ provider_test_timeout:"The connection test timed out after 10 seconds. Try again later.",
 };
 export default async function AssistantPage({searchParams}:Props){
  const p=await searchParams,supabase=await createClient();const {data:{user},error}=await supabase.auth.getUser();if(error||!user)redirect("/login");
@@ -19,11 +26,15 @@ export default async function AssistantPage({searchParams}:Props){
  const requested=typeof p.conversation==="string"?p.conversation:"",activeId=requested||(conversations?.[0]?.id??"");
  const active=conversations?.find(x=>x.id===activeId)??null;
  const {data:messages}=active?await supabase.from("assistant_messages").select("id,role,content,created_at").eq("conversation_id",active.id).eq("user_id",user.id).order("created_at",{ascending:true}).limit(100):{data:[]};
- const aiKeyDetected=Boolean(process.env.GROQ_API_KEY);
+ const aiKeyDetected=Boolean(process.env.GROQ_API_KEY),isOwner=memberships[0].role==="owner";
+ const providerTest=typeof p.provider_test==="string"?p.provider_test:"";
  const errorKey=typeof p.error==="string"?p.error:"";
  return <main className="container"><nav className="workspace-nav"><Link href="/dashboard">← Dashboard</Link><Link href="/dashboard/projects">Projects</Link><Link href="/dashboard/memory">Private memory</Link><Link href="/dashboard/security">Account security</Link></nav>
  <header className="page-header"><div><p className="brand">CRESTOVIA AI / ASSISTANT</p><h1>Personal AI assistant</h1><p className="muted">Private to your signed-in account. When enabled, recent chat and selected saved memories are sent to Groq. Read-only workspace tools can summarize visible tasks, projects, and pending approvals; they never change records or execute external actions.</p></div><form action={createConversation}><button className="button" type="submit">New conversation</button></form></header>
  {!aiKeyDetected?<p className="notice notice-error">AI provider is not configured on this server yet. Add GROQ_API_KEY as a private server-side secret, then restart or redeploy the web service. Never use a NEXT_PUBLIC_ variable or commit the key.</p>:<p className="notice">AI provider key detected; connectivity and validity have not been tested yet. The key itself is never displayed.</p>}
+ {providerTest==="success"?<p className="notice notice-success">Groq connection test passed. The server received a non-empty response; the API key was not exposed.</p>:null}
+ {providerTest&&providerTest!=="success"&&errorText["provider_test_"+providerTest]?<p className="notice notice-error">{errorText["provider_test_"+providerTest]}</p>:null}
+ {isOwner?<section className="panel" style={{marginBottom:18}}><div className="card-topline"><div><h2>AI provider diagnostics</h2><p className="muted">Sends one short test prompt from the server. It does not save a conversation or change company data.</p></div><form action={testAssistantProvider}><button className="button" type="submit">Test AI connection</button></form></div></section>:null}
  {errorKey&&errorText[errorKey]?<p className="notice notice-error">{errorText[errorKey]}</p>:null}{p.deleted==="1"?<p className="notice notice-success">Conversation deleted.</p>:null}
  <div className="assistant-layout"><aside className="panel assistant-sidebar"><h2>Recent conversations</h2>{!conversations?.length?<p className="muted">No conversations yet.</p>:<div className="conversation-links">{conversations.map(c=><Link className={c.id===activeId?"conversation-link active":"conversation-link"} key={c.id} href={"/dashboard/assistant?conversation="+c.id}>{c.title}</Link>)}</div>}</aside>
  <section className="panel assistant-chat">{active?<><div className="chat-heading"><div><h2>{active.title}</h2><p className="muted">Conversation history is private to this account.</p></div><form action={deleteConversation}><input type="hidden" name="conversation_id" value={active.id}/><button className="button button-danger" type="submit">Delete</button></form></div>

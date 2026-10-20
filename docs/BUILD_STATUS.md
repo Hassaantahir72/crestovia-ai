@@ -1,14 +1,19 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.34 (in progress)  
-**Milestone:** AI provider readiness visibility  
+**Project version:** 0.2.35 (in progress)  
+**Milestone:** Owner-only live AI connection test  
 **Overall product implementation estimate:** approximately 48%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.34 — AI provider readiness visibility (in progress)
+## Version 0.2.35 — Owner-only live AI connection test (in progress)
+- Added an owner-only server-side Groq test request with a 10-second timeout and a tiny token budget. It does not persist messages or display the API key.
+- Added safe provider error feedback and regression coverage. API tests, ESLint, and production build must pass before merge.
+- No database migration is required. Public deployment remains deferred.
+
+## Version 0.2.34 — AI provider readiness visibility (completed)
 - The assistant page distinguishes a missing server-side GROQ_API_KEY from a detected key, without rendering the secret. Presence does not mean the provider connection is valid.
-- Added setup guidance and regression coverage. API tests, web lint, and production build are pending.
-- No schema migration is needed. Public deployment remains deferred.
+- Added private setup guidance and regression coverage. API tests, ESLint, and Next.js production build passed; PR #8 merged into main.
+- No schema migration was needed. Public deployment remains deferred.
 
 ## Version 0.2.33 — Editable private memory (completed)
 - Added private-memory editing with bounded title/content, an allow-list for categories, explicit user_id predicates on lookup and update, and updated timestamps.

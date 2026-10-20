@@ -1,5 +1,11 @@
 # Crestovia AI — Changelog
 
+## 0.2.35 — Owner-only live AI connection test (in progress)
+- Added an owner-only, server-side Groq connection test with a 10-second timeout, an 8-token maximum response, no conversation persistence, and safe error categories.
+- Added status feedback to the assistant page and regression tests for owner-only access, timeout bounds, no-store requests, and secret handling.
+- No database migration is required. CI and production build must pass before merge. Public deployment remains deferred.
+
+
 ## 0.2.34 — AI provider readiness visibility (in progress)
 - The assistant page now reports whether a server-side GROQ_API_KEY is present without exposing the secret; it explicitly says that presence does not verify provider connectivity or credentials.
 - Added private configuration instructions and source regression coverage. No external account or database migration is needed for this code increment.
