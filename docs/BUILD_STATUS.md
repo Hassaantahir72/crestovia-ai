@@ -1,14 +1,15 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.28  
-**Milestone:** Authentication, MFA, and audit regression coverage  
+**Project version:** 0.2.29  
+**Milestone:** Foreign-key lookup performance hardening  
 **Overall product implementation estimate:** approximately 48%  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.29 — Foreign-key lookup performance (in progress)
-- Supabase performance advisor identified 19 foreign-key lookup patterns without covering indexes. Added a non-destructive migration with indexes for those patterns and a source regression test.
-- The migration is on a build branch and has not yet been applied to the connected Supabase database; CI and post-migration advisor verification are pending.
-- This is a performance-only change: no application runtime behavior, RLS policy, or data changes are intended.
+## Version 0.2.29 — Foreign-key lookup performance (completed)
+- Added 19 non-destructive indexes covering foreign-key lookup patterns identified by Supabase's performance advisor. API tests and web lint/production build passed in GitHub Actions; PR #3 merged to `main`.
+- Applied the index migration to the connected Supabase project and verified all 19 indexes exist. The advisor no longer reports unindexed foreign keys, and the security advisor returns no findings.
+- Remaining performance findings are five multiple-permissive-policy warnings and unused-index notices. These need careful policy consolidation and real workload data; no RLS policies or existing indexes were removed in this increment.
+- No application runtime behavior changed. Public deployment remains deferred.
 
 ## Version 0.2.28 — Authentication and audit regression coverage
 - Added source regression checks for email-MFA origin validation, owner-only access, current-session challenge binding, expiry, atomic failed-attempt RPC use, and one-time consumption before cookie issuance.
