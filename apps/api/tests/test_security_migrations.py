@@ -168,3 +168,9 @@ def test_notification_table_rls_and_task_reminder_indexes_are_scoped():
     assert "task_assigned" in sql
     assert "create index if not exists notifications_recipient_created_idx" in sql
     assert "drop table" not in sql
+
+
+def test_notification_creator_foreign_key_has_covering_index():
+    sql = compact_sql("0025_notification_created_by_index_v0_2_43.sql")
+    assert "create index if not exists notifications_created_by_idx on public.notifications(created_by)" in sql
+    assert "drop index" not in sql
