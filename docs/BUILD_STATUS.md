@@ -1,72 +1,60 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.11  
-**Milestone:** Owner privacy, scoped team access, workspace write flows, owner membership controls, and TOTP MFA enforcement  
-**Status:** Source updates are pushed to the private GitHub repository. Supabase schema and RLS are applied. Real-user end-to-end permission tests and frontend production build remain in progress. Deployment is intentionally deferred until project completion and owner approval.
+**Project version:** 0.2.14  
+**Milestone:** Owner/team access controls, workspace collaboration, private assistant foundation, invitations, and email-code owner MFA  
+**Overall product implementation estimate:** approximately 35%  
+**Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.11 assistant increment
-
-- Added private assistant conversations/messages and private memory tables with RLS enabled and authenticated-only grants.
-- Added assistant chat and private memory UI, plus a server-side Groq provider adapter.
-- AI replies remain inactive until GROQ_API_KEY is configured privately in the server environment. No tools/actions are enabled.
-
-## Version 0.2.13 invitation increment
-
-- Added owner-initiated email invitations using a server-only Supabase admin client.
-- Added onboarding acceptance for invited memberships and a narrow organization-read policy for invitees.
-- Acceptance activates only the current user's own invited membership and writes an audit event through the server-only admin client.
-- Actual invitation delivery requires private server secrets and configured Supabase Auth email settings; real-account delivery tests are pending.
-
-## Version 0.2.14 email MFA increment
-
-- Added owner email-code request and verification routes with keyed OTP hashes, 10-minute expiry, resend cooldown/hourly limit, five-attempt cap, one-time consumption, and a signed HttpOnly cookie bound to the current Supabase session.
-- Challenge storage is RLS-enabled, has no browser grants, and has an explicit deny policy for anon/authenticated roles; service-role access is server-only.
-- Owner access accepts a valid email-MFA cookie or a verified TOTP factor at AAL2.
-- Email delivery remains inactive until SUPABASE_SERVICE_ROLE_KEY, APP_MFA_SECRET, RESEND_API_KEY, and RESEND_FROM_EMAIL are configured privately.
-
-## Included
-- Next.js frontend with Supabase Auth, sign-in, protected dashboard, callback, sign-out, and organization onboarding.
+## Current capabilities
+- Next.js frontend, Supabase Auth, protected dashboard, sign-in, sign-out, callback, and onboarding.
 - FastAPI health and authenticated identity endpoints.
-- Supabase schema for organizations, profiles, memberships, audit logs, departments, projects, tasks, comments, activity, project assignments, and owner-private items.
-- Owner-only project creation, task creation/status updates, owner team management, project-level assignments, and member suspension/role controls.
-- Account security page with TOTP enrollment, verification, factor removal, login challenge, and server-side AAL2 checks on owner workspace pages and server actions.
+- Owner-only project creation, task creation/status updates, task comments, and owner controls for project assignments and existing member roles/status.
+- Owner-initiated Supabase Auth invitations and an onboarding acceptance flow for invited memberships.
+- Project-level viewer, contributor, and manager assignments; owner-private records are isolated from team data.
+- Private per-user assistant conversations and saved memories, with a server-side Groq provider adapter and chat UI.
+- Owner account security supports email-code second factor when provider secrets are configured, with authenticator-app TOTP as fallback.
+- Supabase schema migrations through 0010 are applied; all 15 public tables have RLS enabled.
 
-## Verified
+## Verification
 - Private GitHub repository: https://github.com/Hassaantahir72/crestovia-ai
-- Supabase project crestovia-ai; all 15 public tables have RLS enabled.
-- API tests: 2 passed on the latest locally available test run.
-- Render and GitHub Actions YAML parsed successfully.
-- GitHub web CI previously exposed ESLint configuration errors; these were corrected. Latest CI run must be checked before calling the frontend build verified.
-- Local npm installation timed out in this environment; no claim of local frontend build success.
-- No public deployment has been created.
+- Supabase security advisor currently reports no security lint findings.
+- Organization creation uses SECURITY INVOKER with RLS-constrained bootstrap policies.
+- Python API tests: 2 passed.
+- Render and GitHub Actions YAML validation passed locally.
+- GitHub Actions frontend lint and production build passed on code commit 6012ac4. The only later source change was package version metadata; its workflow run is being checked.
+- Local npm installation timed out in this environment, so the verified frontend build is the remote GitHub Actions build.
+- No public application deployment has been created.
 
-## Security caveats
-- TOTP authenticator MFA is implemented in the code. Owner routes and server actions require a verified factor and AAL2 session.
-- Email-code second factor is implemented in code with keyed OTP hashes, expiry, rate limits, replay prevention, and a session-bound HttpOnly cookie. Email delivery is not active until private server secrets and a verified sender are configured and real-account tests pass.
-- Invitation email, account invitation, real-user owner/member isolation, and session revocation workflows remain pending.
-- Supabase security advisor returned no current security lint findings after migration 0006 converted the organization-creation RPC to SECURITY INVOKER and added RLS-constrained bootstrap policies. Real authenticated bootstrap testing is still required.
+## Security implementation notes
+- Owner dashboard, project, team, assistant, memory, and server-action paths require email-MFA verification or a verified TOTP factor at AAL2.
+- Email OTP codes are random six-digit values, hashed with a server-only secret, expire after 10 minutes, are invalidated after use, have a 60-second resend cooldown, a per-account hourly send limit, and a five-attempt cap.
+- Successful email verification creates a signed HttpOnly cookie bound to the current Supabase session.
+- Email challenge records are RLS-enabled, have no browser grants, and have an explicit deny policy for anon/authenticated roles. Only the server-side service-role client can access them.
+- Invitation acceptance is restricted to the authenticated user's own invited membership; invited users remain blocked from workspace data until acceptance.
+- Assistant chat has no tools or external-action capability. If enabled, recent chat and selected saved memories are sent to Groq for reply generation.
 
-## Verified latest increment
-- Migration 0007_private_assistant_conversations_and_memory is applied; all three assistant tables have RLS enabled and authenticated-only grants.
-- Supabase security advisor currently returns no security lint findings after migration 0006.
-- GitHub Actions frontend lint and production build passed on commit b04ffd7; the latest team-page change also passed on commit d7f4a1b. Local npm installation timed out in this environment, so the verified build is the remote CI build.
+## Required private configuration before real-world use
+- SUPABASE_SERVICE_ROLE_KEY for invitation administration and email-MFA challenge storage.
+- APP_MFA_SECRET (random value at least 32 characters) for email-code hashing and signed-cookie verification.
+- RESEND_API_KEY and RESEND_FROM_EMAIL from a verified sender for email-code delivery.
+- GROQ_API_KEY for AI replies; GROQ_MODEL is configurable.
+- Configure these only in local private environment files or the hosting provider's secret settings. Never paste them into chat, commit them, or expose them through NEXT_PUBLIC_* variables.
 
-## Still pending
-- Verify latest frontend lint and production build in GitHub Actions and fix any reported issues.
-- Test with separate owner, unassigned member, viewer, contributor, and manager accounts across at least two projects.
-- Implement email-code second factor if retained as the owner's required preference, secure invitations, audit events for membership changes, rate limiting, recovery, and session revocation.
-- AI chat, persistent assistant memory, approvals, daily briefings, voice, integrations, and automation.
-- Security review, backup/restore drill, and acceptance tests.
-- Final hosting and deployment, only after the project is complete and owner approves release.
+## Remaining work
+- Verify email delivery, expiry, replay rejection, resend limits, wrong-code lockout, session binding, sign-out/session rotation, and TOTP fallback using real accounts.
+- Verify invitations end-to-end using a new test email and ensure Supabase Auth redirect URLs/email delivery are configured.
+- Test owner, unassigned member, viewer, contributor, manager, and suspended-member access across at least two projects and multiple organizations.
+- Finish audit coverage, rate limiting, recovery/session revocation, backup/restore drill, dependency/security review, and production acceptance tests.
+- Add AI approvals/tool registry, daily briefings, voice, integrations, and automation. AI tools must remain allow-listed and approval-gated.
+- Complete final security and user acceptance tests before deployment. No public deployment is authorized yet.
 
-## Progress estimates
+## Phase estimates
 - Architecture/planning: 100%
-- Phase 1 foundation: 80%
-- Phase 2 workspace: 35%
-- Phase 3 AI/memory/approvals: 18% (private chat and memory foundation; provider key and approval/tool systems pending)
+- Phase 1 foundation: 85% (schema, auth scaffolding, safe organization bootstrap; real-account tests pending)
+- Phase 2 workspace: 48% (project/task writes, comments, member controls, assignments, invitation acceptance; real-user testing pending)
+- Phase 3 AI/memory/approvals: 18% (private chat and memory foundation; provider secret, approvals, and tool systems pending)
 - Phase 4 assistant/voice: 0%
 - Phase 5 integrations: 0%
-- Phase 6 automation/hardening: 0%
-- Overall product implementation: approximately 35%
+- Phase 6 automation/hardening: 15% (MFA and RLS baseline implemented; security acceptance testing remains)
 
-These are implementation estimates, not production-readiness claims. Public deployment is intentionally deferred until completion and owner approval.
+These are implementation estimates, not production-readiness claims.
