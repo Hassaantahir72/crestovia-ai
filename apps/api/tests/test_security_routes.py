@@ -134,7 +134,7 @@ def test_assistant_response_can_only_be_submitted_as_an_explicit_approval_reques
 
 
 def test_approved_task_execution_is_atomic_owner_scoped_and_invoker_only():
-    migration = (ROOT / "database" / "migrations" / "0022_atomic_approved_task_execution_v0_2_40.sql").read_text(encoding="utf-8")
+    migration = (ROOT / "database" / "migrations" / "0023_approval_execution_org_scope_v0_2_41.sql").read_text(encoding="utf-8")
     actions = read_web("app/dashboard/actions.ts")
     approvals = read_web("app/dashboard/approvals/page.tsx")
 
@@ -147,8 +147,9 @@ def test_approved_task_execution_is_atomic_owner_scoped_and_invoker_only():
     assert "v_request.execution_status <> 'pending'" in migration
     assert "insert into public.tasks" in migration.lower()
     assert "execution_status = 'succeeded'" in migration
-    assert "grant execute on function public.execute_approved_task_request(uuid) to authenticated" in migration.lower()
+    assert "grant execute on function public.execute_approved_task_request(uuid, uuid) to authenticated" in migration.lower()
+    assert "r.organization_id = p_organization_id" in migration
     executor = actions[actions.index("export async function executeApprovedTaskRequest"):]
-    assert 'supabase.rpc("execute_approved_task_request",{p_request_id:id})' in executor
+    assert 'supabase.rpc("execute_approved_task_request",{p_request_id:id,p_organization_id:membership.organization_id})' in executor
     assert '.from("tasks").insert(' not in executor
     assert "external actions remain disabled" in approvals
