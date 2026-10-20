@@ -19,7 +19,7 @@
 
 ## Verified
 - Private GitHub repository: https://github.com/Hassaantahir72/crestovia-ai
-- Supabase project crestovia-ai; all 11 expected public tables have RLS enabled.
+- Supabase project crestovia-ai; all 14 public tables have RLS enabled.
 - API tests: 2 passed on the latest locally available test run.
 - Render and GitHub Actions YAML parsed successfully.
 - GitHub web CI previously exposed ESLint configuration errors; these were corrected. Latest CI run must be checked before calling the frontend build verified.
@@ -35,7 +35,7 @@
 ## Verified latest increment
 - Migration 0007_private_assistant_conversations_and_memory is applied; all three assistant tables have RLS enabled and authenticated-only grants.
 - Supabase security advisor currently returns no security lint findings after migration 0006.
-- Frontend lint passed in GitHub Actions; production build type checking is being fixed and must pass before release.
+- GitHub Actions frontend lint and production build passed on commit b04ffd7; the latest team-page change also passed on commit d7f4a1b. Local npm installation timed out in this environment, so the verified build is the remote CI build.
 
 ## Still pending
 - Verify latest frontend lint and production build in GitHub Actions and fix any reported issues.
