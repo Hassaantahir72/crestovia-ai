@@ -21,14 +21,14 @@
 - Private per-user assistant conversations and saved memories, with a server-side Groq provider adapter and chat UI.
 - Owner email-code second factor when private provider settings are configured, with authenticator-app TOTP as fallback.
 - Data-based daily briefing with deadline, blocked-work, project, approval, and recent-activity summaries.
-- Supabase schema migrations through 0011 are applied; all 16 public tables have RLS enabled.
+- Supabase schema migrations through 0012 are represented in source; all 17 public tables have RLS enabled. The organization_invitations table is applied but is not yet wired into the invite UI; membership rows remain the active invitation-state source.
 
 ## Verification
 - Private GitHub repository: https://github.com/Hassaantahir72/crestovia-ai
 - Supabase security advisor last reported no security lint findings before this UI-only increment; re-check after future schema changes.
 - Organization creation uses SECURITY INVOKER with RLS-constrained bootstrap policies.
 - Python API tests: 2 passed on the prior verified increment.
-- GitHub Actions frontend lint and production build passed for the daily-briefing code on commit 7d7f0e16ca8cbff6fc7b94431a118038a2425f12.
+- GitHub Actions frontend lint and production build passed for the daily-briefing code on commit 7d7f0e16ca8cbff6fc7b94431a118038a2425f12; the subsequent schema-history sync is pending its own CI run.
 - Local npm installation timed out in this environment; no local production build is claimed.
 - No public application deployment has been created.
 

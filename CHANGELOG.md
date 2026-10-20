@@ -5,6 +5,7 @@
 - Kept briefing reads on the authenticated Supabase client so row-level security scopes results to each user.
 - Added timezone-aware date grouping with a safe fallback and dashboard navigation.
 - The briefing is read-only and deterministic; it requires no AI key and cannot execute actions.
+- Synced the already-applied organization invitation tracking table into migration history; the table is groundwork and is not yet wired into invitation UI flows.
 
 ## 0.2.15 — Owner approval queue foundation
 - Added an RLS-protected action approval request queue for team members to request owner review.
