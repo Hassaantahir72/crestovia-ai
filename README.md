@@ -16,7 +16,13 @@ This is foundation starter code, not a fully deployed production system. Real-us
 Read docs/supabase/BEGINNER_SETUP.md and docs/deployment/LIVE_PREVIEW_SETUP.md. Configure local environment files from examples. Never commit secrets.
 
 ## Owner and team security
-Read docs/security/SECURITY_AND_RELEASE_PLAN.md and docs/security/TEAM_ACCESS_MODEL.md. Owner-private data is isolated from the shared company workspace. Team access to projects is explicitly assigned with viewer/contributor/manager levels. Membership administration and audit-log visibility are owner-only. Assignment UI, MFA enforcement, and multi-user security tests remain pending.
+Read docs/security/SECURITY_AND_RELEASE_PLAN.md and docs/security/TEAM_ACCESS_MODEL.md. Owner-private data is isolated from the shared company workspace. Team access to projects is explicitly assigned with viewer/contributor/manager levels. Membership administration and audit-log visibility are owner-only. Assignment UI is available, while secure invitations, MFA enforcement, and multi-user security tests remain pending.
+
+## Workspace operations (0.2.8)
+- Owners can create projects and manage project-level assignments from /dashboard/team.
+- Signed-in users can create tasks and update task status within the limits enforced by Supabase RLS.
+- Project access levels are viewer, contributor, and manager. New-user invitations, role changes, enforced MFA, and multi-user security acceptance tests are still pending.
+- GitHub Actions includes a frontend lint/build workflow. Check Actions for the actual result; local npm dependency installation timed out in this environment.
 
 ## Deployment
 The Render blueprint is preparation only. Public deployment is intentionally deferred until the project is complete, security and acceptance tests pass, and the owner explicitly approves launch.
