@@ -68,3 +68,12 @@ def test_private_memory_update_is_validated_and_scoped_to_signed_in_user():
     assert '.from("assistant_memories").update({title,category,content,updated_at:new Date().toISOString()}).eq("id",id).eq("user_id",user.id)' in actions
     assert 'field(data,"title",160)' in actions
     assert 'field(data,"content",12000)' in actions
+
+
+def test_assistant_provider_readiness_never_exposes_secret_value():
+    page = read_web("app/dashboard/assistant/page.tsx")
+
+    assert 'Boolean(process.env.GROQ_API_KEY)' in page
+    assert 'AI provider key detected; connectivity and validity have not been tested yet.' in page
+    assert 'Never use a NEXT_PUBLIC_ variable or commit the key.' in page
+    assert 'process.env.GROQ_API_KEY}' not in page
