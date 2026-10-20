@@ -1,6 +1,4 @@
--- Synced migration for the invitation-tracking table already applied to the connected Supabase project.
--- The current invite action still records invited/active status in public.memberships;
--- wiring this tracking table into invitation and acceptance workflows is a follow-up task.
+-- Organization invitation tracking table. Role constraint is expanded by migration 0013.
 create table if not exists public.organization_invitations (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null references public.organizations(id) on delete cascade,
