@@ -1,5 +1,15 @@
 # Crestovia AI — Changelog
 
+## 0.2.18 — Invitation tracking, acceptance, and revocation
+- Connected the existing organization_invitations table to the owner invitation workflow, recording email, invited user, inviter, organization role, and status.
+- Added a Pending Invitations table to Team Access with owner-only revocation controls.
+- Revoking a pending invite marks the invitation revoked and suspends the still-invited membership, so the account does not gain workspace access from that invitation.
+- Invitation acceptance updates the tracking row and membership state; legacy invitations without a tracking row can still use the existing acceptance path.
+- Added migration 0013 to allow the full supported organization role set in tracked invitations.
+- Applied the role-constraint migration to the connected Supabase project and will verify schema and security advisors after this increment.
+- No public deployment was performed.
+
+
 ## 0.2.17 — Department management and project organization
 - Added a departments workspace with create, edit, and delete flows for owners, admins, and managers, subject to Supabase RLS.
 - Added project counts per department and clear handling when a department is deleted (projects are preserved and become unassigned).
