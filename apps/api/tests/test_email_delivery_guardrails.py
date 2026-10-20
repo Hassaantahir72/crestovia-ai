@@ -33,3 +33,12 @@ def test_email_delivery_ledger_has_rls_and_no_browser_write_grants():
     assert "grant select on table public.email_delivery_attempts to authenticated" in source
     assert "unique" in source and "idempotency_key" in source
     assert "role = 'owner'" in source
+
+
+def test_email_delivery_actor_foreign_keys_have_covering_indexes():
+    migration = (ROOT / "database" / "migrations" / "0029_email_delivery_fk_indexes_v0_2_46.sql").read_text().lower()
+    assert "create index if not exists email_delivery_attempts_requested_by_idx" in migration
+    assert "on public.email_delivery_attempts (requested_by)" in migration
+    assert "create index if not exists email_delivery_attempts_sent_by_idx" in migration
+    assert "on public.email_delivery_attempts (sent_by)" in migration
+    assert "drop index" not in migration
