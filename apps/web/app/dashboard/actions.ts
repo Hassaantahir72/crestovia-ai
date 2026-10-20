@@ -13,12 +13,40 @@ async function context() {
   return {supabase,user,membership:memberships[0]};
 }
 function value(data:FormData,key:string,max:number){return String(data.get(key)??"").trim().slice(0,max)}
+export async function createDepartment(data:FormData){
+ const {supabase,user,membership}=await context();
+ if(!["owner","admin","manager"].includes(membership.role))redirect("/dashboard/departments?error=manager_only");
+ const name=value(data,"name",100),description=value(data,"description",2000);
+ if(name.length<2)redirect("/dashboard/departments?error=invalid_name");
+ const {error}=await supabase.from("departments").insert({organization_id:membership.organization_id,name,description,created_by:user.id});
+ if(error)redirect("/dashboard/departments?error=save_failed");
+ revalidatePath("/dashboard");revalidatePath("/dashboard/departments");revalidatePath("/dashboard/projects");redirect("/dashboard/departments?created=1");
+}
+export async function updateDepartment(data:FormData){
+ const {supabase,membership}=await context();
+ if(!["owner","admin","manager"].includes(membership.role))redirect("/dashboard/departments?error=manager_only");
+ const id=value(data,"department_id",64),name=value(data,"name",100),description=value(data,"description",2000);
+ if(!id||name.length<2)redirect("/dashboard/departments?error=invalid_input");
+ const {data:updated,error}=await supabase.from("departments").update({name,description,updated_at:new Date().toISOString()}).eq("id",id).eq("organization_id",membership.organization_id).select("id").maybeSingle();
+ if(error||!updated)redirect("/dashboard/departments?error=save_failed");
+ revalidatePath("/dashboard/departments");revalidatePath("/dashboard/projects");redirect("/dashboard/departments?updated=1");
+}
+export async function deleteDepartment(data:FormData){
+ const {supabase,membership}=await context();
+ if(!["owner","admin","manager"].includes(membership.role))redirect("/dashboard/departments?error=manager_only");
+ const id=value(data,"department_id",64);if(!id)redirect("/dashboard/departments?error=invalid_input");
+ const {data:deleted,error}=await supabase.from("departments").delete().eq("id",id).eq("organization_id",membership.organization_id).select("id").maybeSingle();
+ if(error||!deleted)redirect("/dashboard/departments?error=delete_failed");
+ revalidatePath("/dashboard/departments");revalidatePath("/dashboard/projects");redirect("/dashboard/departments?deleted=1");
+}
+
 export async function createProject(data:FormData){
  const {supabase,user,membership}=await context();
  if(membership.role!=="owner") redirect("/dashboard/projects?error=owner_only");
- const name=value(data,"name",160),description=value(data,"description",5000),status=value(data,"status",20)||"planned",priority=value(data,"priority",20)||"medium",due_date=value(data,"due_date",10)||null;
+ const name=value(data,"name",160),description=value(data,"description",5000),status=value(data,"status",20)||"planned",priority=value(data,"priority",20)||"medium",due_date=value(data,"due_date",10)||null,department_id=value(data,"department_id",64)||null;
  if(name.length<2||!["planned","active","on_hold","completed","archived"].includes(status)||!["low","medium","high","urgent"].includes(priority)) redirect("/dashboard/projects?error=invalid_input");
- const {error}=await supabase.from("projects").insert({organization_id:membership.organization_id,name,description,status,priority,due_date,created_by:user.id});
+ if(department_id){const {data:department}=await supabase.from("departments").select("id").eq("id",department_id).eq("organization_id",membership.organization_id).maybeSingle();if(!department)redirect("/dashboard/projects?error=invalid_department")}
+ const {error}=await supabase.from("projects").insert({organization_id:membership.organization_id,name,description,status,priority,due_date,department_id,created_by:user.id});
  if(error) redirect("/dashboard/projects?error=save_failed");
  revalidatePath("/dashboard");revalidatePath("/dashboard/projects");redirect("/dashboard/projects?created=1");
 }
