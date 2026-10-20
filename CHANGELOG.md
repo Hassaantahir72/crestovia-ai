@@ -1,5 +1,10 @@
 # Crestovia AI — Changelog
 
+## 0.2.10 — RLS-enforced organization bootstrap
+- Replaced the SECURITY DEFINER organization-creation RPC with a SECURITY INVOKER function and explicit RLS-constrained first-owner policies.
+- Verified the function is no longer SECURITY DEFINER and the Supabase security advisor reports no current security lints.
+- Authenticated onboarding test remains pending.
+
 ## 0.2.9 — Owner-enforced authenticator MFA
 - Added account-security page to enroll, verify, list, and remove TOTP authenticator factors.
 - Added login challenge for owners with a verified factor and server-side AAL2 checks on owner dashboard, project, team, and write-action paths.
