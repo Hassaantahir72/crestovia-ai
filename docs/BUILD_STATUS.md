@@ -1,6 +1,6 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.9  
+**Project version:** 0.2.10  
 **Milestone:** Owner privacy, scoped team access, workspace write flows, owner membership controls, and TOTP MFA enforcement  
 **Status:** Source updates are pushed to the private GitHub repository. Supabase schema and RLS are applied. Real-user end-to-end permission tests and frontend production build remain in progress. Deployment is intentionally deferred until project completion and owner approval.
 
@@ -24,7 +24,7 @@
 - TOTP authenticator MFA is implemented in the code. Owner routes and server actions require a verified factor and AAL2 session.
 - The owner's requested email-delivered second-factor code is not implemented yet. It needs a secure email provider integration, OTP hashing/expiry/rate limits/replay protection, and a server-only provider key configured privately.
 - Invitation email, account invitation, real-user owner/member isolation, and session revocation workflows remain pending.
-- Security advisor still warns about the intentional authenticated SECURITY DEFINER organization-creation RPC; review its access design before launch.
+- Supabase security advisor returned no current security lint findings after migration 0006 converted the organization-creation RPC to SECURITY INVOKER and added RLS-constrained bootstrap policies. Real authenticated bootstrap testing is still required.
 
 ## Still pending
 - Verify latest frontend lint and production build in GitHub Actions and fix any reported issues.
@@ -42,6 +42,6 @@
 - Phase 4 assistant/voice: 0%
 - Phase 5 integrations: 0%
 - Phase 6 automation/hardening: 0%
-- Overall product implementation: approximately 27%
+- Overall product implementation: approximately 28%
 
 These are implementation estimates, not production-readiness claims. Public deployment is intentionally deferred until completion and owner approval.
