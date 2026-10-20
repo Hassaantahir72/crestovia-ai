@@ -1,3 +1,9 @@
+## v0.2.44 — Approval decision notifications
+
+- Notify the requester in the in-app inbox when an organization owner approves or rejects their approval request.
+- Restrict approval-decision notification inserts to the owner who reviewed the matching request; recipients can only update the read timestamp.
+- Record an audit event if notification creation fails without undoing the already-recorded approval decision.
+
 ## v0.2.43 — Notification foreign-key index
 
 - Adds a covering index for the notification creator foreign key flagged by the Supabase performance advisor.

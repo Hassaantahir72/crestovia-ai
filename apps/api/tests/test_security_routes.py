@@ -177,3 +177,17 @@ def test_notification_inbox_actions_are_recipient_and_org_scoped():
     assert 'export async function markAllNotificationsRead' in actions
     assert '.eq("recipient_id",user.id)' in page
     assert '.order("created_at",{ascending:false})' in page
+
+
+def test_approval_review_notifies_requester_without_executing_external_actions():
+    actions = read_web("app/dashboard/actions.ts")
+    start = actions.index("export async function reviewApprovalRequest")
+    end = actions.index("export async function executeApprovedTaskRequest", start)
+    review = actions[start:end]
+
+    assert '.select("id,requested_by,summary")' in review
+    assert 'type:"approval_reviewed"' in review
+    assert 'recipient_id:request.requested_by' in review
+    assert 'action:"notification.approval_decision.failed"' in review
+    assert 'revalidatePath("/dashboard/notifications")' in review
+    assert "fetch(" not in review

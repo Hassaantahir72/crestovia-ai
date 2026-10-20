@@ -174,3 +174,13 @@ def test_notification_creator_foreign_key_has_covering_index():
     sql = compact_sql("0025_notification_created_by_index_v0_2_43.sql")
     assert "create index if not exists notifications_created_by_idx on public.notifications(created_by)" in sql
     assert "drop index" not in sql
+
+
+def test_approval_decision_notification_insert_is_bound_to_reviewed_request():
+    sql = compact_sql("0026_approval_decision_notifications_v0_2_44.sql")
+    assert 'create policy "owners notify approval requesters"' in sql
+    assert "type = 'approval_reviewed'" in sql
+    assert "entity_type = 'approval_request'" in sql
+    assert "requested_by = notifications.recipient_id" in sql
+    assert "reviewed_by = (select auth.uid())" in sql
+    assert "status in ('approved', 'rejected')" in sql

@@ -169,9 +169,12 @@ export async function reviewApprovalRequest(data:FormData){
  const {supabase,user,membership}=await context();if(membership.role!=="owner")redirect("/dashboard/approvals?error=owner_only");
  const id=value(data,"request_id",64),decision=value(data,"decision",16),reviewNote=value(data,"review_note",1000);
  if(!id||!["approved","rejected"].includes(decision))redirect("/dashboard/approvals?error=invalid_decision");
- const {data:request,error}=await supabase.from("action_approval_requests").update({status:decision,reviewed_by:user.id,reviewed_at:new Date().toISOString(),review_note:reviewNote}).eq("id",id).eq("organization_id",membership.organization_id).eq("status","pending").gt("expires_at",new Date().toISOString()).select("id").maybeSingle();
+ const {data:request,error}=await supabase.from("action_approval_requests").update({status:decision,reviewed_by:user.id,reviewed_at:new Date().toISOString(),review_note:reviewNote}).eq("id",id).eq("organization_id",membership.organization_id).eq("status","pending").gt("expires_at",new Date().toISOString()).select("id,requested_by,summary").maybeSingle();
  if(error||!request)redirect("/dashboard/approvals?error=request_not_pending");
- await recordAuditEvent({organizationId:membership.organization_id,actorId:user.id,action:"approval.request.reviewed",entityType:"action_approval_request",entityId:request.id,metadata:{decision}});revalidatePath("/dashboard/approvals");redirect("/dashboard/approvals?reviewed=1");
+ await recordAuditEvent({organizationId:membership.organization_id,actorId:user.id,action:"approval.request.reviewed",entityType:"action_approval_request",entityId:request.id,metadata:{decision}});
+ const {error:notificationError}=await supabase.from("notifications").insert({organization_id:membership.organization_id,recipient_id:request.requested_by,created_by:user.id,type:"approval_reviewed",title:decision==="approved"?"Your approval request was approved":"Your approval request was rejected",body:request.summary,entity_type:"approval_request",entity_id:request.id,dedupe_key:"approval_reviewed:"+request.id});
+ if(notificationError){await recordAuditEvent({organizationId:membership.organization_id,actorId:user.id,action:"notification.approval_decision.failed",entityType:"action_approval_request",entityId:request.id,metadata:{recipient_id:request.requested_by}});}
+ revalidatePath("/dashboard/approvals");revalidatePath("/dashboard/notifications");redirect("/dashboard/approvals?reviewed=1");
 }
 
 export async function executeApprovedTaskRequest(data:FormData){
