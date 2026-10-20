@@ -36,3 +36,15 @@ def test_audit_privilege_hardening_migrations_are_ordered():
     assert migration_files.index("0014_audit_log_admin_read_access.sql") < migration_files.index(
         "0015_audit_logs_browser_read_only.sql"
     )
+
+def test_email_mfa_failed_attempts_use_compare_and_set():
+    route = (ROOT / "apps" / "web" / "app" / "api" / "security" / "email-mfa" / "verify" / "route.ts").read_text(
+        encoding="utf-8"
+    )
+    invalid_branch = route.split("if(!valid){", 1)[1].split("const {data:consumed", 1)[0]
+
+    assert '.eq("attempt_count",challenge.attempt_count)' in invalid_branch
+    assert '.is("used_at",null)' in invalid_branch
+    assert '.select("id").maybeSingle()' in invalid_branch
+    assert "if(!attemptUpdated)" in invalid_branch
+    assert "challenge_already_used_or_updated" in invalid_branch

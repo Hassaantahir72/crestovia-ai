@@ -1,5 +1,11 @@
 # Crestovia AI — Changelog
 
+## 0.2.23 — Concurrent email MFA attempt hardening
+- Changed failed email-code attempts to use a database compare-and-set update keyed by the previously observed attempt count.
+- Concurrent failed verification requests can no longer silently overwrite the same attempt counter; stale competing updates receive a conflict response.
+- Added a CI regression check for the compare-and-set guard. Real email-provider and multi-request integration tests remain required.
+- No new key, migration, or deployment is needed for this code change.
+
 ## 0.2.22 — Audit permission regression tests
 - Added automated regression tests for the owner/admin-only audit SELECT policy, organization scoping, active membership requirement, and browser read-only grants.
 - Added security documentation distinguishing source-migration tests from real-account RLS acceptance tests.

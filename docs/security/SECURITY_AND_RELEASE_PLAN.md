@@ -36,7 +36,7 @@
 
 
 ## Email-code second-factor implementation (0.2.14)
-- Email codes are random, hashed with a server-only secret, expire after 10 minutes, and are invalidated after use. Requests have a 60-second resend cooldown and a per-user hourly limit; each code permits at most five attempts.
+- Email codes are random, hashed with a server-only secret, expire after 10 minutes, and are invalidated after use. Requests have a 60-second resend cooldown and a per-user hourly limit; each code permits at most five attempts. Failed verification increments now use a compare-and-set update to prevent concurrent requests from overwriting one another's attempt count.
 - Verification creates a signed HttpOnly cookie bound to the authenticated Supabase session, and the owner gate accepts it or a verified TOTP/AAL2 session.
 - Required private settings: SUPABASE_SERVICE_ROLE_KEY, APP_MFA_SECRET (at least 32 characters), RESEND_API_KEY, and RESEND_FROM_EMAIL from a verified sender. Configure only in server secret settings.
 - Before launch, test email delivery, expiry, replay rejection, resend limits, wrong-code lockout, session binding, sign-out/session rotation, and TOTP fallback with real test accounts.
