@@ -153,3 +153,16 @@ def test_assistant_queries_explicitly_scope_private_records_to_signed_in_user():
     assert '.from("assistant_memories").select("category,title,content").eq("user_id",user.id)' in actions
     assert '.from("assistant_conversations").select("id,title,updated_at").eq("user_id",user.id)' in page
     assert '.from("assistant_messages").select("id,role,content,created_at").eq("conversation_id",active.id).eq("user_id",user.id)' in page
+
+
+def test_notification_table_rls_and_task_reminder_indexes_are_scoped():
+    sql = compact_sql("0024_in_app_notifications_v0_2_42.sql")
+
+    assert "create table if not exists public.notifications" in sql
+    assert "enable row level security" in sql
+    assert "recipient_id = (select auth.uid())" in sql
+    assert "grant select, update, insert on public.notifications to authenticated" in sql
+    assert "on conflict (dedupe_key) do nothing" in sql or "dedupe_key text not null unique" in sql
+    assert "task_assigned" in sql
+    assert "create index if not exists notifications_recipient_created_idx" in sql
+    assert "drop table" not in sql
