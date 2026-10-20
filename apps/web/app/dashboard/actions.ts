@@ -80,3 +80,20 @@ export async function deleteTaskComment(data:FormData){
  const {error}=await supabase.from("task_comments").delete().eq("id",id).eq("organization_id",membership.organization_id).eq("author_id",user.id);
  if(error)redirect("/dashboard/tasks?error=comment_delete_failed");revalidatePath("/dashboard/tasks");redirect("/dashboard/tasks?comment_deleted=1");
 }
+
+export async function inviteTeamMember(data:FormData){
+ const {supabase,membership}=await context();if(membership.role!=="owner")redirect("/dashboard/team?error=owner_only");
+ const email=value(data,"email",254).toLowerCase(),role=value(data,"role",20)||"member";
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))redirect("/dashboard/team?error=invalid_email");
+ if(!["admin","manager","member","guest"].includes(role))redirect("/dashboard/team?error=invalid_role");
+ let adminClient:ReturnType<typeof import("@/lib/supabase/admin").createAdminClient>;
+ try{const {createAdminClient}=await import("@/lib/supabase/admin");adminClient=createAdminClient()}catch{redirect("/dashboard/team?error=admin_secret_missing")}
+ const {data:invitation,error:inviteError}=await adminClient.auth.admin.inviteUserByEmail(email);
+ if(inviteError||!invitation.user){const msg=inviteError?.message.toLowerCase()??"";if(msg.includes("already")||msg.includes("registered"))redirect("/dashboard/team?error=account_exists");redirect("/dashboard/team?error=invite_failed")}
+ const invitedId=invitation.user.id;
+ const {data:existing}=await supabase.from("memberships").select("user_id,status").eq("organization_id",membership.organization_id).eq("user_id",invitedId).maybeSingle();
+ if(existing?.status==="active")redirect("/dashboard/team?error=already_member");
+ const {error:membershipError}=await supabase.from("memberships").upsert({organization_id:membership.organization_id,user_id:invitedId,role,status:"invited"},{onConflict:"organization_id,user_id"});
+ if(membershipError)redirect("/dashboard/team?error=membership_invite_failed");
+ revalidatePath("/dashboard/team");redirect("/dashboard/team?invited=1");
+}
