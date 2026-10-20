@@ -17,7 +17,7 @@ Free-first company operating system starter using Next.js, FastAPI, and Supabase
 Real-account MFA/invitation tests, permission-isolation acceptance tests, AI tool registry and approval execution, reminders/voice, integrations, automation, production hardening, and deployment. The project is not yet production-ready.
 
 ## Setup
-See docs/supabase/BEGINNER_SETUP.md, docs/security/TEAM_ACCESS_MODEL.md, docs/security/SECURITY_AND_RELEASE_PLAN.md, and docs/deployment/LIVE_PREVIEW_SETUP.md. Never paste or commit secrets.
+See docs/supabase/BEGINNER_SETUP.md, docs/security/TEAM_ACCESS_MODEL.md, docs/security/SECURITY_AND_RELEASE_PLAN.md, docs/deployment/LIVE_PREVIEW_SETUP.md, and docs/AI_PROVIDER_SETUP.md. Never paste or commit secrets.
 
 ## Deployment policy
 Public deployment remains deferred until the product is complete, security and acceptance tests pass, and the owner explicitly approves launch. No public deployment has been created.
