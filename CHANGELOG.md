@@ -1,5 +1,11 @@
 # Crestovia AI — Changelog
 
+## 0.2.14 — Email-code owner MFA
+- Added a custom email second-factor challenge for the verified owner email, with 6-digit codes, 10-minute expiry, one-minute resend cooldown, five-attempt hourly limit, keyed code hashes, one-time consumption, and session-bound HttpOnly signed cookies.
+- Added server-only challenge storage with RLS and explicit deny policies for browser roles.
+- Added Resend email delivery adapter and private environment placeholders. Email delivery is not active until the owner configures the service-role key, APP_MFA_SECRET, Resend API key, and verified sender address in provider secrets.
+- Authenticator-app TOTP remains a fallback. The email provider setup and real-account tests are still required.
+
 ## 0.2.13 — Invitation acceptance flow
 - Added owner invitation initiation through Supabase Auth using a server-only admin client.
 - Added invited-membership acceptance on onboarding and a narrow RLS policy allowing invitees to read the organization name for their pending invitation.
