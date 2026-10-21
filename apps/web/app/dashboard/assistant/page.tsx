@@ -10,6 +10,8 @@ const errorText:Record<string,string>={
  ai_provider_rate_limited:"The AI provider is rate-limiting requests. Wait and try again.",
  ai_provider_request_failed:"Your message was saved, but the AI provider could not reply. You can retry without losing the submitted prompt.",
  ai_provider_empty_response:"The AI provider returned an empty response.",
+ assistant_rate_limited:"You have sent too many assistant messages. Wait a moment before trying again.",
+ rate_limit_unavailable:"The request protection service is unavailable. Your message was not sent; please try again shortly.",
  conversation_create_failed:"Could not create a conversation.",conversation_not_found:"That conversation is unavailable or belongs to another account.",empty_message:"Write a message before sending.",history_failed:"Could not load the conversation history.",message_save_failed:"The message could not be saved.",reply_save_failed:"The AI reply could not be saved.",conversation_delete_failed:"Could not delete that conversation.",
   invalid_approval_proposal:"That assistant response cannot be submitted for approval.",
   approval_proposal_unavailable:"That assistant response is unavailable to this account.",
@@ -21,6 +23,8 @@ const errorText:Record<string,string>={
  provider_test_request_failed:"The connection test could not complete. Check the selected model and provider status.",
  provider_test_empty_response:"Groq accepted the request but returned no assistant text.",
  provider_test_timeout:"The connection test timed out after 10 seconds. Try again later.",
+ provider_test_rate_limited:"Too many provider connection tests. Wait before trying again.",
+ provider_test_rate_limit_unavailable:"The request protection service is unavailable, so the provider test was not run. Try again shortly.",
 };
 export default async function AssistantPage({searchParams}:Props){
  const p=await searchParams,supabase=await createClient();const {data:{user},error}=await supabase.auth.getUser();if(error||!user)redirect("/login");
