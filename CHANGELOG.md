@@ -1,3 +1,9 @@
+## v0.2.68 — Reminder sweep operational observability
+
+- Adds structured success/failure logs for the reminder sweep with stage labels, scan/queue counts, and duration; log fields avoid task titles, recipient identifiers, tokens, and provider error details.
+- Adds duration to the non-cached success response so trusted scheduler monitoring can track latency and workload.
+- Adds API-CI guardrails for operational metrics and PII-minimized failure logs. Reminder execution still requires owner-configured private secrets and a trusted scheduler; no deployment is triggered.
+
 ## v0.2.67 — Monitoring and incident response runbook
 
 - Adds operator guidance for API/web/database/provider monitoring, alert triage, incident evidence, credential rotation, and recovery escalation.

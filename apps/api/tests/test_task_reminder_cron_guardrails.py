@@ -10,9 +10,9 @@ def test_task_reminder_cron_requires_server_secret_before_admin_access():
     auth_check = source.index('request.headers.get("authorization")')
     admin_client = source.index("admin=createAdminClient()")
     assert secret_check < auth_check < admin_client
-    assert 'status:503' in source
-    assert 'status:401' in source
-    assert "Bearer ${secret}" in source
+    assert "status:503" in source
+    assert "status:401" in source
+    assert '"Bearer "+secret' in source
 
 
 def test_task_reminder_sweeps_are_independently_bounded_and_exclude_completed_work():
@@ -32,8 +32,8 @@ def test_task_reminder_notifications_are_deduplicated_and_responses_not_cached()
     assert '"Cache-Control":"no-store, max-age=0"' in source
     assert 'dedupe_key:type+":"+task.id+":"+day' in source
     assert '.upsert(rows,{onConflict:"dedupe_key",ignoreDuplicates:true})' in source
-    assert 'export async function GET(request:Request)' in source
-    assert 'export async function POST(request:Request)' in source
+    assert "export async function GET(request:Request)" in source
+    assert "export async function POST(request:Request)" in source
 
 
 def test_task_reminder_route_returns_generic_errors_without_provider_details():
@@ -42,3 +42,13 @@ def test_task_reminder_route_returns_generic_errors_without_provider_details():
     assert 'error:"notification_queue_failed"' in source
     assert 'error:"service_role_not_configured"' in source
     assert "createAdminClient()" in source
+
+
+def test_task_reminder_sweep_emits_pii_minimized_operational_metrics():
+    source = ROUTE.read_text()
+    assert 'console.info("task_reminder_sweep_completed",summary)' in source
+    assert 'console.error("task_reminder_sweep_failed",{stage:"overdue_query",reason:"database_query_error"})' in source
+    assert 'console.error("task_reminder_sweep_failed",{stage:"due_soon_query",reason:"database_query_error"})' in source
+    assert 'console.error("task_reminder_sweep_failed",{stage:"notification_upsert",reason:"database_write_error",scanned:tasks.length})' in source
+    assert "durationMs:Date.now()-startedAt" in source
+    assert "task.title" not in source[source.index("console.info"):source.index("console.info")+100]
