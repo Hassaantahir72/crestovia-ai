@@ -8,6 +8,7 @@ const TASK_FIELDS="id,organization_id,title,assigned_to,due_at,status";
 
 async function runReminderSweep(request:Request){
  const startedAt=Date.now();
+ try{
  const secret=process.env.CRON_SECRET;
  if(!secret)return NextResponse.json({error:"cron_not_configured"},{status:503,headers:jsonHeaders});
  if(request.headers.get("authorization")!=="Bearer "+secret)return NextResponse.json({error:"unauthorized"},{status:401,headers:jsonHeaders});
@@ -55,6 +56,10 @@ async function runReminderSweep(request:Request){
  summary.durationMs=Date.now()-startedAt;
  console.info("task_reminder_sweep_completed",summary);
  return NextResponse.json({ok:true,...summary},{headers:jsonHeaders});
+ }catch{
+  console.error("task_reminder_sweep_failed",{stage:"unexpected_exception",reason:"unexpected_runtime_error"});
+  return NextResponse.json({error:"task_reminder_sweep_failed"},{status:500,headers:jsonHeaders});
+ }
 }
 export async function GET(request:Request){return runReminderSweep(request)}
 export async function POST(request:Request){return runReminderSweep(request)}

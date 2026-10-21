@@ -52,3 +52,10 @@ def test_task_reminder_sweep_emits_pii_minimized_operational_metrics():
     assert 'console.error("task_reminder_sweep_failed",{stage:"notification_upsert",reason:"database_write_error",scanned:tasks.length})' in source
     assert "durationMs:Date.now()-startedAt" in source
     assert "task.title" not in source[source.index("console.info"):source.index("console.info")+100]
+
+
+def test_task_reminder_sweep_handles_unexpected_runtime_exceptions_safely():
+    source = ROUTE.read_text()
+    assert 'stage:"unexpected_exception",reason:"unexpected_runtime_error"' in source
+    assert 'error:"task_reminder_sweep_failed"' in source
+    assert 'return NextResponse.json({error:"task_reminder_sweep_failed"},{status:500,headers:jsonHeaders})' in source

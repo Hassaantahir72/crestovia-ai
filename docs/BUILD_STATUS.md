@@ -1,5 +1,17 @@
 # Crestovia AI — Current Build Status
 
+**Project version:** 0.2.69 (candidate; CI verification pending)  
+**Milestone:** Safe recovery from unexpected reminder failures  
+**Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
+**Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.69 — Safe recovery from unexpected reminder failures
+- Adds a final error boundary around reminder sweep runtime work, safe generic 500 responses, and structured failure-stage logging without raw exception details.
+- Adds a regression test for unexpected exceptions and generic error behavior.
+- Scheduler retries, missed-run recovery, and alert destinations still require owner-controlled configuration and live acceptance. No deployment or secret configuration is performed.
+
+# Crestovia AI — Current Build Status
+
 **Project version:** 0.2.68 (candidate; CI verification pending)  
 **Milestone:** Reminder sweep operational observability  
 **Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
