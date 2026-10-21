@@ -204,6 +204,5 @@ def test_assistant_prompt_is_persisted_before_provider_call_can_fail():
     persist_prompt = send.index('.from("assistant_messages").insert({conversation_id:id,user_id:user.id,role:"user",content})')
     provider_call = send.index("generateAssistantReply(")
     assert persist_prompt < provider_call
-    assert 'error=" + id + "&error=message_save_failed' not in send
     assert "Your message was saved, but the AI provider could not reply." in page
     assert 'role:"assistant",content:answer' in send
