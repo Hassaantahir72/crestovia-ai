@@ -1,3 +1,9 @@
+## v0.2.65 — Deployment smoke checks
+
+- Adds a dependency-free post-deployment smoke check for API liveness/readiness and optional web homepage availability.
+- Adds automated tests for endpoint status, network errors, malformed URLs, and embedded URL credentials.
+- Documents safe use and the limits of smoke checks; no deployment is triggered and public launch remains owner-gated.
+
 ## v0.2.64 — Reject blank CORS origins in readiness probe
 
 - Tightens `/ready` so a CORS origin list containing only empty or whitespace entries is treated as incomplete configuration.
