@@ -32,6 +32,8 @@ export default async function ApprovalsPage({ searchParams }: Props) {
     invalid_action_type: "Choose a valid request type.",
     invalid_summary: "Summary must contain at least three characters.",
     request_failed: "Could not create the request.",
+    approval_rate_limited: "You have created too many approval requests. Wait before submitting another.",
+    approval_rate_limit_unavailable: "Request protection is unavailable, so no approval request was created. Please try again shortly.",
     execution_unavailable: "This request is not approved, has expired, or is unavailable.",
     unsupported_execution: "Only approved workspace task creation is executable in this release.",
     execution_already_started: "This request has already been claimed or executed.",
