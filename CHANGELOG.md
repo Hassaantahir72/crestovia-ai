@@ -1,3 +1,9 @@
+## v0.2.74 — Database migration sequence audit
+
+- Adds a repeatable migration-source checker that detects malformed filenames, duplicate versions, missing sequence numbers, unreadable files, and empty migrations.
+- Adds regression tests and a package command so migration ordering can be checked before release.
+- Explicitly states that source ordering does not prove a live database has applied migrations or has correct grants/RLS; those remain owner-controlled acceptance checks.
+
 ## v0.2.73 — Evidence-based readiness report
 
 - Adds a repeatable readiness report that counts only explicitly checked checklist evidence across Gates A–F.
