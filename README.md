@@ -1,31 +1,41 @@
-# Crestovia AI
+# Crestovia AI — Jarvis for Company Operations
 
-Free-first company operating system starter using Next.js, FastAPI, and Supabase.
+Crestovia AI is a private company-operations workspace built with Next.js, FastAPI, and Supabase. The project is actively developed; it is **not yet production-ready**, and public deployment remains deferred until the owner explicitly approves launch.
 
-## Current capabilities
-- Sign-in, protected dashboard, organization onboarding.
-- Owner-only project creation, task creation/status updates, task comments, team role controls, and project-level access assignments.
-- Department management and optional project-to-department assignment.
-- Owner-managed tracked invitations with pending status, acceptance tracking, and revocation controls.
-- Owner-private data isolation and database RLS policies.
+## Implemented capabilities
+
+- Authentication, protected workspace, organization onboarding, team roles, invitations, and department/project/task workflows.
+- Organization-aware access controls and Supabase row-level security (RLS), with regression guardrails in CI.
 - Owner email-code second factor when configured, with authenticator-app TOTP fallback.
-- Private AI assistant chat and saved memories, with a server-side Groq adapter.
-- Owner approval queue for proposed work; approvals do not execute external actions.
-- Daily briefing for deadlines, blocked work, projects, approvals, and recent activity, scoped to data visible to the signed-in user.
+- Private AI assistant conversations and editable saved memories, backed by a server-side Groq adapter.
+- Read-only assistant workspace tools and a review queue for proposed work.
+- Owner-approved internal task execution through a scoped, transactional database function; external actions remain separately gated and are not implied by approval.
+- Daily briefing, in-app notifications, bounded reminder scans, and a secret-protected reminder endpoint.
+- Resend email delivery integration scaffolding, signed webhook verification, delivery-event reconciliation, and retry controls.
+- Rate limits for sensitive assistant, invitation, approval, and provider-diagnostic operations.
+- Audit history and server-side configuration preflight checks.
 
-## Still in development
-Real-account MFA/invitation tests, permission-isolation acceptance tests, AI tool registry and approval execution, reminders/voice, integrations, automation, production hardening, and deployment. The project is not yet production-ready.
+## Verification and limitations
+
+CI covers API regression tests, web configuration-preflight tests, ESLint, and a Next.js production build. These checks do **not** prove live credentials, provider delivery, real-account MFA, deployed RLS behavior, or cross-organization isolation. See `docs/PRODUCTION_READINESS.md` and `docs/security/ORG_ISOLATION_ACCEPTANCE.md` for required live acceptance work.
 
 ## Setup
-See docs/supabase/BEGINNER_SETUP.md, docs/security/TEAM_ACCESS_MODEL.md, docs/security/SECURITY_AND_RELEASE_PLAN.md, docs/deployment/LIVE_PREVIEW_SETUP.md, and docs/AI_PROVIDER_SETUP.md. Never paste or commit secrets.
+
+Start with:
+
+- `docs/supabase/BEGINNER_SETUP.md`
+- `docs/security/TEAM_ACCESS_MODEL.md`
+- `docs/security/SECURITY_AND_RELEASE_PLAN.md`
+- `docs/deployment/LIVE_PREVIEW_SETUP.md`
+- `docs/deployment/CONFIGURATION_PREFLIGHT.md`
+- `docs/AI_PROVIDER_SETUP.md`
+
+Use `npm run preflight` in `apps/web` to check basic web configuration. Use `npm run preflight:production` to check for the expected private integration variables before a controlled release. These commands check variable names and obvious placeholders only; they never print values, call providers, or verify credentials. Do not paste secrets into chat or commit them.
+
+## Private configuration
+
+Depending on enabled features, server-side configuration includes `SUPABASE_SERVICE_ROLE_KEY`, `APP_MFA_SECRET`, `GROQ_API_KEY`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_WEBHOOK_SECRET`, and `CRON_SECRET`. Browser-exposed `NEXT_PUBLIC_*` variables must contain public values only. Never expose service-role keys, API tokens, MFA secrets, webhook secrets, or cron secrets through browser variables.
 
 ## Deployment policy
-Public deployment remains deferred until the product is complete, security and acceptance tests pass, and the owner explicitly approves launch. No public deployment has been created.
 
-## Required private configuration
-- `SUPABASE_SERVICE_ROLE_KEY`, `APP_MFA_SECRET`, `RESEND_API_KEY`, and `RESEND_FROM_EMAIL` for server-side invitation and email-code MFA workflows.
-- `GROQ_API_KEY` for AI assistant replies.
-- These values belong only in private local environment files or provider secret settings, never in chat, GitHub source, or any `NEXT_PUBLIC_*` variable.
-
-## Daily briefing (0.2.16)
-The briefing is a read-only, data-based summary scoped by authenticated Supabase access rules. It does not require an AI provider key or execute actions. See `docs/phase-4/DAILY_BRIEFING.md`.
+No public deployment is authorized by this repository update. The Render blueprint is configuration only; required secret values, provider/webhook registration, trusted scheduling, live tenant-isolation acceptance, monitoring, and backup/restore validation still need owner-controlled setup. **Public deployment remains deferred until the owner explicitly approves it.**

@@ -1,11 +1,16 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.61 (in progress)  
-**Milestone:** Configuration preflight and secret-exposure guardrails  
+**Project version:** 0.2.62 (in progress)  
+**Milestone:** Capability documentation and deployment configuration alignment  
 **Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.61 — Configuration preflight and secret-exposure guardrails (in progress)
+## Version 0.2.62 — Capability documentation and deployment configuration alignment (in progress)
+- Reconciles the README with implemented features and explicitly documents the boundary between source/CI evidence and live production acceptance.
+- Declares the missing Resend webhook and cron secret names in the Render blueprint as private, owner-supplied values; no secrets are added and no deployment is triggered.
+- Documentation/configuration-only increment; public deployment remains deferred.
+
+## Version 0.2.61 — Configuration preflight and secret-exposure guardrails (completed; live acceptance pending)
 - Adds a dependency-free environment preflight for web and API required variables, placeholder values, and sensitive names incorrectly exposed through NEXT_PUBLIC_.
 - Adds tests to the web CI workflow and setup documentation. The production profile checks the private integration variables expected by the full deployment.
 - Does not prove secrets are valid or integrations work. Live acceptance remains required; no runtime request behavior or database migration changes.
