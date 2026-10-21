@@ -3,9 +3,8 @@
 - Fixes a delivery-status race where a webhook received before its email ledger row was matchable remained permanently unmatched, even when Resend retried the same event.
 - Previously unmatched events can now be reprocessed safely; already processed event IDs remain idempotent.
 - Preserves signature checks, event-row locking, status precedence, and the existing service-role-only RPC boundary.
-- Adds migration 0033, regression guardrails, and rollout/acceptance documentation. Supabase migration application and live Resend webhook verification are required before this protection is active in production.
+- Adds migration 0033, regression guardrails, and rollout/acceptance documentation. Migration 0033 has been applied to the connected Supabase project and its RPC access controls verified; real Resend webhook retry tests are still required before production reliance.
 - Public deployment remains deferred.
-
 ## v0.2.55 — Email provider diagnostic rate limits
 
 - Limits the owner-only Resend connection test to 3 requests/minute and 10/hour per owner account.
