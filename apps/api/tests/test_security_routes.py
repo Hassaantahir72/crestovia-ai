@@ -192,3 +192,17 @@ def test_approval_review_notifies_requester_without_executing_external_actions()
     assert 'action:"notification.approval_decision.failed"' in review
     assert 'revalidatePath("/dashboard/notifications")' in review
     assert "fetch(" not in review
+
+
+def test_assistant_prompt_is_persisted_before_provider_call_can_fail():
+    actions = read_web("app/dashboard/assistant/actions.ts")
+    page = read_web("app/dashboard/assistant/page.tsx")
+    start = actions.index("export async function sendAssistantMessage")
+    end = actions.index("export async function deleteConversation", start)
+    send = actions[start:end]
+
+    persist_prompt = send.index('.from("assistant_messages").insert({conversation_id:id,user_id:user.id,role:"user",content})')
+    provider_call = send.index("generateAssistantReply(")
+    assert persist_prompt < provider_call
+    assert "Your message was saved, but the AI provider could not reply." in page
+    assert 'role:"assistant",content:answer' in send

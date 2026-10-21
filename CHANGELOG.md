@@ -1,3 +1,10 @@
+## v0.2.51 — Preserve assistant prompts when AI provider fails
+
+- Saves a signed-in user's prompt to their private conversation before calling the external AI provider, so missing credentials, provider timeouts, and transient errors do not silently discard submitted text.
+- Updates the conversation title when the prompt is saved and displays a truthful error message that distinguishes a saved prompt from a missing AI reply.
+- Adds API-CI source regression coverage for persistence order. No database migration is required.
+- API tests, web lint, and production build must pass before merge; live provider verification still requires a private Groq key.
+
 ## v0.2.50 — Fair bounded task reminder scans
 
 - Splits the reminder sweep into independent overdue and upcoming-task queries, each capped at 250 rows, so a large overdue backlog cannot consume the entire due-soon scan.
