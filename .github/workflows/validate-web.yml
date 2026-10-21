@@ -21,6 +21,8 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Test configuration preflight
+        run: node --test ../../scripts/preflight.test.mjs
       - name: Run ESLint
         run: npm run lint
       - name: Build Next.js app
