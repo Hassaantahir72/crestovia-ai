@@ -129,7 +129,7 @@ export async function deleteTaskComment(data:FormData){
 export async function inviteTeamMember(data:FormData){
  const {supabase,user,membership}=await context();if(membership.role!=="owner")redirect("/dashboard/team?error=owner_only");
  const email=value(data,"email",254).toLowerCase(),role=value(data,"role",20)||"member";
- if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))redirect("/dashboard/team?error=invalid_email");
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))redirect("/dashboard/team?error=invalid_email");
  if(!["admin","manager","member","guest"].includes(role))redirect("/dashboard/team?error=invalid_role");
  let adminClient:ReturnType<typeof import("@/lib/supabase/admin").createAdminClient>;
  try{const {createAdminClient}=await import("@/lib/supabase/admin");adminClient=createAdminClient()}catch{redirect("/dashboard/team?error=admin_secret_missing")}
