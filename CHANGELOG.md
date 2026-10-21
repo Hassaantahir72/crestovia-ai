@@ -1,3 +1,10 @@
+## v0.2.55 — Email provider diagnostic rate limits
+
+- Limits the owner-only Resend connection test to 3 requests/minute and 10/hour per owner account.
+- The shared rate-limit check runs before contacting Resend and fails closed when protection is unavailable.
+- Adds regression tests, user-facing feedback, and setup documentation. Reuses migration 0032; no new schema or external secret.
+- Approved email delivery keeps its separate idempotency and retry controls. Public deployment remains deferred.
+
 ## v0.2.54 — Approval request rate limits
 
 - Applies shared atomic per-user limits to direct approval requests and assistant-generated proposals: 3/minute, 10/hour, and 30/day.
