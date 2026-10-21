@@ -1,3 +1,9 @@
+## v0.2.69 — Safe recovery from unexpected reminder failures
+
+- Wraps the reminder sweep's runtime work in a final safe error boundary so thrown network/runtime exceptions return a generic non-cacheable 500 instead of leaking diagnostic details.
+- Emits a structured failure stage without task/user payloads or raw exception text.
+- Adds regression guardrails. This improves error visibility but does not itself configure scheduler retries, alerts, or missed-run recovery; no deployment is triggered.
+
 ## v0.2.68 — Reminder sweep operational observability
 
 - Adds structured success/failure logs for the reminder sweep with stage labels, scan/queue counts, and duration; log fields avoid task titles, recipient identifiers, tokens, and provider error details.
