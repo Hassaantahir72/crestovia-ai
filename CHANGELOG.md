@@ -1,9 +1,9 @@
-## v0.2.46 — Approval-gated transactional email delivery
+## v0.2.47 — Verified email delivery status webhooks
 
-- Adds covering indexes for the delivery ledger's requester and sender foreign keys after the Supabase performance advisor identified both lookups.
-- Adds a server-only Resend adapter with strict single-recipient, subject, and plain-text body validation; requests must be approved and executed by an organization owner with MFA.
-- Adds an organization-scoped delivery ledger with owner-only reads, idempotency keys, provider message IDs, bounded attempts, and safe error categories. The UI distinguishes provider acceptance from actual inbox delivery.
-- Email sends require private RESEND_API_KEY and RESEND_FROM_EMAIL configuration. No secrets are committed and public deployment remains deferred.
+- Adds a server-only Resend webhook endpoint that verifies Svix signatures over the exact raw body, enforces a five-minute timestamp window, and caps payload size.
+- Processes delivered, bounced, and complained events through a transactionally idempotent database function; duplicate provider event IDs are harmless.
+- Stores provider event identifiers in a private RLS-enabled ledger, with function execution restricted to the service role. Unknown event types are acknowledged but ignored.
+- Configure RESEND_WEBHOOK_SECRET privately in the server environment and register the HTTPS webhook URL in Resend before delivery events are processed. No public deployment or secret is included.
 
 ## v0.2.45 — Consolidated notification insert policy
 
