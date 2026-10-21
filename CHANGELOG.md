@@ -1,3 +1,9 @@
+## v0.2.72 — Prevent implicit Render deployments
+
+- Disables Render Blueprint auto-deploy so a source merge cannot silently trigger a hosted rollout through this service definition.
+- Clarifies that creating or deploying a preview requires explicit owner authorization and private environment configuration.
+- Adds regression guardrails for deployment defaults and documentation. No hosting account is accessed and no deployment is initiated; public launch remains owner-gated.
+
 ## v0.2.71 — Verify distributable source archives
 
 - Adds a fail-closed source ZIP verifier for archive integrity, unsafe paths, local environment files, development artifacts, private-key headers, and recognizable provider-token patterns.
