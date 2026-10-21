@@ -11,6 +11,12 @@ create table public.user_rate_limit_buckets (
 
 alter table public.user_rate_limit_buckets enable row level security;
 revoke all privileges on table public.user_rate_limit_buckets from public, anon, authenticated;
+create policy "deny browser access to user rate limit buckets"
+  on public.user_rate_limit_buckets
+  for all
+  to anon, authenticated
+  using (false)
+  with check (false);
 grant select, insert, update, delete on table public.user_rate_limit_buckets to service_role;
 
 create or replace function public.consume_user_rate_limit(
