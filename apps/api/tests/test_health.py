@@ -28,6 +28,21 @@ def test_readiness_returns_503_when_required_configuration_is_missing(monkeypatc
     assert response.json()["detail"] == "API configuration is incomplete"
 
 
+def test_readiness_returns_503_when_cors_origins_are_blank(monkeypatch):
+    monkeypatch.setattr(
+        main_module,
+        "settings",
+        SimpleNamespace(
+            supabase_url="https://project.supabase.co",
+            supabase_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            allowed_origins=["", "   "],
+        ),
+    )
+    response = client.get("/ready")
+    assert response.status_code == 503
+    assert response.json()["detail"] == "API configuration is incomplete"
+
+
 def test_readiness_passes_when_required_configuration_is_present(monkeypatch):
     monkeypatch.setattr(
         main_module,
