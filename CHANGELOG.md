@@ -1,3 +1,10 @@
+## v0.2.77 — Read-only live database audit runbook
+
+- Adds a SELECT-only SQL audit for public-table RLS/policy coverage, browser-role grants, public SECURITY DEFINER functions, and recorded migration history.
+- Documents the 2026-10-21 read-only findings: 21/21 public tables have RLS and policies, Security Advisor had no findings, and migration-name mapping needs careful reconciliation before any automated sync.
+- Records that the database is empty of application rows, so tenant isolation has not been demonstrated with live organization data; informational unused-index findings should be revisited after representative traffic.
+- No database changes or deployment are performed.
+
 ## v0.2.76 — Enforce cron secret strength in preflight
 
 - Extends production configuration preflight to reject CRON_SECRET values shorter than 32 characters before deployment setup proceeds.
