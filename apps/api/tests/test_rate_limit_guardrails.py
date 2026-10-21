@@ -11,6 +11,8 @@ def test_rate_limit_ledger_is_private_and_function_is_atomic_invoker_only():
     assert "create table public.user_rate_limit_buckets" in sql
     assert "primary key (user_id, bucket)" in sql
     assert "enable row level security" in sql
+    assert 'create policy "deny browser access to user rate limit buckets"' in sql
+    assert "using (false) with check (false)" in sql
     assert "revoke all privileges on table public.user_rate_limit_buckets from public, anon, authenticated" in sql
     assert "grant select, insert, update, delete on table public.user_rate_limit_buckets to service_role" in sql
     assert "create or replace function public.consume_user_rate_limit" in sql
