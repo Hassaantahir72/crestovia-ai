@@ -1,5 +1,17 @@
 # Crestovia AI — Current Build Status
 
+**Project version:** 0.2.68 (candidate; CI verification pending)  
+**Milestone:** Reminder sweep operational observability  
+**Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
+**Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.68 — Reminder sweep operational observability
+- Adds structured reminder sweep success/failure logs using stage names, counts, and duration only; no task titles, recipient IDs, secrets, or provider diagnostic payloads are logged.
+- Adds `durationMs` to successful cron responses and regression checks for the observability contract.
+- CI and source checks still do not prove a real scheduler, alert destination, or missed-run recovery; those remain live acceptance tasks. No deployment or secret configuration is performed.
+
+# Crestovia AI — Current Build Status
+
 **Project version:** 0.2.67 (in progress)  
 **Milestone:** Monitoring, incident response, and credential-rotation runbook  
 **Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
