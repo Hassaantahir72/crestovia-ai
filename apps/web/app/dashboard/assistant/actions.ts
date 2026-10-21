@@ -13,7 +13,7 @@ async function getUserContext(){
 }
 function field(data:FormData,name:string,max:number){return String(data.get(name)??"").trim().slice(0,max)}
 export async function testAssistantProvider(){
- const {membership}=await getUserContext();
+ const {membership,user}=await getUserContext();
  if(membership.role!=="owner")redirect("/dashboard/assistant?provider_test=owner_only");
  let providerTestAllowed:boolean;
  try{providerTestAllowed=await consumeUserRateLimit(user.id,"assistant_provider_test_minute",3,60)&&await consumeUserRateLimit(user.id,"assistant_provider_test_hour",10,3600)}catch{redirect("/dashboard/assistant?provider_test=rate_limit_unavailable")}
