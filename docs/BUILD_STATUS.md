@@ -1,9 +1,15 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.50 (in progress)  
-**Milestone:** Fair bounded task-reminder scans  
+**Project version:** 0.2.51 (in progress)  
+**Milestone:** Preserve assistant prompts on provider failure  
 **Overall product implementation estimate:** approximately 66% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.51 — Preserve assistant prompts on provider failure (in progress)
+- Persists the user's message and updates the conversation title before requesting an AI reply, preventing provider errors from discarding submitted text.
+- Clarifies UI error copy and adds regression coverage for persistence ordering.
+- No database migration required. API CI, web lint, and production build must pass before merge.
+- Live provider verification still requires a private Groq key. Public deployment remains deferred.
 
 ## Version 0.2.50 — Fair bounded task-reminder scans (in progress)
 - Splits overdue and upcoming tasks into separate 250-row bounded queries so overdue backlog cannot consume the entire upcoming-task scan.
