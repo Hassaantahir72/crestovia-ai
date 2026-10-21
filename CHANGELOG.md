@@ -1,3 +1,11 @@
+## v0.2.53 — Team invitation throttling and duplicate protection
+
+- Adds shared atomic per-owner limits of 5 invitations/minute, 20/hour, and 50/day before calling Supabase Auth email delivery.
+- Checks the organization invitation ledger for an existing pending invitation and known active member before sending another invitation.
+- Fails closed when rate-limit storage is unavailable and adds clear UI feedback plus API-CI source guardrails.
+- Reuses migration 0032 from v0.2.52; no new database migration or external secret is introduced. Supabase Auth email delivery and the existing server-only service-role key are still required.
+- Public deployment remains deferred; live onboarding and multi-account acceptance tests are still required.
+
 ## v0.2.52 — Atomic assistant request rate limits
 
 - Adds a private Supabase-backed atomic rate-limit ledger for assistant prompts and owner-only AI provider connection tests.

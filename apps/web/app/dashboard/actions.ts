@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { enforceOwnerMfa } from "@/lib/security/owner-mfa";
 import { recordAuditEvent } from "@/lib/security/audit";
+import { consumeUserRateLimit } from "@/lib/security/rate-limit";
 async function context() {
   const supabase = await createClient();
   const {data:{user},error}=await supabase.auth.getUser();
@@ -132,11 +133,25 @@ export async function inviteTeamMember(data:FormData){
  if(!["admin","manager","member","guest"].includes(role))redirect("/dashboard/team?error=invalid_role");
  let adminClient:ReturnType<typeof import("@/lib/supabase/admin").createAdminClient>;
  try{const {createAdminClient}=await import("@/lib/supabase/admin");adminClient=createAdminClient()}catch{redirect("/dashboard/team?error=admin_secret_missing")}
+ // Check known invitation state before triggering Supabase Auth email delivery.
+ const {data:trackedInvitation,error:lookupError}=await adminClient.from("organization_invitations").select("id,invited_user_id,status").eq("organization_id",membership.organization_id).eq("invited_email",email).maybeSingle();
+ if(lookupError)redirect("/dashboard/team?error=invite_lookup_failed");
+ if(trackedInvitation?.status==="pending")redirect("/dashboard/team?error=invitation_pending");
+ if(trackedInvitation?.invited_user_id){
+  const {data:existing,error:memberLookupError}=await supabase.from("memberships").select("user_id,status").eq("organization_id",membership.organization_id).eq("user_id",trackedInvitation.invited_user_id).maybeSingle();
+  if(memberLookupError)redirect("/dashboard/team?error=invite_lookup_failed");
+  if(existing?.status==="active")redirect("/dashboard/team?error=already_member");
+ }
+ let inviteAllowed:boolean;
+ try{
+  inviteAllowed=await consumeUserRateLimit(user.id,"team_invite_minute",5,60)
+   &&await consumeUserRateLimit(user.id,"team_invite_hour",20,3600)
+   &&await consumeUserRateLimit(user.id,"team_invite_day",50,86400);
+ }catch{redirect("/dashboard/team?error=invitation_rate_limit_unavailable")}
+ if(!inviteAllowed)redirect("/dashboard/team?error=invitation_rate_limited");
  const {data:invitation,error:inviteError}=await adminClient.auth.admin.inviteUserByEmail(email);
  if(inviteError||!invitation.user){const msg=inviteError?.message.toLowerCase()??"";if(msg.includes("already")||msg.includes("registered"))redirect("/dashboard/team?error=account_exists");redirect("/dashboard/team?error=invite_failed")}
  const invitedId=invitation.user.id;
- const {data:existing}=await supabase.from("memberships").select("user_id,status").eq("organization_id",membership.organization_id).eq("user_id",invitedId).maybeSingle();
- if(existing?.status==="active")redirect("/dashboard/team?error=already_member");
  const {error:membershipError}=await supabase.from("memberships").upsert({organization_id:membership.organization_id,user_id:invitedId,role,status:"invited"},{onConflict:"organization_id,user_id"});
  if(membershipError)redirect("/dashboard/team?error=membership_invite_failed");
  const {error:trackingError}=await adminClient.from("organization_invitations").upsert({organization_id:membership.organization_id,invited_email:email,invited_user_id:invitedId,invited_by:user.id,role,status:"pending",accepted_at:null},{onConflict:"organization_id,invited_email"});
