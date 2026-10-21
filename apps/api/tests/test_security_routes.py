@@ -163,7 +163,7 @@ def test_task_reminder_cron_requires_private_secret_and_is_bounded():
     assert 'request.headers.get("authorization")' in route
     assert 'status:401' in route
     assert 'createAdminClient()' in route
-    assert '.limit(500)' in route
+    assert route.count('.limit(250)') == 2
     assert 'ignoreDuplicates:true' in route
     assert 'cache-control' in route.lower()
 
