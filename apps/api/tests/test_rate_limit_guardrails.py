@@ -52,5 +52,5 @@ def test_assistant_message_and_provider_test_are_rate_limited_before_external_ca
     assert provider_action.index("consumeUserRateLimit(") < provider_action.index('fetch("https://api.groq.com/openai/v1/chat/completions"')
     assert "assistant_rate_limited:" in page
     assert "rate_limit_unavailable:" in page
-    assert "provider_test_rate_limited:" in page
+    assert "provider_test_app_rate_limited:" in page
     assert "provider_test_rate_limit_unavailable:" in page
