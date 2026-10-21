@@ -1,11 +1,16 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.64 (in progress)  
-**Milestone:** Reject blank CORS origins in API readiness probe  
+**Project version:** 0.2.65 (in progress)  
+**Milestone:** Safe post-deployment smoke checks  
 **Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.64 — Reject blank CORS origins in readiness probe (in progress)
+## Version 0.2.65 — Deployment smoke checks (in progress)
+- Adds a dependency-free script to check API `/health`, API `/ready`, and optionally the web homepage on an explicitly supplied deployment URL.
+- Adds mocked-fetch tests for success, non-2xx responses, network failures, malformed URLs, and embedded credentials. CI does not call a live deployment.
+- Documents interpretation and limitations; live provider, tenant-isolation, scheduler, and backup/restore acceptance remain required. No deployment is triggered.
+
+## Version 0.2.64 — Reject blank CORS origins in readiness probe (completed)
 - Tightens `/ready` so a list containing only empty or whitespace CORS origins cannot pass readiness.
 - Adds regression coverage and clarifies the deployment health-check documentation.
 - No network calls, migrations, or secrets. Live Supabase reachability and account-isolation acceptance remain separate release gates.
