@@ -28,6 +28,7 @@ if (production && target === "web") {
 
 const missing = [];
 const placeholders = [];
+const weakSecrets = [];
 for (const name of required) {
   const value = process.env[name]?.trim();
   if (!value) {
@@ -35,16 +36,20 @@ for (const name of required) {
   } else if (/YOUR_PROJECT_REF|REPLACE_ME|CHANGE_ME|PLACEHOLDER|example\.com/i.test(value)) {
     placeholders.push(name);
   }
+  if (production && target === "web" && name === "CRON_SECRET" && value && value.length < 32) {
+    weakSecrets.push(name);
+  }
 }
 
 const unsafePublicNames = Object.keys(process.env).filter((name) =>
   /^NEXT_PUBLIC_.*(?:SERVICE_ROLE|APP_MFA_SECRET|GROQ_API_KEY|RESEND|CRON_SECRET|WEBHOOK_SECRET)/i.test(name),
 );
 
-if (missing.length || placeholders.length || unsafePublicNames.length) {
+if (missing.length || placeholders.length || weakSecrets.length || unsafePublicNames.length) {
   console.error("Crestovia AI configuration preflight failed.");
   if (missing.length) console.error(`Missing required variables: ${missing.join(", ")}`);
   if (placeholders.length) console.error(`Placeholder values detected for: ${placeholders.join(", ")}`);
+  if (weakSecrets.length) console.error(`Secrets do not meet minimum length requirements: ${weakSecrets.join(", ")}`);
   if (unsafePublicNames.length) console.error(`Potentially sensitive variables use NEXT_PUBLIC_: ${unsafePublicNames.join(", ")}`);
   console.error("Variable values are intentionally never printed.");
   process.exit(1);
