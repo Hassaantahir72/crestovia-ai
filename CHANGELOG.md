@@ -1,3 +1,11 @@
+## v0.2.52 — Atomic assistant request rate limits
+
+- Adds a private Supabase-backed atomic rate-limit ledger for assistant prompts and owner-only AI provider connection tests.
+- Limits assistant requests to 12/minute and 100/hour per user; provider tests to 3/minute and 10/hour. Requests fail closed if the rate-limit service or migration is unavailable.
+- Adds migration 0032 with a SECURITY INVOKER function, empty search path, and service-role-only execution; browser roles have no ledger grants.
+- Adds API-CI regression checks and setup guidance. Applying migration 0032 and configuring SUPABASE_SERVICE_ROLE_KEY privately are required before using these protected actions.
+- No public deployment is performed; live multi-user and provider tests remain required.
+
 ## v0.2.51 — Preserve assistant prompts when AI provider fails
 
 - Saves a signed-in user's prompt to their private conversation before calling the external AI provider, so missing credentials, provider timeouts, and transient errors do not silently discard submitted text.
