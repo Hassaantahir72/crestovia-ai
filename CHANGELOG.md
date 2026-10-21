@@ -1,3 +1,10 @@
+## v0.2.73 — Evidence-based readiness report
+
+- Adds a repeatable readiness report that counts only explicitly checked checklist evidence across Gates A–F.
+- Adds JSON output, a structural validator, and a strict mode that exits non-zero while any readiness item remains outstanding.
+- Protects against accidental false-ready claims by requiring the launch authorization item to remain owner-gated and the checklist to state its not-ready status.
+- Adds regression tests and package scripts. Reporting is not live provider verification and does not authorize deployment.
+
 ## v0.2.72 — Prevent implicit Render deployments
 
 - Disables Render Blueprint auto-deploy so a source merge cannot silently trigger a hosted rollout through this service definition.
