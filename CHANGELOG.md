@@ -1,3 +1,9 @@
+## v0.2.76 — Enforce cron secret strength in preflight
+
+- Extends production configuration preflight to reject CRON_SECRET values shorter than 32 characters before deployment setup proceeds.
+- Adds tests for short-secret rejection, safe non-disclosure, and acceptance of a sufficiently long value when required configuration is present.
+- The runtime endpoint's existing minimum-length enforcement remains the final server-side guard; this preflight is an earlier operator feedback layer.
+
 ## v0.2.75 — Enforce release metadata consistency
 
 - Extends source archive verification to require a readable package manifest and changelog, and to confirm their release versions match.
