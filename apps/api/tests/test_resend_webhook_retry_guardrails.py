@@ -28,3 +28,15 @@ def test_webhook_event_reconciliation_keeps_existing_privileged_boundary():
     assert 'if (!verifyResendSignature(rawBody, request.headers))' in route
     assert "max_clock_skew_seconds = 300" in route.lower()
     assert "max_body_bytes = 256_000" in route.lower()
+
+
+def test_resend_webhook_bounds_request_body_before_full_buffering():
+    route = WEBHOOK.read_text(encoding="utf-8")
+    assert "async function readBoundedBody(request: Request)" in route
+    assert "request.body.getReader()" in route
+    assert "totalBytes += value.byteLength" in route
+    assert "totalBytes > MAX_BODY_BYTES" in route
+    assert "await reader.cancel()" in route
+    assert "request.text()" not in route
+    assert "status: 413" in route
+    assert "status: 400" in route
