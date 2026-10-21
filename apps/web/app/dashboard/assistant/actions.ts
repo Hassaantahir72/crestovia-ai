@@ -17,7 +17,7 @@ export async function testAssistantProvider(){
  if(membership.role!=="owner")redirect("/dashboard/assistant?provider_test=owner_only");
  let providerTestAllowed:boolean;
  try{providerTestAllowed=await consumeUserRateLimit(user.id,"assistant_provider_test_minute",3,60)&&await consumeUserRateLimit(user.id,"assistant_provider_test_hour",10,3600)}catch{redirect("/dashboard/assistant?provider_test=rate_limit_unavailable")}
- if(!providerTestAllowed)redirect("/dashboard/assistant?provider_test=rate_limited");
+ if(!providerTestAllowed)redirect("/dashboard/assistant?provider_test=app_rate_limited");
  const apiKey=process.env.GROQ_API_KEY;
  if(!apiKey)redirect("/dashboard/assistant?provider_test=not_configured");
  const model=process.env.GROQ_MODEL||"llama-3.3-70b-versatile";
