@@ -1,3 +1,10 @@
+## v0.2.54 — Approval request rate limits
+
+- Applies shared atomic per-user limits to direct approval requests and assistant-generated proposals: 3/minute, 10/hour, and 30/day.
+- Both entry points share the same rate-limit buckets, preventing bypass by switching forms; failed protection checks fail closed before request insertion.
+- Adds API-CI guardrails and setup documentation. Reuses migration 0032; no new database migration or external secret is required.
+- Approval requests remain proposals only and still require the existing owner-review workflow. Public deployment remains deferred.
+
 ## v0.2.53 — Team invitation throttling and duplicate protection
 
 - Adds shared atomic per-owner limits of 5 invitations/minute, 20/hour, and 50/day before calling Supabase Auth email delivery.

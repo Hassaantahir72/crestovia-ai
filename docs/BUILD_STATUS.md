@@ -1,11 +1,16 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.53 (in progress)  
-**Milestone:** Team invitation throttling and duplicate protection  
+**Project version:** 0.2.54 (in progress)  
+**Milestone:** Approval request rate limits  
 **Overall product implementation estimate:** approximately 66% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.53 — Team invitation throttling and duplicate protection (in progress)
+## Version 0.2.54 — Approval request rate limits (in progress)
+- Adds shared per-user limits to direct approval requests and assistant-generated proposals: 3/minute, 10/hour, and 30/day.
+- Reuses the private Supabase rate-limit RPC; no new migration or external secret. API tests, web lint, and production build must pass before merge.
+- Real-account approval workflow tests remain outstanding. Public deployment remains deferred.
+
+## Version 0.2.53 — Team invitation throttling and duplicate protection (completed)
 - Adds per-owner invitation limits of 5/minute, 20/hour, and 50/day; checks known pending invitations and tracked active memberships before sending an invitation email.
 - Reuses the private atomic rate-limit RPC from migration 0032. No new database migration is needed. API regression tests, web lint, and production build must pass before merge.
 - Live onboarding and multi-account acceptance tests remain outstanding. Public deployment remains deferred.
