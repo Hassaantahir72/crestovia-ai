@@ -1,6 +1,6 @@
 {
   "name": "crestovia-ai-web",
-  "version": "0.2.65",
+  "version": "0.2.66",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preflight": "node ../../scripts/preflight.mjs web",
     "preflight:production": "node ../../scripts/preflight.mjs web --production",
-    "smoke:production": "node ../../scripts/health-smoke.mjs"
+    "smoke:production": "node ../../scripts/health-smoke.mjs",
+    "verify:db-backup": "node ../../scripts/verify-db-backup.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
