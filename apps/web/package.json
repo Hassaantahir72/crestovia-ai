@@ -1,6 +1,6 @@
 {
   "name": "crestovia-ai-web",
-  "version": "0.2.73",
+  "version": "0.2.74",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,7 +12,8 @@
     "smoke:production": "node ../../scripts/health-smoke.mjs",
     "verify:db-backup": "node ../../scripts/verify-db-backup.mjs",
     "readiness": "node ../../scripts/readiness-report.mjs",
-    "readiness:validate": "node ../../scripts/readiness-report.mjs --validate"
+    "readiness:validate": "node ../../scripts/readiness-report.mjs --validate",
+    "migration:check": "python ../../scripts/check-migrations.py"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
