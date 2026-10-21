@@ -1,13 +1,18 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.63 (in progress)  
-**Milestone:** API configuration readiness probe  
+**Project version:** 0.2.64 (in progress)  
+**Milestone:** Reject blank CORS origins in API readiness probe  
 **Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.63 — API configuration readiness probe (in progress)
+## Version 0.2.64 — Reject blank CORS origins in readiness probe (in progress)
+- Tightens `/ready` so a list containing only empty or whitespace CORS origins cannot pass readiness.
+- Adds regression coverage and clarifies the deployment health-check documentation.
+- No network calls, migrations, or secrets. Live Supabase reachability and account-isolation acceptance remain separate release gates.
+
+## Version 0.2.63 — API configuration readiness probe (completed)
 - Adds an unauthenticated `/ready` endpoint that distinguishes process liveness from minimum API configuration readiness.
-- Adds tests for both missing and present Supabase/JWKS/CORS settings; responses disclose no configuration values and no network checks are performed.
+- Adds tests for missing and present Supabase/JWKS/CORS settings; responses disclose no configuration values and no network checks are performed.
 - No database migration or secret values. Live Supabase reachability and account-isolation acceptance remain separate release gates.
 
 ## Version 0.2.62 — Capability documentation and deployment configuration alignment (completed)
