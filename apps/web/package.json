@@ -10,7 +10,9 @@
     "preflight": "node ../../scripts/preflight.mjs web",
     "preflight:production": "node ../../scripts/preflight.mjs web --production",
     "smoke:production": "node ../../scripts/health-smoke.mjs",
-    "verify:db-backup": "node ../../scripts/verify-db-backup.mjs",\n    "readiness": "node ../../scripts/readiness-report.mjs",\n    "readiness:validate": "node ../../scripts/readiness-report.mjs --validate"
+    "verify:db-backup": "node ../../scripts/verify-db-backup.mjs",
+    "readiness": "node ../../scripts/readiness-report.mjs",
+    "readiness:validate": "node ../../scripts/readiness-report.mjs --validate"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
