@@ -16,6 +16,8 @@ const errorText:Record<string,string>={
   invalid_approval_proposal:"That assistant response cannot be submitted for approval.",
   approval_proposal_unavailable:"That assistant response is unavailable to this account.",
   approval_proposal_failed:"Could not submit this proposal. Please try again.",
+  approval_rate_limited:"You have created too many approval requests. Wait before submitting another.",
+  approval_rate_limit_unavailable:"Request protection is unavailable, so no approval request was created. Please try again shortly.",
   provider_test_owner_only:"Only the organization owner can run the provider connection test.",
  provider_test_not_configured:"GROQ_API_KEY is not configured as a server-only secret.",
  provider_test_auth_failed:"Groq rejected the configured credentials. Check the key privately; it is never displayed here.",
