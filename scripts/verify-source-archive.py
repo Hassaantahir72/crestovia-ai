@@ -71,8 +71,8 @@ def verify_archive(archive_path: str) -> list[str]:
                 manifest = json.loads(archive.read("apps/web/package.json").decode("utf-8"))
                 changelog = archive.read("CHANGELOG.md").decode("utf-8")
                 package_version = manifest.get("version")
-                heading = re.search(r"^## v(\\d+\\.\\d+\\.\\d+)\\b", changelog, re.MULTILINE)
-                if not isinstance(package_version, str) or not re.fullmatch(r"\\d+\\.\\d+\\.\\d+", package_version):
+                heading = re.search(r"^## v(\d+\.\d+\.\d+)\b", changelog, re.MULTILINE)
+                if not isinstance(package_version, str) or not re.fullmatch(r"\d+\.\d+\.\d+", package_version):
                     problems.append("package manifest version is invalid")
                 elif not heading or heading.group(1) != package_version:
                     problems.append("release version mismatch between package manifest and changelog")
