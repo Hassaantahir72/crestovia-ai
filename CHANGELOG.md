@@ -1,3 +1,11 @@
+## v0.2.58 — Bound email-MFA verification request bodies
+
+- Caps owner email-MFA verification requests at 4,096 bytes before JSON parsing, including chunked requests without a declared content length.
+- Rejects oversized Content-Length early and cancels streamed bodies once the limit is crossed.
+- Keeps same-origin checks, authenticated-owner checks, session-bound one-time challenges, atomic failed-attempt tracking, and timing-safe code comparison intact.
+- Adds regression coverage and updates the package/build metadata. API tests, web lint, and production build must pass before merge.
+- No database migration or new secret. Public deployment remains deferred.
+
 ## v0.2.57 — Bound Resend webhook body reads
 
 - Rejects declared oversized payloads before reading the request body and incrementally caps chunked/undeclared payloads at 256,000 bytes.
