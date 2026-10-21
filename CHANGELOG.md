@@ -1,3 +1,9 @@
+## v0.2.71 — Verify distributable source archives
+
+- Adds a fail-closed source ZIP verifier for archive integrity, unsafe paths, local environment files, development artifacts, private-key headers, and recognizable provider-token patterns.
+- Runs archive verification before the release artifact is uploaded and adds regression tests that ensure detected token values are never echoed.
+- Safe environment example templates remain allowed. This is a guardrail, not a guarantee against every possible secret format; public deployment remains deferred.
+
 ## v0.2.70 — Enforce strong task-reminder cron secrets
 
 - Rejects configured `CRON_SECRET` values shorter than 32 characters before authorization or database access, returning a generic non-cacheable 503 response.
