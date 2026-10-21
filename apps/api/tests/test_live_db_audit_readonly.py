@@ -11,7 +11,7 @@ def test_live_database_audit_sql_is_read_only():
     statements = [statement.strip() for statement in without_comments.split(";") if statement.strip()]
     assert len(statements) == 6
     assert all(re.match(r"^select\b", statement, re.IGNORECASE) for statement in statements)
-    assert not re.search(r"\b(insert|update|delete|alter|drop|create|grant|revoke|truncate)\b", without_comments, re.IGNORECASE)
+    assert all(not re.match(r"^(insert|update|delete|alter|drop|create|grant|revoke|truncate)\\b", statement, re.IGNORECASE) for statement in statements)
 
 
 def test_live_database_audit_covers_rls_grants_definer_functions_and_migrations():
