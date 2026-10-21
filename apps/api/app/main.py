@@ -30,7 +30,11 @@ def health() -> dict[str, str]:
 @app.get("/ready", tags=["health"])
 def readiness() -> dict[str, str]:
     """Readiness probe: required auth-verifier and CORS configuration is present."""
-    if not settings.supabase_url.strip() or not settings.supabase_jwks_url.strip() or not settings.allowed_origins:
+    if (
+        not settings.supabase_url.strip()
+        or not settings.supabase_jwks_url.strip()
+        or not any(origin.strip() for origin in settings.allowed_origins)
+    ):
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="API configuration is incomplete",
