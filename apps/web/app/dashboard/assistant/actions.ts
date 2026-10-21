@@ -51,8 +51,7 @@ export async function sendAssistantMessage(data:FormData){
  // Persist the user's prompt before calling the external provider so transient AI failures never erase submitted work.
  const {error:userErr}=await supabase.from("assistant_messages").insert({conversation_id:id,user_id:user.id,role:"user",content});if(userErr)redirect("/dashboard/assistant?conversation="+id+"&error=message_save_failed");
  const title=conversation.title==="New conversation"?content.slice(0,60):conversation.title;
- const {error:titleErr}=await supabase.from("assistant_conversations").update({title,updated_at:new Date().toISOString()}).eq("id",id).eq("user_id",user.id);
- if(titleErr)redirect("/dashboard/assistant?conversation="+id+"&error=message_save_failed");
+ await supabase.from("assistant_conversations").update({title,updated_at:new Date().toISOString()}).eq("id",id).eq("user_id",user.id);
  let answer="";
  try{const workspaceContext=await runReadOnlyAssistantTools(supabase,membership.organization_id,user.id,content);answer=await generateAssistantReply([...(prior??[]) as AssistantMessage[],{role:"user",content}],savedMemories??[],workspaceContext)}
  catch(e){const code=e instanceof Error?e.message:"AI_PROVIDER_REQUEST_FAILED";const allowed=["AI_PROVIDER_NOT_CONFIGURED","AI_PROVIDER_AUTH_FAILED","AI_PROVIDER_RATE_LIMITED","AI_PROVIDER_REQUEST_FAILED","AI_PROVIDER_EMPTY_RESPONSE"];redirect("/dashboard/assistant?conversation="+id+"&error="+(allowed.includes(code)?code.toLowerCase():"ai_provider_request_failed"))}
