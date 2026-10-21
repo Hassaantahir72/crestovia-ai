@@ -1,9 +1,15 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.56 (implementation merged; live acceptance pending)  
-**Milestone:** Resend webhook retry reconciliation  
-**Overall product implementation estimate:** approximately 67% (rough planning estimate; not a test-coverage or production-readiness score)  
+**Project version:** 0.2.57 (in progress)  
+**Milestone:** Bounded Resend webhook request-body reads  
+**Overall product implementation estimate:** approximately 68% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.57 — Bounded Resend webhook request-body reads (in progress)
+- Adds a 256,000-byte cap enforced while reading the stream, with early rejection for oversized Content-Length and cancellation when streamed bytes exceed the cap.
+- Avoids reading an arbitrarily large body into memory before checking size. Existing signature verification and event processing remain unchanged.
+- Regression guardrails added. API validation, web lint, production build, and full source package must pass before merge.
+- No migration or new external secret. Public deployment remains deferred.
 
 ## Version 0.2.56 — Resend webhook retry reconciliation (implementation merged; live acceptance pending)
 - PR #32 is merged. API tests, web ESLint, and the Next.js production build passed.
