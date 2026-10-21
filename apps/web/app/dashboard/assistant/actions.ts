@@ -5,6 +5,7 @@ import {createClient} from "@/lib/supabase/server";
 import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
 import {generateAssistantReply,type AssistantMessage} from "@/lib/ai/provider";
 import {runReadOnlyAssistantTools} from "@/lib/ai/workspace-tools";
+import {consumeUserRateLimit} from "@/lib/security/rate-limit";
 async function getUserContext(){
  const supabase=await createClient();const {data:{user},error}=await supabase.auth.getUser();if(error||!user)redirect("/login");
  const {data:memberships}=await supabase.from("memberships").select("organization_id,role").eq("user_id",user.id).eq("status","active").order("created_at",{ascending:true}).limit(1);if(!memberships?.length)redirect("/onboarding");
@@ -14,6 +15,9 @@ function field(data:FormData,name:string,max:number){return String(data.get(name
 export async function testAssistantProvider(){
  const {membership}=await getUserContext();
  if(membership.role!=="owner")redirect("/dashboard/assistant?provider_test=owner_only");
+ let providerTestAllowed:boolean;
+ try{providerTestAllowed=await consumeUserRateLimit(user.id,"assistant_provider_test_minute",3,60)&&await consumeUserRateLimit(user.id,"assistant_provider_test_hour",10,3600)}catch{redirect("/dashboard/assistant?provider_test=rate_limit_unavailable")}
+ if(!providerTestAllowed)redirect("/dashboard/assistant?provider_test=rate_limited");
  const apiKey=process.env.GROQ_API_KEY;
  if(!apiKey)redirect("/dashboard/assistant?provider_test=not_configured");
  const model=process.env.GROQ_MODEL||"llama-3.3-70b-versatile";
@@ -45,6 +49,9 @@ export async function sendAssistantMessage(data:FormData){
  const {supabase,user,membership}=await getUserContext();const id=field(data,"conversation_id",64),content=field(data,"content",12000);
  if(!id||!content)redirect("/dashboard/assistant?error=empty_message");
  const {data:conversation}=await supabase.from("assistant_conversations").select("id,title").eq("id",id).eq("user_id",user.id).maybeSingle();if(!conversation)redirect("/dashboard/assistant?error=conversation_not_found");
+ let messageAllowed:boolean;
+ try{messageAllowed=await consumeUserRateLimit(user.id,"assistant_message_minute",12,60)&&await consumeUserRateLimit(user.id,"assistant_message_hour",100,3600)}catch{redirect("/dashboard/assistant?conversation="+id+"&error=rate_limit_unavailable")}
+ if(!messageAllowed)redirect("/dashboard/assistant?conversation="+id+"&error=assistant_rate_limited");
  const {data:prior,error:historyError}=await supabase.from("assistant_messages").select("role,content").eq("conversation_id",id).eq("user_id",user.id).order("created_at",{ascending:true}).limit(20);
  if(historyError)redirect("/dashboard/assistant?conversation="+id+"&error=history_failed");
  const {data:savedMemories}=await supabase.from("assistant_memories").select("category,title,content").eq("user_id",user.id).order("updated_at",{ascending:false}).limit(8);
