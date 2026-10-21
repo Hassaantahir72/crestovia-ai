@@ -1,3 +1,9 @@
+## v0.2.75 — Enforce release metadata consistency
+
+- Extends source archive verification to require a readable package manifest and changelog, and to confirm their release versions match.
+- Adds regression coverage for mismatched release metadata, preventing source ZIPs from silently carrying stale package versions.
+- Keeps the archive verifier fail-closed; secret-pattern checks remain heuristic and do not guarantee detection of every credential format.
+
 ## v0.2.74 — Database migration sequence audit
 
 - Adds a repeatable migration-source checker that detects malformed filenames, duplicate versions, missing sequence numbers, unreadable files, and empty migrations.
