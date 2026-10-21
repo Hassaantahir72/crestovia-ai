@@ -104,6 +104,9 @@ export async function proposeAssistantActionForApproval(data:FormData){
  const details=String(message.content??"").trim().slice(0,4000);
  const summary=details.replace(/\s+/g," ").slice(0,200);
  if(summary.length<3)redirect("/dashboard/assistant?error=invalid_approval_proposal");
+ let approvalAllowed:boolean;
+ try{approvalAllowed=await consumeUserRateLimit(user.id,"approval_request_minute",3,60)&&await consumeUserRateLimit(user.id,"approval_request_hour",10,3600)&&await consumeUserRateLimit(user.id,"approval_request_day",30,86400)}catch{redirect("/dashboard/assistant?conversation="+message.conversation_id+"&error=approval_rate_limit_unavailable")}
+ if(!approvalAllowed)redirect("/dashboard/assistant?conversation="+message.conversation_id+"&error=approval_rate_limited");
  const {data:created,error}=await supabase.from("action_approval_requests").insert({organization_id:membership.organization_id,requested_by:user.id,action_type:actionType,summary,details}).select("id").single();
  if(error||!created)redirect("/dashboard/assistant?conversation="+message.conversation_id+"&error=approval_proposal_failed");
  await (await import("@/lib/security/audit")).recordAuditEvent({organizationId:membership.organization_id,actorId:user.id,action:"approval.request.created_from_assistant",entityType:"action_approval_request",entityId:created.id,metadata:{action_type:actionType,assistant_message_id:message.id}});
