@@ -25,6 +25,8 @@ jobs:
         run: node --test ../../scripts/preflight.test.mjs
       - name: Test deployment smoke checks
         run: node --test ../../scripts/health-smoke.test.mjs
+      - name: Test database backup verification helper
+        run: node --test ../../scripts/verify-db-backup.test.mjs
       - name: Run ESLint
         run: npm run lint
       - name: Build Next.js app
