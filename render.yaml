@@ -27,3 +27,7 @@ services:
         sync: false
       - key: RESEND_FROM_EMAIL
         sync: false
+      - key: RESEND_WEBHOOK_SECRET
+        sync: false
+      - key: CRON_SECRET
+        sync: false
