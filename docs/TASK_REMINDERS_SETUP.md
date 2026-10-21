@@ -6,7 +6,7 @@ Crestovia AI v0.2.50 includes an authenticated endpoint that creates in-app remi
 
 Configure these on the deployed web service, never in source control:
 
-- `CRON_SECRET`: a long, random bearer token shared with the scheduler.
+- `CRON_SECRET`: a cryptographically random bearer token of at least 32 characters, shared with the scheduler. The endpoint rejects shorter values with HTTP 503.
 - `SUPABASE_SERVICE_ROLE_KEY`: the Supabase service-role key for the existing project. It must remain server-side and must never use a `NEXT_PUBLIC_` prefix.
 
 The endpoint also needs the existing `NEXT_PUBLIC_SUPABASE_URL` value used by the server-side admin client.

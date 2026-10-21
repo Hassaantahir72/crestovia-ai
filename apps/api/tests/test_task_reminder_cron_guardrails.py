@@ -59,3 +59,14 @@ def test_task_reminder_sweep_handles_unexpected_runtime_exceptions_safely():
     assert 'stage:"unexpected_exception",reason:"unexpected_runtime_error"' in source
     assert 'error:"task_reminder_sweep_failed"' in source
     assert 'return NextResponse.json({error:"task_reminder_sweep_failed"},{status:500,headers:jsonHeaders})' in source
+
+
+def test_task_reminder_cron_rejects_short_secrets_before_auth_or_admin_access():
+    source = ROUTE.read_text()
+    secret_check = source.index("if(!secret)")
+    strength_check = source.index("if(secret.length<32)")
+    auth_check = source.index('request.headers.get("authorization")')
+    admin_client = source.index("admin=createAdminClient()")
+    assert secret_check < strength_check < auth_check < admin_client
+    assert 'error:"cron_secret_weak"' in source
+    assert "status:503" in source

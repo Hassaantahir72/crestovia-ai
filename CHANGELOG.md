@@ -1,3 +1,9 @@
+## v0.2.70 — Enforce strong task-reminder cron secrets
+
+- Rejects configured `CRON_SECRET` values shorter than 32 characters before authorization or database access, returning a generic non-cacheable 503 response.
+- Adds a regression guardrail and updates scheduler setup guidance. Existing deployments using shorter secrets must rotate to a strong random value in their private hosting and scheduler settings.
+- No secrets are added and no deployment is triggered.
+
 ## v0.2.69 — Safe recovery from unexpected reminder failures
 
 - Wraps the reminder sweep's runtime work in a final safe error boundary so thrown network/runtime exceptions return a generic non-cacheable 500 instead of leaking diagnostic details.

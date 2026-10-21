@@ -11,6 +11,7 @@ async function runReminderSweep(request:Request){
  try{
  const secret=process.env.CRON_SECRET;
  if(!secret)return NextResponse.json({error:"cron_not_configured"},{status:503,headers:jsonHeaders});
+ if(secret.length<32)return NextResponse.json({error:"cron_secret_weak"},{status:503,headers:jsonHeaders});
  if(request.headers.get("authorization")!=="Bearer "+secret)return NextResponse.json({error:"unauthorized"},{status:401,headers:jsonHeaders});
  let admin:ReturnType<typeof createAdminClient>;
  try{admin=createAdminClient()}catch{
