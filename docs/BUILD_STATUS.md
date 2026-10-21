@@ -1,9 +1,15 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.36 (in progress)  
-**Milestone:** Read-only assistant tool guardrails  
-**Overall product implementation estimate:** approximately 48%  
+**Project version:** 0.2.49 (in progress)  
+**Milestone:** Task-reminder cron guardrail regression coverage  
+**Overall product implementation estimate:** approximately 66% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.49 — Task-reminder cron guardrail regression coverage (in progress)
+- Added API-CI regression checks for server-only cron authorization, bounded task scans, exclusion of completed/cancelled tasks, notification deduplication, no-cache headers, and generic failure responses.
+- Test-only increment; no runtime behavior or database schema changed. GitHub Actions must pass before merge.
+- Deadline reminders still require private `CRON_SECRET` and `SUPABASE_SERVICE_ROLE_KEY` configuration plus a trusted scheduler in the deployed environment. Static regression checks do not replace live HTTP/scheduler testing.
+- Public deployment remains deferred.
 
 ## Version 0.2.36 — Read-only assistant tool guardrails (in progress)
 - Added regression coverage to ensure workspace assistant tools remain read-only, organization-scoped, user-scoped for assigned tasks, and bounded by query limits.
