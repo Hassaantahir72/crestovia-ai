@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.auth import get_current_user
 from app.core.config import get_settings
@@ -23,7 +23,19 @@ app.add_middleware(
 
 @app.get("/health", tags=["health"])
 def health() -> dict[str, str]:
+    """Liveness probe: the API process is running."""
     return {"status": "ok", "service": "crestovia-ai-api"}
+
+
+@app.get("/ready", tags=["health"])
+def readiness() -> dict[str, str]:
+    """Readiness probe: required auth-verifier and CORS configuration is present."""
+    if not settings.supabase_url.strip() or not settings.supabase_jwks_url.strip() or not settings.allowed_origins:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="API configuration is incomplete",
+        )
+    return {"status": "ready", "service": "crestovia-ai-api"}
 
 
 @app.get(f"{settings.api_prefix}/me", tags=["identity"])

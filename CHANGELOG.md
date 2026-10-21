@@ -1,3 +1,9 @@
+## v0.2.63 — API configuration readiness probe
+
+- Adds a public `/ready` endpoint that returns 503 when the API lacks Supabase auth-verifier or CORS configuration, while keeping `/health` as a simple liveness probe.
+- Adds tests for missing and present configuration and documents probe semantics and limitations.
+- The readiness check makes no network calls and does not claim provider/database connectivity; no migration or secret values are added.
+
 ## v0.2.62 — Accurate capability and deployment configuration docs
 
 - Reconciles the README with the implemented workspace, assistant, approval, notification, rate-limit, and provider guardrails while clearly separating CI evidence from live acceptance.
