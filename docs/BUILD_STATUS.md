@@ -1,14 +1,19 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.51 (in progress)  
-**Milestone:** Preserve assistant prompts on provider failure  
+**Project version:** 0.2.52 (in progress)  
+**Milestone:** Atomic assistant request rate limits  
 **Overall product implementation estimate:** approximately 66% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.51 — Preserve assistant prompts on provider failure (in progress)
+## Version 0.2.52 — Atomic assistant request rate limits (in progress)
+- Adds atomic per-user minute/hour limits for assistant prompts and owner-only provider diagnostics using a private Supabase ledger; fails closed when the limiter is unavailable.
+- Migration `0032_user_rate_limits_v0_2_52.sql` is required; the service-role key must remain server-side. Regression tests, API/web CI, and migration review must pass before merge.
+- Live multi-account tests and provider verification remain outstanding. Public deployment remains deferred.
+
+## Version 0.2.51 — Preserve assistant prompts on provider failure (completed)
 - Persists the user's message and updates the conversation title before requesting an AI reply, preventing provider errors from discarding submitted text.
 - Clarifies UI error copy and adds regression coverage for persistence ordering.
-- No database migration required. API CI, web lint, and production build must pass before merge.
+- No database migration required. API CI, web lint, and production build passed before merge.
 - Live provider verification still requires a private Groq key. Public deployment remains deferred.
 
 ## Version 0.2.50 — Fair bounded task-reminder scans (in progress)
