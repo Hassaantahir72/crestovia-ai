@@ -1,14 +1,26 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.65 (in progress)  
-**Milestone:** Safe post-deployment smoke checks  
+**Project version:** 0.2.66 (in progress)  
+**Milestone:** Safe database backup archive verification and restore-drill runbook  
 **Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.65 — Deployment smoke checks (in progress)
+## Version 0.2.66 — Backup archive verification and recovery evidence (in progress)
+- Adds a local-only Node helper for validating PostgreSQL custom-format backup archives with `pg_restore --list` and computing a SHA-256 checksum. It never uploads the backup or prints its path or contents.
+- Adds unit tests for missing, empty, symlink, invalid-archive, and valid fixture cases; CI uses synthetic fixtures only.
+- Adds an operator runbook for provider retention confirmation, isolated non-production restore drills, RLS/grant verification, and private evidence capture.
+- No Supabase migration, live backup/restore, new secret, or deployment is performed by this code change. A real restore drill is still required.
+
+## Version 0.2.65 — Deployment smoke checks (completed)
 - Adds a dependency-free script to check API `/health`, API `/ready`, and optionally the web homepage on an explicitly supplied deployment URL.
 - Adds mocked-fetch tests for success, non-2xx responses, network failures, malformed URLs, and embedded credentials. CI does not call a live deployment.
-- Documents interpretation and limitations; live provider, tenant-isolation, scheduler, and backup/restore acceptance remain required. No deployment is triggered.
+- Documents interpretation and limitations; live provider, tenant-isolation, scheduler, and backup/restore acceptance remain required. No deployment was triggered.
+
+## Live Supabase snapshot (checked 2026-10-21)
+- Connected project `crestovia-ai` is reported `ACTIVE_HEALTHY`.
+- Migration history contains 33 entries through `0033_retry_unmatched_resend_events_v0_2_56`; v0.2.66 does not introduce a database migration.
+- Current security advisor response has no lint findings. Performance advisor reports 47 informational unused-index findings; no indexes were removed because production workload evidence is not yet available.
+- These checks do not prove real-account organization isolation, provider delivery, scheduler reliability, or backup recoverability.
 
 ## Version 0.2.64 — Reject blank CORS origins in readiness probe (completed)
 - Tightens `/ready` so a list containing only empty or whitespace CORS origins cannot pass readiness.
