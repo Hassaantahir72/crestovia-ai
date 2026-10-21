@@ -1,3 +1,9 @@
+## v0.2.62 — Accurate capability and deployment configuration docs
+
+- Reconciles the README with the implemented workspace, assistant, approval, notification, rate-limit, and provider guardrails while clearly separating CI evidence from live acceptance.
+- Declares the Resend webhook and reminder cron secrets in the Render blueprint as owner-supplied private variables; no secret values or deployment actions are added.
+- Updates package and build-status metadata. Public deployment remains deferred.
+
 ## v0.2.61 — Configuration preflight checks
 
 - Adds a dependency-free preflight for web/API environment-variable presence and obvious placeholders without printing secret values or making network requests.
