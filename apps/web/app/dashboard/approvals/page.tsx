@@ -43,6 +43,8 @@ export default async function ApprovalsPage({ searchParams }: Props) {
     request_not_pending: "That request is no longer pending or is outside your access.",
     email_provider_not_configured: "Email sending is disabled until RESEND_API_KEY and a valid RESEND_FROM_EMAIL are configured privately.",
     email_connection_failed: "Resend connection test failed. Check the private API key and provider account configuration.",
+    email_connection_rate_limited: "Too many Resend connection tests. Wait before trying again.",
+    email_connection_rate_limit_unavailable: "Request protection is unavailable, so the email provider test was not run. Please try again shortly.",
     email_payload_invalid: "Email details must be valid JSON with one recipient, a subject, and plain-text body.",
     email_request_unavailable: "This email request is not approved, has expired, or is unavailable.",
     email_already_started: "Email execution is already in progress or unavailable.",
