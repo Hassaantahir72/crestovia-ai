@@ -1,3 +1,11 @@
+## v0.2.57 — Bound Resend webhook body reads
+
+- Rejects declared oversized payloads before reading the request body and incrementally caps chunked/undeclared payloads at 256,000 bytes.
+- Cancels the request stream as soon as the cap is exceeded instead of buffering an arbitrarily large body before checking its size.
+- Keeps signature verification, timestamp validation, event validation, and the database RPC boundary unchanged.
+- Adds regression guardrails and updates package/build metadata. API tests, web lint, and production build must pass before merge.
+- No database migration or new secret. Public deployment remains deferred.
+
 ## v0.2.56 — Reconcile retried unmatched Resend webhooks
 
 - Fixes a delivery-status race where a webhook received before its email ledger row was matchable remained permanently unmatched, even when Resend retried the same event.
