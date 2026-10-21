@@ -1,11 +1,20 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.66 (in progress)  
-**Milestone:** Safe database backup archive verification and restore-drill runbook  
+**Project version:** 0.2.67 (in progress)  
+**Milestone:** Monitoring, incident response, and credential-rotation runbook  
 **Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.66 — Backup archive verification and recovery evidence (in progress)
+## Version 0.2.67 — Monitoring and incident response (in progress)
+- Adds an operator runbook covering availability/readiness, reminder scheduler, email, AI provider, database, and authentication signals.
+- Documents safe incident evidence handling, credential rotation, session revocation, containment, and recovery escalation.
+- Runbook only: no monitors, alert destinations, secrets, provider settings, or deployments are configured by this change.
+
+## Version 0.2.66 — Backup archive verification and recovery evidence (completed)
+- Adds a local-only Node helper to validate custom-format PostgreSQL backup archives with `pg_restore --list` and calculate a SHA-256 checksum.
+- Adds synthetic-fixture tests and a recovery runbook; a real isolated restore drill and provider retention confirmation remain required.
+
+
 - Adds a local-only Node helper for validating PostgreSQL custom-format backup archives with `pg_restore --list` and computing a SHA-256 checksum. It never uploads the backup or prints its path or contents.
 - Adds unit tests for missing, empty, symlink, invalid-archive, and valid fixture cases; CI uses synthetic fixtures only.
 - Adds an operator runbook for provider retention confirmation, isolated non-production restore drills, RLS/grant verification, and private evidence capture.
