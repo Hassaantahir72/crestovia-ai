@@ -195,3 +195,19 @@ def test_notification_insert_policies_are_consolidated_and_scoped():
     assert "type = 'approval_reviewed'" in sql
     assert "app_private.is_org_owner(r.organization_id)" in sql
     assert "recipient_id <> (select auth.uid())" in sql
+
+
+def test_public_anon_privileges_are_revoked_and_authenticated_admin_privileges_are_limited():
+    sql = compact_sql("0034_revoke_anon_public_privileges.sql")
+
+    assert "revoke all privileges on all tables in schema public from anon" in sql
+    assert "revoke all privileges on all sequences in schema public from anon" in sql
+    assert "revoke execute on all functions in schema public from anon" in sql
+    assert "revoke truncate, references, trigger, maintain on all tables in schema public from authenticated" in sql
+    for owner_role in ("postgres", "supabase_admin"):
+        assert f"alter default privileges for role {owner_role} in schema public revoke all on tables from anon" in sql
+        assert f"alter default privileges for role {owner_role} in schema public revoke execute on functions from anon" in sql
+        assert f"alter default privileges for role {owner_role} in schema public revoke usage, select on sequences from anon" in sql
+        assert f"alter default privileges for role {owner_role} in schema public revoke truncate, references, trigger, maintain on tables from authenticated" in sql
+    assert "drop table" not in sql
+    assert "delete from" not in sql
