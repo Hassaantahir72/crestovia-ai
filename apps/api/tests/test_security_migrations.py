@@ -207,6 +207,7 @@ def test_public_anon_privileges_are_revoked_and_authenticated_admin_privileges_a
     for owner_role in ("postgres", "supabase_admin"):
         assert f"alter default privileges for role {owner_role} in schema public revoke all on tables from anon" in sql
         assert f"alter default privileges for role {owner_role} in schema public revoke execute on functions from anon" in sql
+        assert f"alter default privileges for role {owner_role} in schema public revoke execute on functions from authenticated" in sql
         assert f"alter default privileges for role {owner_role} in schema public revoke usage, select on sequences from anon" in sql
         assert f"alter default privileges for role {owner_role} in schema public revoke truncate, references, trigger, maintain on tables from authenticated" in sql
     assert "drop table" not in sql
