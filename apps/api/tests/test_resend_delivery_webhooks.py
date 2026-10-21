@@ -32,3 +32,12 @@ def test_delivery_event_processing_is_idempotent_and_service_role_only():
     assert "revoke all on function public.apply_resend_delivery_event(text,text,text,text) from public, anon, authenticated" in source
     assert "grant execute on function public.apply_resend_delivery_event(text,text,text,text) to service_role" in source
     assert "enable row level security" in source
+
+
+def test_delivery_event_table_has_explicit_deny_policy_for_browser_roles():
+    migration = (ROOT / "database" / "migrations" / "0031_private_delivery_event_rls_v0_2_48.sql").read_text().lower()
+    assert 'create policy "deny browser access to email delivery events"' in migration
+    assert "for all" in migration
+    assert "to anon, authenticated" in migration
+    assert "using (false)" in migration
+    assert "with check (false)" in migration
