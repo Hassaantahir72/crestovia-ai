@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { enforceOwnerMfa } from "@/lib/security/owner-mfa";
 import { recordAuditEvent } from "@/lib/security/audit";
+import { consumeUserRateLimit } from "@/lib/security/rate-limit";
 import { emailProviderReadiness, sendApprovedEmail, validateApprovedEmailPayload } from "@/lib/email/provider";
 
 async function ownerContext() {
@@ -93,6 +94,14 @@ export async function executeApprovedEmailRequest(data: FormData) {
 
 export async function testEmailProviderConnection() {
   const { user, membership } = await ownerContext();
+  let testAllowed: boolean;
+  try {
+    testAllowed = await consumeUserRateLimit(user.id, "email_provider_test_minute", 3, 60)
+      && await consumeUserRateLimit(user.id, "email_provider_test_hour", 10, 3600);
+  } catch {
+    redirect("/dashboard/approvals?error=email_connection_rate_limit_unavailable");
+  }
+  if (!testAllowed) redirect("/dashboard/approvals?error=email_connection_rate_limited");
   const readiness = emailProviderReadiness();
   if (!readiness.ready) redirect("/dashboard/approvals?error=email_provider_not_configured");
   try {
