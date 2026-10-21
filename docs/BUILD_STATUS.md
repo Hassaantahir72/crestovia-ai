@@ -1,11 +1,16 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.54 (in progress)  
-**Milestone:** Approval request rate limits  
+**Project version:** 0.2.55 (in progress)  
+**Milestone:** Email provider diagnostic rate limits  
 **Overall product implementation estimate:** approximately 66% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.54 — Approval request rate limits (in progress)
+## Version 0.2.55 — Email provider diagnostic rate limits (in progress)
+- Limits the owner-only Resend connection test to 3/minute and 10/hour before contacting the provider; fails closed if the rate-limit service is unavailable.
+- Reuses migration 0032 and the existing private service-role configuration. API tests, web lint, and production build must pass before merge.
+- Live provider verification remains dependent on private Resend credentials. Public deployment remains deferred.
+
+## Version 0.2.54 — Approval request rate limits (completed)
 - Adds shared per-user limits to direct approval requests and assistant-generated proposals: 3/minute, 10/hour, and 30/day.
 - Reuses the private Supabase rate-limit RPC; no new migration or external secret. API tests, web lint, and production build must pass before merge.
 - Real-account approval workflow tests remain outstanding. Public deployment remains deferred.
