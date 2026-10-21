@@ -1,23 +1,28 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.59 (in progress)  
-**Milestone:** Organization-isolation regression guardrails  
+**Project version:** 0.2.60 (in progress)  
+**Milestone:** Production-readiness evidence and release gate  
 **Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.59 — Organization-isolation regression guardrails (in progress)
-- Adds API-CI source checks for active-organization predicates on assistant workspace reads, recipient/organization scoping on notification mutations, and organization-bound atomic approval execution.
-- Adds a live two-organization/multi-role acceptance checklist. These checks improve regression coverage but do not prove deployed RLS behavior.
-- No migration, new secret, or runtime behavior change. CI must pass before merge.
+## Version 0.2.60 — Production-readiness evidence and release gate (in progress)
+- Adds a single checklist for live tenant isolation, real provider delivery/webhooks, scheduled reminders, monitoring, backups/recovery, and owner-approved launch.
+- Explicitly separates merged source/CI evidence from live integration acceptance. No runtime changes, migration, or new secret.
 - Public deployment remains deferred.
 
-## Version 0.2.58 — Bounded owner email-MFA verification request bodies (in progress)
+## Version 0.2.59 — Organization-isolation regression guardrails (completed; live acceptance pending)
+- Adds API-CI source checks for active-organization predicates on assistant workspace reads, recipient/organization scoping on notification mutations, and organization-bound atomic approval execution.
+- Adds a live two-organization/multi-role acceptance checklist. These checks improve regression coverage but do not prove deployed RLS behavior.
+- No migration, new secret, or runtime behavior change. API tests, web lint, and production build passed before merge.
+- Public deployment remains deferred.
+
+## Version 0.2.58 — Bounded owner email-MFA verification request bodies (completed)
 - Caps MFA verification payloads at 4,096 bytes while streaming and before JSON parsing; rejects oversized declared bodies early and cancels oversized streamed bodies.
 - Preserves authentication, owner-only checks, session-bound single-use challenges, atomic failed-attempt counting, and timing-safe comparisons.
 - Regression guardrails added. API validation, web lint, production build, and full source packaging must pass before merge.
 - No migration or new external secret. Public deployment remains deferred.
 
-## Version 0.2.57 — Bounded Resend webhook request-body reads (in progress)
+## Version 0.2.57 — Bounded Resend webhook request-body reads (completed)
 - Adds a 256,000-byte cap enforced while reading the stream, with early rejection for oversized Content-Length and cancellation when streamed bytes exceed the cap.
 - Avoids reading an arbitrarily large body into memory before checking size. Existing signature verification and event processing remain unchanged.
 - Regression guardrails added. API validation, web lint, production build, and full source package must pass before merge.

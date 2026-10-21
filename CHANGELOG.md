@@ -1,3 +1,10 @@
+## v0.2.60 — Production-readiness evidence and release gate
+
+- Adds a release-readiness checklist for live tenant-isolation acceptance, provider integrations, scheduler monitoring, backups/recovery, and launch approval.
+- Corrects v0.2.59 status to merged and separates code/CI completion from live acceptance and production readiness.
+- Updates package metadata to 0.2.60. No runtime behavior, migration, or new secret changes.
+- Public deployment remains deferred pending owner approval and completion of release gates.
+
 ## v0.2.59 — Organization-isolation regression guardrails
 
 - Adds API-CI regression tests for organization-scoped read-only assistant queries, recipient- and organization-scoped notification mutations, and organization-bound atomic approval execution.
