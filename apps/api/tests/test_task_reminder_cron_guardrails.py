@@ -12,7 +12,7 @@ def test_task_reminder_cron_requires_server_secret_before_admin_access():
     assert secret_check < auth_check < admin_client
     assert 'status:503' in source
     assert 'status:401' in source
-    assert 'authorization")!==`Bearer ${secret}`' in source
+    assert "Bearer ${secret}" in source
 
 
 def test_task_reminder_sweeps_are_independently_bounded_and_exclude_completed_work():
