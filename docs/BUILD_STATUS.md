@@ -1,9 +1,15 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.58 (in progress)  
-**Milestone:** Bounded owner email-MFA verification request bodies  
-**Overall product implementation estimate:** approximately 69% (rough planning estimate; not a test-coverage or production-readiness score)  
+**Project version:** 0.2.59 (in progress)  
+**Milestone:** Organization-isolation regression guardrails  
+**Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.59 — Organization-isolation regression guardrails (in progress)
+- Adds API-CI source checks for active-organization predicates on assistant workspace reads, recipient/organization scoping on notification mutations, and organization-bound atomic approval execution.
+- Adds a live two-organization/multi-role acceptance checklist. These checks improve regression coverage but do not prove deployed RLS behavior.
+- No migration, new secret, or runtime behavior change. CI must pass before merge.
+- Public deployment remains deferred.
 
 ## Version 0.2.58 — Bounded owner email-MFA verification request bodies (in progress)
 - Caps MFA verification payloads at 4,096 bytes while streaming and before JSON parsing; rejects oversized declared bodies early and cancels oversized streamed bodies.

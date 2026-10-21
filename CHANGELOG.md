@@ -1,3 +1,10 @@
+## v0.2.59 — Organization-isolation regression guardrails
+
+- Adds API-CI regression tests for organization-scoped read-only assistant queries, recipient- and organization-scoped notification mutations, and organization-bound atomic approval execution.
+- Documents a two-organization, multi-role live acceptance checklist covering cross-tenant reads and writes, suspended memberships, notifications, and approval execution.
+- No runtime behavior, database schema, migration, or external secret changes. Source-level tests do not replace live RLS and multi-account acceptance testing.
+- Public deployment remains deferred.
+
 ## v0.2.58 — Bound email-MFA verification request bodies
 
 - Caps owner email-MFA verification requests at 4,096 bytes before JSON parsing, including chunked requests without a declared content length.
