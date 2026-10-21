@@ -1,9 +1,16 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.49 (in progress)  
-**Milestone:** Task-reminder cron guardrail regression coverage  
+**Project version:** 0.2.50 (in progress)  
+**Milestone:** Fair bounded task-reminder scans  
 **Overall product implementation estimate:** approximately 66% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.50 — Fair bounded task-reminder scans (in progress)
+- Splits overdue and upcoming tasks into separate 250-row bounded queries so overdue backlog cannot consume the entire upcoming-task scan.
+- Reports overdue and upcoming scan counts separately; adds regression checks for the independent quotas and sorting.
+- No schema migration required. API CI, web lint, and production build must pass before merge.
+- Private `CRON_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, and trusted scheduler configuration remain required for live reminders; larger backlogs may need future pagination.
+- Public deployment remains deferred.
 
 ## Version 0.2.49 — Task-reminder cron guardrail regression coverage (in progress)
 - Added API-CI regression checks for server-only cron authorization, bounded task scans, exclusion of completed/cancelled tasks, notification deduplication, no-cache headers, and generic failure responses.
