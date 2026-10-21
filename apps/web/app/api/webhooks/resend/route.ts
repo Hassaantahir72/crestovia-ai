@@ -8,6 +8,42 @@ export const dynamic = "force-dynamic";
 const MAX_CLOCK_SKEW_SECONDS = 300;
 const MAX_BODY_BYTES = 256_000;
 
+type BoundedBodyResult =
+  | { ok: true; rawBody: string }
+  | { ok: false; reason: "too_large" | "read_failed" };
+
+/** Read incrementally so oversized bodies are rejected before buffering them in full. */
+async function readBoundedBody(request: Request): Promise<BoundedBodyResult> {
+  const contentLength = request.headers.get("content-length");
+  if (contentLength && /^\\d+$/.test(contentLength) && Number(contentLength) > MAX_BODY_BYTES) {
+    return { ok: false, reason: "too_large" };
+  }
+
+  if (!request.body) return { ok: true, rawBody: "" };
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      totalBytes += value.byteLength;
+      if (totalBytes > MAX_BODY_BYTES) {
+        await reader.cancel().catch(() => undefined);
+        return { ok: false, reason: "too_large" };
+      }
+      chunks.push(value);
+    }
+    return { ok: true, rawBody: Buffer.concat(chunks, totalBytes).toString("utf8") };
+  } catch {
+    await reader.cancel().catch(() => undefined);
+    return { ok: false, reason: "read_failed" };
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 function verifyResendSignature(rawBody: string, headers: Headers): boolean {
   const secret = process.env.RESEND_WEBHOOK_SECRET;
   const id = headers.get("svix-id");
@@ -39,8 +75,12 @@ function verifyResendSignature(rawBody: string, headers: Headers): boolean {
 }
 
 export async function POST(request: Request) {
-  const rawBody = await request.text();
-  if (Buffer.byteLength(rawBody, "utf8") > MAX_BODY_BYTES) return NextResponse.json({ error: "payload_too_large" }, { status: 413 });
+  const bodyResult = await readBoundedBody(request);
+  if (!bodyResult.ok) {
+    if (bodyResult.reason === "too_large") return NextResponse.json({ error: "payload_too_large" }, { status: 413 });
+    return NextResponse.json({ error: "invalid_body" }, { status: 400 });
+  }
+  const rawBody = bodyResult.rawBody;
   if (!verifyResendSignature(rawBody, request.headers)) return NextResponse.json({ error: "invalid_signature" }, { status: 401 });
 
   let event: unknown;
