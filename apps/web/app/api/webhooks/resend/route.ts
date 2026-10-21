@@ -15,7 +15,7 @@ type BoundedBodyResult =
 /** Read incrementally so oversized bodies are rejected before buffering them in full. */
 async function readBoundedBody(request: Request): Promise<BoundedBodyResult> {
   const contentLength = request.headers.get("content-length");
-  if (contentLength && /^\\d+$/.test(contentLength) && Number(contentLength) > MAX_BODY_BYTES) {
+  if (contentLength && /^\d+$/.test(contentLength) && Number(contentLength) > MAX_BODY_BYTES) {
     return { ok: false, reason: "too_large" };
   }
 
