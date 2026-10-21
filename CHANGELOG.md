@@ -1,3 +1,9 @@
+## v0.2.64 — Reject blank CORS origins in readiness probe
+
+- Tightens `/ready` so a CORS origin list containing only empty or whitespace entries is treated as incomplete configuration.
+- Adds a regression test for blank origin entries and clarifies the health-check documentation.
+- No new secrets, network calls, database migrations, or deployment actions.
+
 ## v0.2.63 — API configuration readiness probe
 
 - Adds a public `/ready` endpoint that returns 503 when the API lacks Supabase auth-verifier or CORS configuration, while keeping `/health` as a simple liveness probe.
