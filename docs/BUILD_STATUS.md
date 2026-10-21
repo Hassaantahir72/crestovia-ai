@@ -1,9 +1,15 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.57 (in progress)  
-**Milestone:** Bounded Resend webhook request-body reads  
-**Overall product implementation estimate:** approximately 68% (rough planning estimate; not a test-coverage or production-readiness score)  
+**Project version:** 0.2.58 (in progress)  
+**Milestone:** Bounded owner email-MFA verification request bodies  
+**Overall product implementation estimate:** approximately 69% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.58 — Bounded owner email-MFA verification request bodies (in progress)
+- Caps MFA verification payloads at 4,096 bytes while streaming and before JSON parsing; rejects oversized declared bodies early and cancels oversized streamed bodies.
+- Preserves authentication, owner-only checks, session-bound single-use challenges, atomic failed-attempt counting, and timing-safe comparisons.
+- Regression guardrails added. API validation, web lint, production build, and full source packaging must pass before merge.
+- No migration or new external secret. Public deployment remains deferred.
 
 ## Version 0.2.57 — Bounded Resend webhook request-body reads (in progress)
 - Adds a 256,000-byte cap enforced while reading the stream, with early rejection for oversized Content-Length and cancellation when streamed bytes exceed the cap.

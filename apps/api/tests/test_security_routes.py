@@ -206,3 +206,15 @@ def test_assistant_prompt_is_persisted_before_provider_call_can_fail():
     assert persist_prompt < provider_call
     assert "Your message was saved, but the AI provider could not reply." in page
     assert 'role:"assistant",content:answer' in send
+
+
+def test_email_mfa_verify_bounds_body_before_json_parsing():
+    route = read_web("app/api/security/email-mfa/verify/route.ts")
+    assert "MAX_REQUEST_BODY_BYTES=4_096" in route
+    assert "async function readBoundedBody(request:Request)" in route
+    assert "request.body.getReader()" in route
+    assert "total>MAX_REQUEST_BODY_BYTES" in route
+    assert "await reader.cancel()" in route
+    assert "JSON.parse(bodyResult.body)" in route
+    assert "request.json()" not in route
+    assert 'reason==="too_large"?413:400' in route

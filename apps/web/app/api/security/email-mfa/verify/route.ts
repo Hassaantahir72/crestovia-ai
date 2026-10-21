@@ -5,9 +5,31 @@ import {createClient} from "@/lib/supabase/server";
 import {createAdminClient} from "@/lib/supabase/admin";
 import {createEmailMfaToken,emailMfaCookieOptions,hashEmailCode,EMAIL_MFA_COOKIE} from "@/lib/security/email-mfa";
 export const runtime="nodejs";
+const MAX_REQUEST_BODY_BYTES=4_096;
+
+type BoundedBodyResult={ok:true;body:string}|{ok:false;reason:"too_large"|"read_failed"};
+async function readBoundedBody(request:Request):Promise<BoundedBodyResult>{
+ const contentLength=request.headers.get("content-length");
+ if(contentLength&&/^\d+$/.test(contentLength)&&Number(contentLength)>MAX_REQUEST_BODY_BYTES)return {ok:false,reason:"too_large"};
+ if(!request.body)return {ok:true,body:""};
+ const reader=request.body.getReader(),chunks:Uint8Array[]=[];let total=0;
+ try{
+  while(true){
+   const {done,value}=await reader.read();if(done)break;
+   total+=value.byteLength;
+   if(total>MAX_REQUEST_BODY_BYTES){await reader.cancel().catch(()=>undefined);return {ok:false,reason:"too_large"}}
+   chunks.push(value);
+  }
+  return {ok:true,body:Buffer.concat(chunks,total).toString("utf8")};
+ }catch{
+  await reader.cancel().catch(()=>undefined);return {ok:false,reason:"read_failed"};
+ }finally{reader.releaseLock()}
+}
 export async function POST(request:Request){
  const origin=request.headers.get("origin");if(origin&&origin!==new URL(request.url).origin)return NextResponse.json({error:"invalid_origin"},{status:403});
- let body:{code?:unknown};try{body=await request.json() as {code?:unknown}}catch{return NextResponse.json({error:"invalid_request"},{status:400})}
+ const bodyResult=await readBoundedBody(request);
+ if(!bodyResult.ok)return NextResponse.json({error:bodyResult.reason==="too_large"?"request_too_large":"invalid_request"},{status:bodyResult.reason==="too_large"?413:400});
+ let body:{code?:unknown};try{body=JSON.parse(bodyResult.body) as {code?:unknown}}catch{return NextResponse.json({error:"invalid_request"},{status:400})}
  const code=typeof body.code==="string"?body.code.trim():"";if(!/^\d{6}$/.test(code))return NextResponse.json({error:"invalid_code"},{status:400});
  const supabase=await createClient();const {data:{user},error:authError}=await supabase.auth.getUser();if(authError||!user)return NextResponse.json({error:"not_authenticated"},{status:401});
  const {data:memberships}=await supabase.from("memberships").select("role").eq("user_id",user.id).eq("status","active");if(!memberships?.some(m=>m.role==="owner"))return NextResponse.json({error:"owner_only"},{status:403});
