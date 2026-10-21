@@ -1,7 +1,7 @@
 ## v0.2.78 — Harden public-schema browser-role privileges
 
 - Adds a reviewable migration to revoke all existing and default public-schema table, sequence, and function privileges from unauthenticated `anon`.
-- Removes table-level TRUNCATE, REFERENCES, TRIGGER, and PostgreSQL 17 MAINTAIN privileges from authenticated users while preserving normal row-level operations subject to RLS.
+- Removes table-level TRUNCATE, REFERENCES, TRIGGER, and PostgreSQL 17 MAINTAIN privileges from authenticated users while preserving normal row-level operations subject to RLS; future function EXECUTE grants become opt-in for browser roles.
 - Extends the read-only database audit to inspect default ACLs and effective table-level administrative privileges; adds regression checks.
 - **Migration is source-only and has not been applied to the connected database.** Live application requires owner approval after compatibility review.
 
