@@ -1,15 +1,15 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.56 (in progress)  
+**Project version:** 0.2.56 (implementation merged; live acceptance pending)  
 **Milestone:** Resend webhook retry reconciliation  
 **Overall product implementation estimate:** approximately 67% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.56 — Resend webhook retry reconciliation (in progress)
-- Fixes the case where an event first recorded as unmatched could never be applied on a later provider retry with the same event ID.
-- Adds a replacement for the existing RPC function, regression guardrails, and rollout instructions. No new table or secret is introduced.
-- The migration must be applied and function permissions verified in Supabase before the fix is active there; real Resend event/retry tests remain outstanding.
-- API validation, web lint, production build, and complete source packaging must pass before merge. Public deployment remains deferred.
+## Version 0.2.56 — Resend webhook retry reconciliation (implementation merged; live acceptance pending)
+- PR #32 is merged. API tests, web ESLint, and the Next.js production build passed.
+- Migration `0033_retry_unmatched_resend_events_v0_2_56.sql` is applied to Supabase project `crestovia-ai`. The RPC remains SECURITY INVOKER with an empty search path; EXECUTE is granted to `service_role` only. The security advisor returned no findings.
+- The migration allows previously unmatched Resend events to be retried after the matching delivery row becomes available; processed event IDs remain idempotent.
+- Real Resend webhook/retry acceptance tests still require private provider configuration. Public deployment remains deferred.
 
 ## Version 0.2.55 — Email provider diagnostic rate limits (completed)
 - Limits the owner-only Resend connection test to 3/minute and 10/hour before contacting the provider; fails closed if the rate-limit service is unavailable.
