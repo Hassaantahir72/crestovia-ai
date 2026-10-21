@@ -8,7 +8,7 @@ const errorText:Record<string,string>={
  ai_provider_not_configured:"AI replies are prepared but not active yet. GROQ_API_KEY must be configured as a server-only secret before the assistant can answer.",
  ai_provider_auth_failed:"The AI provider rejected the configured credentials. Check the server secret privately.",
  ai_provider_rate_limited:"The AI provider is rate-limiting requests. Wait and try again.",
- ai_provider_request_failed:"The AI provider request failed. No message was saved; please try again later.",
+ ai_provider_request_failed:"Your message was saved, but the AI provider could not reply. You can retry without losing the submitted prompt.",
  ai_provider_empty_response:"The AI provider returned an empty response.",
  conversation_create_failed:"Could not create a conversation.",conversation_not_found:"That conversation is unavailable or belongs to another account.",empty_message:"Write a message before sending.",history_failed:"Could not load the conversation history.",message_save_failed:"The message could not be saved.",reply_save_failed:"The AI reply could not be saved.",conversation_delete_failed:"Could not delete that conversation.",
   invalid_approval_proposal:"That assistant response cannot be submitted for approval.",
