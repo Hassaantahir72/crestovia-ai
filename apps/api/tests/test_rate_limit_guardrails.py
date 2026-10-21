@@ -7,7 +7,7 @@ WEB = ROOT / "apps" / "web"
 
 
 def test_rate_limit_ledger_is_private_and_function_is_atomic_invoker_only():
-    sql = re.sub(r"\s+, " ", MIGRATION.read_text(encoding="utf-8").lower())
+    sql = re.sub(r"\s+", " ", MIGRATION.read_text(encoding="utf-8").lower())
     assert "create table public.user_rate_limit_buckets" in sql
     assert "primary key (user_id, bucket)" in sql
     assert "enable row level security" in sql
