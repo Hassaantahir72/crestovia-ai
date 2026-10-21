@@ -40,3 +40,23 @@ order by p.proname, arguments;
 select version, name
 from supabase_migrations.schema_migrations
 order by version;
+
+-- 5. Inspect default privileges for public objects and their owner roles.
+select
+  defaclrole::regrole::text as owner_role,
+  defaclobjtype as object_type,
+  defaclacl::text as default_acl
+from pg_default_acl
+where defaclnamespace = 'public'::regnamespace
+order by owner_role, object_type;
+
+-- 6. Check effective table-level administrative privileges that RLS does not filter.
+select
+  table_name,
+  has_table_privilege('anon', format('public.%I', table_name), 'TRUNCATE') as anon_can_truncate,
+  has_table_privilege('authenticated', format('public.%I', table_name), 'TRUNCATE') as authenticated_can_truncate,
+  has_table_privilege('authenticated', format('public.%I', table_name), 'MAINTAIN') as authenticated_can_maintain
+from information_schema.tables
+where table_schema = 'public'
+  and table_type = 'BASE TABLE'
+order by table_name;
