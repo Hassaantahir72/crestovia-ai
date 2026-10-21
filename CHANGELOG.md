@@ -1,3 +1,10 @@
+## v0.2.50 — Fair bounded task reminder scans
+
+- Splits the reminder sweep into independent overdue and upcoming-task queries, each capped at 250 rows, so a large overdue backlog cannot consume the entire due-soon scan.
+- Prioritizes the most recently overdue tasks and nearest upcoming deadlines; returns per-category scan counts for monitoring.
+- Adds regression checks for the separate bounds and updates scheduler setup guidance. No database migration is required.
+- The cron endpoint still requires private secrets and a trusted scheduler; larger backlogs may need a later pagination/queue design.
+
 ## v0.2.48 — Explicit browser denial for delivery events
 
 - Adds an explicit deny-all RLS policy for anon/authenticated roles on the private Resend event ledger, resolving the Supabase linter's RLS-enabled-without-policy notice without granting browser access.
