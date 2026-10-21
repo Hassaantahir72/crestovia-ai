@@ -1,6 +1,6 @@
 # Task reminder scheduler setup
 
-Crestovia AI v0.2.42 includes an authenticated endpoint that creates in-app reminders for assigned, unfinished tasks whose due time is within the next 24 hours or has passed.
+Crestovia AI v0.2.50 includes an authenticated endpoint that creates in-app reminders for assigned, unfinished tasks whose due time is within the next 24 hours or has passed.
 
 ## Required private environment variables
 
@@ -25,9 +25,10 @@ Replace the host with the actual deployment URL. Do not put the secret in the UR
 
 ## Behavior and safety
 
-- Each run scans at most 500 assigned tasks that are not done/cancelled and have a due date within the next 24 hours or overdue.
+- Each run scans at most 500 assigned tasks: up to 250 overdue tasks and up to 250 tasks due in the next 24 hours. Separate queries prevent a backlog of overdue work from consuming the entire upcoming-task scan.
+- The overdue scan prioritizes the most recently overdue tasks; the upcoming scan prioritizes the nearest due dates. Each category has a fixed cap, so larger backlogs need monitoring and may require a later pagination/queue design.
 - Due-soon and overdue notifications are deduplicated per task and UTC calendar day.
-- The response includes scanned and newly queued counts; it does not send email or SMS.
+- The response includes total scanned, per-category scanned, and newly queued counts; it does not send email or SMS.
 - The endpoint returns 503 when required configuration is missing and 401 when the bearer token is invalid.
 - In-app notifications remain visible only to the recipient while they have active membership in that organization.
 - The endpoint is not scheduled automatically by this code. Configure the trusted scheduler after deployment and verify a successful request in its execution logs.

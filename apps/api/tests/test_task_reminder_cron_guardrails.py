@@ -12,16 +12,19 @@ def test_task_reminder_cron_requires_server_secret_before_admin_access():
     assert secret_check < auth_check < admin_client
     assert 'status:503' in source
     assert 'status:401' in source
-    assert 'authorization")!==`Bearer ${secret}`' in source
+    assert "Bearer ${secret}" in source
 
 
-def test_task_reminder_sweep_is_bounded_and_excludes_completed_work():
+def test_task_reminder_sweeps_are_independently_bounded_and_exclude_completed_work():
     source = ROUTE.read_text()
-    assert '.not("assigned_to","is",null)' in source
-    assert '.not("due_at","is",null)' in source
-    assert '.not("status","in","(done,cancelled)")' in source
-    assert '.limit(500)' in source
+    assert source.count('.not("assigned_to","is",null)') == 2
+    assert source.count('.not("due_at","is",null)') == 2
+    assert source.count('.not("status","in","(done,cancelled)")') == 2
+    assert '.lte("due_at",nowIso).order("due_at",{ascending:false}).limit(250)' in source
+    assert '.gt("due_at",nowIso).lte("due_at",windowEnd.toISOString()).order("due_at",{ascending:true}).limit(250)' in source
+    assert "const overdueTasks=overdueResult.data??[],dueSoonTasks=dueSoonResult.data??[]" in source
     assert "windowEnd=new Date(now.getTime()+24*60*60*1000)" in source
+    assert "overdueScanned:overdueTasks.length,dueSoonScanned:dueSoonTasks.length" in source
 
 
 def test_task_reminder_notifications_are_deduplicated_and_responses_not_cached():
