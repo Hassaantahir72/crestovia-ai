@@ -1,3 +1,10 @@
+## v0.2.61 — Configuration preflight checks
+
+- Adds a dependency-free preflight for web/API environment-variable presence and obvious placeholders without printing secret values or making network requests.
+- Adds a production-profile check for private integration secrets and flags sensitive names incorrectly prefixed with NEXT_PUBLIC_.
+- Adds Node test coverage and runs it in web CI; updates package metadata and setup documentation.
+- Preflight is a sanity check only; it does not replace live provider, database, RLS, or deployment acceptance tests.
+
 ## v0.2.60 — Production-readiness evidence and release gate
 
 - Adds a release-readiness checklist for live tenant-isolation acceptance, provider integrations, scheduler monitoring, backups/recovery, and launch approval.
