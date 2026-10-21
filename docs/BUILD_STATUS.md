@@ -1,7 +1,20 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.60 (in progress)  
-**Milestone:** Production-readiness evidence and release gate  
+**Project version:** 0.2.61 (in progress)  
+**Milestone:** Configuration preflight and secret-exposure guardrails  
+**Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
+**Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
+
+## Version 0.2.61 — Configuration preflight and secret-exposure guardrails (in progress)
+- Adds a dependency-free environment preflight for web and API required variables, placeholder values, and sensitive names incorrectly exposed through NEXT_PUBLIC_.
+- Adds tests to the web CI workflow and setup documentation. The production profile checks the private integration variables expected by the full deployment.
+- Does not prove secrets are valid or integrations work. Live acceptance remains required; no runtime request behavior or database migration changes.
+- CI must pass before merge.
+
+# Crestovia AI — Current Build Status
+
+**Project version:** 0.2.61 (in progress)  
+**Milestone:** Configuration preflight and secret-exposure guardrails  
 **Overall product implementation estimate:** approximately 70% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
