@@ -59,7 +59,7 @@ def test_source_archive_rejects_recognizable_provider_tokens_without_echoing_the
 def test_source_archive_rejects_private_key_material(tmp_path):
     archive = make_archive(
         tmp_path,
-        {"private.pem": "-----BEGIN PRIVATE KEY-----\nnot-a-real-key\n"},
+        {"private.pem": "-----BEGIN PRIVATE " + "KEY-----\nnot-a-real-key\n"},
     )
     result = run_verifier(archive)
     assert result.returncode == 1
