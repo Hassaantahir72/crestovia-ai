@@ -1,12 +1,14 @@
 {
   "name": "crestovia-ai-web",
-  "version": "0.2.60",
+  "version": "0.2.61",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "preflight": "node ../../scripts/preflight.mjs web",
+    "preflight:production": "node ../../scripts/preflight.mjs web --production"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
