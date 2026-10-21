@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import subprocess
 import sys
 import zipfile
@@ -9,8 +10,13 @@ VERIFIER = ROOT / "scripts" / "verify-source-archive.py"
 
 def make_archive(tmp_path, files):
     archive = tmp_path / "source.zip"
+    entries = {
+        "apps/web/package.json": json.dumps({"version": "0.2.75"}),
+        "CHANGELOG.md": "## v0.2.75 — Test release\\n",
+    }
+    entries.update(files)
     with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as zipped:
-        for name, content in files.items():
+        for name, content in entries.items():
             zipped.writestr(name, content)
     return archive
 
@@ -86,3 +92,14 @@ def test_source_archive_rejects_invalid_zip(tmp_path):
     result = run_verifier(archive)
     assert result.returncode == 1
     assert "cannot be opened as a ZIP file" in result.stdout
+
+
+
+def test_source_archive_rejects_package_and_changelog_version_mismatch(tmp_path):
+    archive = make_archive(
+        tmp_path,
+        {"apps/web/package.json": json.dumps({"version": "9.9.9"})},
+    )
+    result = run_verifier(archive)
+    assert result.returncode == 1
+    assert "release version mismatch between package manifest and changelog" in result.stdout

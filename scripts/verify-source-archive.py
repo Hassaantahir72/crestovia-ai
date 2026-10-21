@@ -2,6 +2,7 @@
 """Fail-closed checks for the distributable Crestovia AI source archive."""
 from __future__ import annotations
 
+import json
 import re
 import sys
 import zipfile
@@ -60,6 +61,23 @@ def verify_archive(archive_path: str) -> list[str]:
                 continue
             if any(pattern.search(content) for pattern in SECRET_PATTERNS):
                 problems.append(f"recognizable credential or private key detected: {name}")
+
+        required_metadata = {"apps/web/package.json", "CHANGELOG.md"}
+        names = {info.filename for info in archive.infolist() if not info.is_dir()}
+        if not required_metadata.issubset(names):
+            problems.append("release metadata missing from source archive")
+        else:
+            try:
+                manifest = json.loads(archive.read("apps/web/package.json").decode("utf-8"))
+                changelog = archive.read("CHANGELOG.md").decode("utf-8")
+                package_version = manifest.get("version")
+                heading = re.search(r"^## v(\d+\.\d+\.\d+)\b", changelog, re.MULTILINE)
+                if not isinstance(package_version, str) or not re.fullmatch(r"\d+\.\d+\.\d+", package_version):
+                    problems.append("package manifest version is invalid")
+                elif not heading or heading.group(1) != package_version:
+                    problems.append("release version mismatch between package manifest and changelog")
+            except (UnicodeDecodeError, json.JSONDecodeError, KeyError, AttributeError):
+                problems.append("release metadata cannot be parsed")
 
     return problems
 
