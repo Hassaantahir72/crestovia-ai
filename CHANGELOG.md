@@ -1,3 +1,8 @@
+## v0.2.67 — Monitoring and incident response runbook
+
+- Adds operator guidance for API/web/database/provider monitoring, alert triage, incident evidence, credential rotation, and recovery escalation.
+- Documents that alerts, provider settings, credentials, and incident contacts must be configured and tested in owner-controlled accounts; no deployment or credential change is performed.
+
 ## v0.2.66 — Database backup archive verification
 
 - Adds a local-only helper that validates custom-format PostgreSQL backup archives with `pg_restore --list` and emits a SHA-256 checksum without printing the path or archive contents.
