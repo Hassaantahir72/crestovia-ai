@@ -23,7 +23,7 @@ const errorText:Record<string,string>={
  provider_test_request_failed:"The connection test could not complete. Check the selected model and provider status.",
  provider_test_empty_response:"Groq accepted the request but returned no assistant text.",
  provider_test_timeout:"The connection test timed out after 10 seconds. Try again later.",
- provider_test_rate_limited:"Too many provider connection tests. Wait before trying again.",
+ provider_test_app_rate_limited:"Too many provider connection tests. Wait before trying again.",
  provider_test_rate_limit_unavailable:"The request protection service is unavailable, so the provider test was not run. Try again shortly.",
 };
 export default async function AssistantPage({searchParams}:Props){
