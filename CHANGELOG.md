@@ -1,3 +1,8 @@
+## v0.2.48 — Explicit browser denial for delivery events
+
+- Adds an explicit deny-all RLS policy for anon/authenticated roles on the private Resend event ledger, resolving the Supabase linter's RLS-enabled-without-policy notice without granting browser access.
+- Keeps writes and event processing server-side; service-role-only grants remain unchanged.
+
 ## v0.2.47 — Verified email delivery status webhooks
 
 - Adds a server-only Resend webhook endpoint that verifies Svix signatures over the exact raw body, enforces a five-minute timestamp window, and caps payload size.
