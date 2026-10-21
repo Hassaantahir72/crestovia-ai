@@ -7,7 +7,9 @@ MIGRATION = ROOT / "database" / "migrations" / "0030_resend_delivery_webhooks_v0
 
 def test_resend_webhook_verifies_raw_body_signature_and_timestamp():
     source = ROUTE.read_text()
-    assert 'request.text()' in source
+    assert 'async function readBoundedBody(request: Request)' in source
+    assert 'request.body.getReader()' in source
+    assert 'totalBytes > MAX_BODY_BYTES' in source
     assert 'createHmac("sha256"' in source
     assert "timingSafeEqual" in source
     assert "MAX_CLOCK_SKEW_SECONDS = 300" in source
