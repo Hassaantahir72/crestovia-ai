@@ -1,3 +1,9 @@
+## v0.2.66 — Database backup archive verification
+
+- Adds a local-only helper that validates custom-format PostgreSQL backup archives with `pg_restore --list` and emits a SHA-256 checksum without printing the path or archive contents.
+- Adds regression tests for missing, empty, symlinked, invalid, and valid test-fixture paths; no real backup data is checked into CI.
+- Adds a recovery runbook covering provider retention review, isolated restore drills, RLS/grant checks, and evidence capture. No database migration, backup, restore, or deployment is triggered.
+
 ## v0.2.65 — Deployment smoke checks
 
 - Adds a dependency-free post-deployment smoke check for API liveness/readiness and optional web homepage availability.
