@@ -1,14 +1,19 @@
 # Crestovia AI — Current Build Status
 
-**Project version:** 0.2.52 (in progress)  
-**Milestone:** Atomic assistant request rate limits  
+**Project version:** 0.2.53 (in progress)  
+**Milestone:** Team invitation throttling and duplicate protection  
 **Overall product implementation estimate:** approximately 66% (rough planning estimate; not a test-coverage or production-readiness score)  
 **Deployment:** intentionally deferred until the product is complete and the owner explicitly approves launch.
 
-## Version 0.2.52 — Atomic assistant request rate limits (in progress)
-- Adds atomic per-user minute/hour limits for assistant prompts and owner-only provider diagnostics using a private Supabase ledger; fails closed when the limiter is unavailable.
-- Migration `0032_user_rate_limits_v0_2_52.sql` is required; the service-role key must remain server-side. Regression tests, API/web CI, and migration review must pass before merge.
-- Live multi-account tests and provider verification remain outstanding. Public deployment remains deferred.
+## Version 0.2.53 — Team invitation throttling and duplicate protection (in progress)
+- Adds per-owner invitation limits of 5/minute, 20/hour, and 50/day; checks known pending invitations and tracked active memberships before sending an invitation email.
+- Reuses the private atomic rate-limit RPC from migration 0032. No new database migration is needed. API regression tests, web lint, and production build must pass before merge.
+- Live onboarding and multi-account acceptance tests remain outstanding. Public deployment remains deferred.
+
+## Version 0.2.52 — Atomic assistant request rate limits (completed)
+- Adds atomic per-user minute/hour limits for assistant prompts and owner-only provider diagnostics using a private Supabase ledger; requests fail closed if the limiter is unavailable.
+- Migration `0032_user_rate_limits_v0_2_52.sql` is applied to Supabase. SQL checks confirm SECURITY INVOKER, empty search path, service-role-only execution, and no browser table access; security advisor has no findings.
+- API tests, ESLint, Next.js production build, and source packaging passed on main. Live multi-account tests and provider verification remain outstanding; public deployment remains deferred.
 
 ## Version 0.2.51 — Preserve assistant prompts on provider failure (completed)
 - Persists the user's message and updates the conversation title before requesting an AI reply, preventing provider errors from discarding submitted text.
@@ -16,14 +21,14 @@
 - No database migration required. API CI, web lint, and production build passed before merge.
 - Live provider verification still requires a private Groq key. Public deployment remains deferred.
 
-## Version 0.2.50 — Fair bounded task-reminder scans (in progress)
+## Version 0.2.50 — Fair bounded task-reminder scans (completed)
 - Splits overdue and upcoming tasks into separate 250-row bounded queries so overdue backlog cannot consume the entire upcoming-task scan.
 - Reports overdue and upcoming scan counts separately; adds regression checks for the independent quotas and sorting.
-- No schema migration required. API CI, web lint, and production build must pass before merge.
+- No schema migration required. API CI, web lint, and production build passed after merge.
 - Private `CRON_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, and trusted scheduler configuration remain required for live reminders; larger backlogs may need future pagination.
 - Public deployment remains deferred.
 
-## Version 0.2.49 — Task-reminder cron guardrail regression coverage (in progress)
+## Version 0.2.49 — Task-reminder cron guardrail regression coverage (completed)
 - Added API-CI regression checks for server-only cron authorization, bounded task scans, exclusion of completed/cancelled tasks, notification deduplication, no-cache headers, and generic failure responses.
 - Test-only increment; no runtime behavior or database schema changed. GitHub Actions must pass before merge.
 - Deadline reminders still require private `CRON_SECRET` and `SUPABASE_SERVICE_ROLE_KEY` configuration plus a trusted scheduler in the deployed environment. Static regression checks do not replace live HTTP/scheduler testing.
