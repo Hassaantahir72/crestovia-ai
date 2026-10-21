@@ -10,7 +10,7 @@ const MAX_REQUEST_BODY_BYTES=4_096;
 type BoundedBodyResult={ok:true;body:string}|{ok:false;reason:"too_large"|"read_failed"};
 async function readBoundedBody(request:Request):Promise<BoundedBodyResult>{
  const contentLength=request.headers.get("content-length");
- if(contentLength&&/^\\d+$/.test(contentLength)&&Number(contentLength)>MAX_REQUEST_BODY_BYTES)return {ok:false,reason:"too_large"};
+ if(contentLength&&/^\d+$/.test(contentLength)&&Number(contentLength)>MAX_REQUEST_BODY_BYTES)return {ok:false,reason:"too_large"};
  if(!request.body)return {ok:true,body:""};
  const reader=request.body.getReader(),chunks:Uint8Array[]=[];let total=0;
  try{
