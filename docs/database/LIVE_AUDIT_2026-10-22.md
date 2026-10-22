@@ -20,7 +20,7 @@ The read-only `has_table_privilege` audit returned the following effective privi
 - `projects`
 - `task_comments`
 - `tasks`
-- `workspace_activity
+- `workspace_activity`
 
 For each listed table, effective SELECT, INSERT, UPDATE, DELETE, and TRUNCATE were `true`. Row-level security may constrain ordinary row operations, but RLS does not filter TRUNCATE.
 
