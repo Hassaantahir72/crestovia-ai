@@ -15,7 +15,7 @@ join pg_namespace n on n.oid = c.relnamespace
 left join pg_policies p on p.schemaname = n.nspname and p.tablename = c.relname
 where n.nspname = 'public'
   and c.relkind in ('r', 'p')
-group by c.relname, c.relrowsecurity
+group by c.relname, c.relkind, c.relrowsecurity, c.relforcerowsecurity
 order by c.relname;
 
 -- 2. Inventory direct table privileges granted to browser-facing roles.

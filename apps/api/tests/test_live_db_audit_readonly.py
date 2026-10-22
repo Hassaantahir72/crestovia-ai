@@ -30,6 +30,7 @@ def test_live_database_audit_covers_rls_grants_definer_functions_and_migrations(
     assert "public_can_execute" in source
     assert "supabase_migrations.schema_migrations" in source
     assert "relforcerowsecurity" in source
+    assert "group by c.relname, c.relkind, c.relrowsecurity, c.relforcerowsecurity" in source
     assert "c.relkind in ('r', 'p')" in source
     assert "permissive_policy_count" in source
     assert "has_schema_privilege('anon', 'public', 'create')" in source
