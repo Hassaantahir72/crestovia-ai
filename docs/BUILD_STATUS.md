@@ -1,24 +1,23 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.96 (merged; API/web/package workflows passed)
-**Baseline commit:** 073606c6d54e34b14201160e53786cb44ae32f1e (v0.2.96 merged; API/web/package workflows passed)
-**Milestone:** Correct global default-ACL handling in migration 0034
+**Project version:** 0.2.97 (candidate; CI verification pending)
+**Baseline commit:** v0.2.96 merge `073606c6d54e34b14201160e53786cb44ae32f1e`; this candidate is not yet merged.
+**Milestone:** Regression coverage for privileged task-reminder RPC grants and deduplication
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
 **Deployment:** deferred until owner approval.
 
-### v0.2.96 verified evidence
-- API regression tests passed on PR source commit `f40f6628e2e71223b0943873881e9866cb58fa2f`: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39742671464
-- Web configuration preflight, smoke-helper tests, readiness checks, ESLint, and Next.js production build passed on the same PR source commit: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39742668196
-- Complete source archive packaging and credential-pattern verification passed on merge commit `073606c6d54e34b14201160e53786cb44ae32f1e`: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39742833528
-- Verified merge-commit source ZIP contained 214 files, passed ZIP integrity and embedded archive verification, package version 0.2.96, SHA-256 `e1c90b4dcdf96b70861234caea9957cc30e948e3e080f32ec17424d886b98017`.
+### v0.2.97 candidate changes
+- Adds API CI tests for the task-reminder batch RPC's SECURITY INVOKER context, empty search path, service-role-only EXECUTE grant, stable dedupe keys, and conflict-safe insertion.
+- No runtime behavior or live database state is changed by this test-only update.
+- CI and a fresh cumulative source archive are pending.
 
 ### Critical remaining release blockers
-1. Review migration 0034 global ACL cross-schema scope and RPC compatibility; run non-production acceptance only after explicit approval.
-2. Execute the tenant-isolation matrix with separate organizations and owner/admin/member/suspended test accounts, including direct API access.
-3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
-4. Confirm backup retention and complete an isolated non-production restore drill.
-5. Collect evidence for remaining readiness checklist items; public deployment remains owner-gated.
+1. Review migration 0034's global ACL cross-schema scope and RPC compatibility; only test migrations in non-production after explicit authorization.
+2. Run tenant-isolation acceptance using two organizations and owner/admin/member/suspended test accounts, including direct API calls.
+3. Configure and verify Groq, Resend delivery/webhooks, and the reminder scheduler/alerts with privately stored credentials.
+4. Confirm backup retention and complete a non-production restore drill.
+5. Collect remaining readiness evidence; public deployment remains owner-gated.
 
 ---
 

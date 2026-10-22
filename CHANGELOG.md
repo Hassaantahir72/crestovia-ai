@@ -1,3 +1,9 @@
+## v0.2.97 — Reminder RPC grant and dedupe regression coverage
+
+- Adds focused CI assertions that the task-reminder batch RPC runs as SECURITY INVOKER with an empty search path and is executable only by `service_role`.
+- Adds regression checks for stable task/type/day dedupe keys and conflict-safe queue insertion, protecting the bounded reminder batch from accidental privilege widening or duplicate enqueueing.
+- No runtime SQL or live database change in this release; migration 0035 remains unapplied in the connected project. Real cron delivery and migration acceptance remain environment-dependent.
+
 ## v0.2.96 — Correct global default-ACL hardening
 
 - Fixes migration 0034 so it revokes relevant global default privileges as well as public-schema-specific defaults; global ACL grants are additive and cannot be cancelled by schema-specific revokes.
