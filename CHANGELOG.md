@@ -1,3 +1,9 @@
+## v0.2.79 — Default function privilege hardening and live audit coverage
+
+- Updates the unapplied privilege-hardening migration to revoke default `EXECUTE` from `PUBLIC` for future functions created by `postgres` and `supabase_admin`; future RPC grants must be explicit.
+- Expands the read-only live database audit to inventory all public functions, including SECURITY INVOKER routines, and report effective EXECUTE access for `anon`, `authenticated`, and `PUBLIC`.
+- Adds regression checks for the default ACL revocations and the expanded read-only audit. No live migration is applied and no deployment is triggered.
+
 ## v0.2.78 — Harden public-schema browser-role privileges
 
 - Adds a reviewable migration to revoke all existing and default public-schema table, sequence, and function privileges from unauthenticated `anon`.
