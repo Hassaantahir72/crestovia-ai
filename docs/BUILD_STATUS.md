@@ -1,3 +1,12 @@
+
+
+## CI / dependency blocker detail — 2026-10-22 11:17 UTC
+
+- Latest Validate Web App run: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39768416500. Latest Validate API run: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39768416554.
+- GitHub job metadata shows both jobs started at 11:09:06 UTC and completed at 11:09:08 UTC, with an empty runner name and zero recorded steps. Log retrieval returns 404 (BlobNotFound). This is evidence the jobs failed before any workflow step ran; it does not identify why runner assignment/start failed. Do not treat it as a source-code test failure or alter application code speculatively.
+- Local npm install reproduced DNS resolution error `EAI_AGAIN registry.npmjs.org` while fetching `@supabase/ssr`; dependencies could not be installed. ESLint and Next production build remain unverified.
+- Offline checks still pass: Node 39/39; API pytest 107/107; migration source-order 36/36. These do not replace the blocked frontend build.
+- Required next action: rerun after GitHub-hosted runner/Actions availability is healthy; if jobs again fail before a runner is assigned, inspect repository Actions settings/usage limits and GitHub support/status. Do not disable CI checks to manufacture a green result.
 ## Live verification refresh — 2026-10-22 11:06 UTC
 
 - Re-ran source archive tests from the cumulative candidate: Node web/security suite **39/39 passed**; API pytest **107/107 passed**; migration source-order check passed for **36 files (0001–0036)**; ZIP integrity/path/environment/credential-pattern verification passed.
