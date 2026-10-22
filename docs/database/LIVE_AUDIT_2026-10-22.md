@@ -4,7 +4,7 @@
 
 ## Migration history
 
-The latest recorded migration is `0033_retry_unmatched_resend_events_v0_2_56`. Migration `0034_revoke_anon_public_privileges.sql` is **not applied** in the connected database.
+The latest recorded migration is `0033_retry_unmatched_resend_events_v0_2_56`. Migration 0034 is not applied; its source filename is `0034_revoke_anon_public_privileges.sql`.
 
 ## Effective table privileges
 
