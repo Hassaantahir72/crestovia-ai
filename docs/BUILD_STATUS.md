@@ -1,23 +1,21 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.83 (candidate; CI verification pending)
-**Latest merged version:** 0.2.82
-**Milestone:** README rendering fix and documentation regression coverage
+**Project version:** 0.2.84 (candidate; CI verification pending)
+**Latest merged version:** 0.2.83
+**Latest merged commit:** c314398e4bd55b856d730b9f06372ba351635ab8
+**Milestone:** Synchronize build status with verified source and CI state
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Deployment:** deferred until owner approval.
 
-### v0.2.82 merged verification
-- Corrected the read-only RLS audit query to group by every selected non-aggregate relation/RLS field.
-- API tests passed; web production build is being verified on the merge commit. The complete source ZIP was packaged and verified (207 entries; package version 0.2.82).
+### v0.2.83 merged verification
+- Fixed literal escaped newline sequences in README.md and added a regression test to prevent recurrence.
+- API test workflows and the web lint/production-build workflows passed on the PR head before merge.
+- The complete source archive was generated from the merged commit and verified: ZIP integrity passed, 207 entries, web package version 0.2.83, and the read-only database audit SQL is present.
 - No live database query, migration, grant change, or deployment was performed.
 
-### v0.2.83 proposed changes
-- Fixes literal escaped newline sequences in README.md and adds a regression test.
-- No application runtime or database changes. CI must pass before merge.
-
 ### Current release blockers
-1. Review effective database grants and migration 0034 against required API/RPC behavior before approval.
-2. Validate organization isolation with separate organizations and real owner/admin/member/suspended test accounts.
+1. Review effective database grants and migration 0034 against required API/RPC behavior before approval. Migration 0034 remains unapplied; the live privilege issue must not be treated as resolved by source changes alone.
+2. Validate organization isolation with separate organizations and real owner/admin/member/suspended test accounts, including direct API access.
 3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
 4. Confirm backup retention and complete an isolated non-production restore drill.
 5. Collect evidence for the production-readiness checklist; public deployment remains owner-gated.
