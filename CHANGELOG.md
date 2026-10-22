@@ -1,3 +1,11 @@
+## v0.2.92 — Add tenant-isolation acceptance runbook
+
+- Adds a non-production acceptance matrix for cross-organization reads/mutations, multi-org context switching, suspended users, notifications, assistant context, exports, and approval replay.
+- Documents synthetic fixture setup, evidence handling, and exit criteria; explicitly leaves the live tenant-isolation gate open until executed and reviewed.
+- Adds a regression test that protects coverage of the critical negative cases.
+- Updates build status and release evidence to the verified v0.2.91 baseline.
+- Documentation and test guardrails only. No live database changes, migrations, or deployments were performed.
+
 ## v0.2.91 — Include global default ACLs in live security audit
 
 - Fixes audit query 5 so it reports both global (defaclnamespace = 0) and public-schema default privileges; global ACLs can affect new objects in public and were omitted by the prior schema-only filter.
