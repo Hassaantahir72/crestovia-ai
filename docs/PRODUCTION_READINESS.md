@@ -98,6 +98,8 @@ This evidence log does not assert that live database security, tenant isolation,
 
 ## Latest CI blocker detail — 2026-10-22
 
+- Latest retry confirmation at 2026-10-22 11:24 UTC: web run `39769401966` and API run `39769401968` both ended before any steps were recorded; job log retrieval again returned 404 (BlobNotFound). Root cause remains unknown. A further local npm install retry timed out, so the frontend build remains unverified.
+
 - The latest web and API jobs failed before any workflow step ran: each job has no runner name, zero steps, and a two-second run window. Job-log retrieval returns 404 (BlobNotFound). Root cause is unknown; application code should not be changed speculatively to mask this infrastructure-level symptom.
 - Local npm dependency installation fails at DNS resolution (`EAI_AGAIN registry.npmjs.org`), so current frontend lint and production build are not verified. Historical successful builds on earlier versions do not prove this candidate builds.
 - Release Gate A remains unchecked until a fresh exact-commit workflow run completes, including lint and Next.js production build. Do not bypass CI or merge the stacked PRs while checks are failing.
