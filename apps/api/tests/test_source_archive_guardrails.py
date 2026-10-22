@@ -103,3 +103,25 @@ def test_source_archive_rejects_package_and_changelog_version_mismatch(tmp_path)
     result = run_verifier(archive)
     assert result.returncode == 1
     assert "release version mismatch between package manifest and changelog" in result.stdout
+
+
+def test_source_archive_rejects_additional_common_provider_tokens_without_echoing_them(tmp_path):
+    tokens = [
+        "sk_live_" + "A" * 24,
+        "rk_test_" + "B" * 24,
+        "xoxb-" + "C" * 30,
+        "glpat-" + "D" * 24,
+        "npm_" + "E" * 36,
+    ]
+    archive = make_archive(tmp_path, {"credentials.txt": "\\n".join(tokens)})
+    result = run_verifier(archive)
+    assert result.returncode == 1
+    assert "credential or private key detected" in result.stdout
+    assert all(token not in result.stdout for token in tokens)
+
+
+def test_source_archive_rejects_members_that_would_skip_credential_scanning(tmp_path):
+    archive = make_archive(tmp_path, {"large-source.txt": "A" * 2_000_001})
+    result = run_verifier(archive)
+    assert result.returncode == 1
+    assert "archive member exceeds credential scan size limit" in result.stdout
