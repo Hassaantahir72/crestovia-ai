@@ -64,3 +64,22 @@ def test_task_reminder_cron_rejects_short_secrets_before_auth_or_admin_access():
     assert secret_check < strength_check < auth_check < admin_client
     assert 'error:"cron_secret_weak"' in source
     assert "status:503" in source
+
+def test_task_reminder_rpc_is_privileged_only_and_uses_caller_security_context():
+    migration = " ".join(MIGRATION.read_text(encoding="utf-8").lower().split())
+
+    assert "language sql" in migration
+    assert "security invoker" in migration
+    assert "set search_path = ''" in migration
+    assert "revoke all on function public.enqueue_due_task_reminders(timestamptz, timestamptz, date, integer) from public, anon, authenticated" in migration
+    assert "grant execute on function public.enqueue_due_task_reminders(timestamptz, timestamptz, date, integer) to service_role" in migration
+    assert "grant execute on function public.enqueue_due_task_reminders(timestamptz, timestamptz, date, integer) to authenticated" not in migration
+    assert "grant execute on function public.enqueue_due_task_reminders(timestamptz, timestamptz, date, integer) to anon" not in migration
+
+
+def test_task_reminder_dedupe_key_is_stable_per_task_type_and_utc_day():
+    migration = " ".join(MIGRATION.read_text(encoding="utf-8").lower().split())
+
+    assert "task_overdue:' else 'task_due_soon:' end" in migration
+    assert "|| t.id::text || ':' || p_day::text" in migration
+    assert "on conflict (dedupe_key) do nothing" in migration
