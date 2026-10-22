@@ -1,3 +1,10 @@
+## v0.2.95 — Keep task reminder batches fair across due categories
+
+- Reserves half of each normal 500-item cron batch for overdue tasks and half for tasks due within the next 24 hours, so a persistent overdue backlog cannot occupy every slot.
+- Keeps each category independently ordered and daily-deduplicated, with a hard maximum batch size of 500 and the existing service-role-only RPC grants.
+- Adds regression checks for both category filters, split limits, migration sequence, and the cron route contract.
+- Source migration only; migration 0036 has not been applied to a live database. Live acceptance and owner approval remain required.
+
 ## v0.2.94 — Prevent task-reminder starvation with bounded deduplicated batches
 
 - Moves reminder selection and notification insertion into a service-role-only database RPC with a strict maximum batch of 500.
