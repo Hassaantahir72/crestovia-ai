@@ -1,3 +1,15 @@
+## Hands-on validation refresh — 2026-10-22 18:20 PKT
+
+- Re-ran the offline JavaScript test suite: 39 passed, 0 failed.
+- Re-ran the API pytest suite: 107 passed, 0 failed.
+- Migration source sequence check passed for 36 migrations (0001–0036); this is a source-order check, not a live database migration audit.
+- Readiness checklist structure passed (six gates, 30 items); release readiness remains blocked by pending real-world evidence.
+- Re-ran Python bytecode compilation successfully for the API and migration-check script.
+- Tried frontend dependency installation again; npm timed out, and offline install confirmed required package metadata is not cached. No package lockfile is present, so a reproducible frontend install is not yet available.
+- Ran the globally available TypeScript compiler as a diagnostic only. It cannot resolve Next.js, React, Node, or Supabase packages because dependencies are absent. It surfaced no syntax diagnostics, and rate-limit guard flags plus approved-email payload narrowing were hardened, but this is **not** a successful frontend typecheck, ESLint run, or Next.js build.
+- GitHub Actions latest API/web jobs still fail before workflow steps and have no downloadable logs. The runner/setup root cause remains unconfirmed; owner review of repository Actions settings/usage is needed if it persists.
+- No live Groq call was made because the key previously pasted into chat must be revoked. No replacement key is available privately in this environment. No staging users/tokens were available for real tenant-isolation acceptance. No production database writes or deployment were performed.
+
 
 
 ## CI / dependency blocker detail — 2026-10-22 11:24 UTC
