@@ -1,3 +1,9 @@
+## v0.2.83 — Fix README operations formatting
+
+- Replaces literal escaped newline characters in the implemented-capabilities section with actual Markdown line breaks so the operations list and guidance render correctly.
+- Adds a regression test preventing escaped newline sequences from reappearing in the README.
+- Documentation/test-only change; no live database change or deployment is performed.
+
 ## v0.2.82 — Fix RLS audit query grouping
 
 - Corrects the first read-only database audit query to group by every selected non-aggregate relation/RLS field, including relation kind and FORCE RLS.
