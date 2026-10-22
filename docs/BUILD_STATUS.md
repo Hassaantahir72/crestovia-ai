@@ -1,5 +1,23 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
+**Project version:** 0.3.3 (candidate; CI verification pending)
+**Baseline:** v0.3.2 / merge commit `59b84f7e1defbbb11b77c2dc6a3ee55ec0e9a8e3`
+**Milestone:** Opt-in live Groq completion smoke check
+**Change:** Adds a real, bounded operator-side completion request using a private `GROQ_API_KEY`; response content and credentials are never printed. Mocked CI tests cover safe failure categories.
+**Database:** no migration or database change. Staging remains at migration 0036; production remains at migration 0033.
+**Deployment:** no public deployment; owner approval remains required.
+
+### Current release blockers
+1. Run tenant-isolation acceptance with two synthetic staging users, then complete mutation, role, stale-context, suspension, and approval-replay tests.
+2. Run the Groq smoke check with a privately configured staging key, then test the app's real assistant flow. Verify Resend delivery/webhooks, reminders, duplicate suppression, and failure recovery with approved fixtures.
+3. Confirm backup retention and complete an isolated non-production restore drill.
+4. Re-audit effective schema/object privileges after schema or role changes; the platform-managed default-ACL limitation remains documented.
+5. Collect release evidence and obtain explicit owner approval before public deployment.
+
+---
+
+## Crestovia AI — Current Build Status (2026-10-22)
+
 **Project version:** 0.3.2 (provider connectivity diagnostics candidate)
 **Milestone:** Read-only provider connectivity checks for Groq and Resend
 **Change:** Adds fixed-endpoint HTTPS GET checks, safe status reporting, offline tests, CI coverage, and an operator runbook. The checks never send email or print secrets.
