@@ -7,7 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { enforceOwnerMfa } from "@/lib/security/owner-mfa";
 import { recordAuditEvent } from "@/lib/security/audit";
 import { consumeUserRateLimit } from "@/lib/security/rate-limit";
-import { emailProviderReadiness, sendApprovedEmail, validateApprovedEmailPayload } from "@/lib/email/provider";
+import { emailProviderReadiness, sendApprovedEmail, validateApprovedEmailPayload, type ApprovedEmailPayload } from "@/lib/email/provider";
 
 async function ownerContext() {
   const supabase = await createClient();
@@ -33,9 +33,12 @@ export async function executeApprovedEmailRequest(data: FormData) {
     .eq("id", id).eq("organization_id", membership.organization_id).maybeSingle();
   if (requestError || !request || request.action_type !== "send_email" || request.status !== "approved" ||
       new Date(request.expires_at).getTime() <= Date.now()) redirect("/dashboard/approvals?error=email_request_unavailable");
-  let payload;
-  try { payload = validateApprovedEmailPayload(request.details); }
-  catch { redirect("/dashboard/approvals?error=email_payload_invalid"); }
+  const parsedPayload: { ok: true; payload: ApprovedEmailPayload } | { ok: false } = (() => {
+    try { return { ok: true, payload: validateApprovedEmailPayload(request.details) }; }
+    catch { return { ok: false }; }
+  })();
+  if (!parsedPayload.ok) redirect("/dashboard/approvals?error=email_payload_invalid");
+  const payload = parsedPayload.payload;
 
   const admin = createAdminClient();
   const { data: claimed, error: claimError } = await admin.from("action_approval_requests")
@@ -94,7 +97,7 @@ export async function executeApprovedEmailRequest(data: FormData) {
 
 export async function testEmailProviderConnection() {
   const { user, membership } = await ownerContext();
-  let testAllowed: boolean;
+  let testAllowed = false;
   try {
     testAllowed = await consumeUserRateLimit(user.id, "email_provider_test_minute", 3, 60)
       && await consumeUserRateLimit(user.id, "email_provider_test_hour", 10, 3600);
