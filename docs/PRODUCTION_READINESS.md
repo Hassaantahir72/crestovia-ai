@@ -4,9 +4,11 @@ This checklist is the release gate for the private Crestovia AI deployment. A so
 
 ## Gate A — automated source and build checks
 
-- [x] API test workflow passes on the exact release commit.
-- [x] Web ESLint and Next.js production build pass on the exact release commit.
-- [x] Complete source archive is generated from that same commit and passes ZIP integrity checks.
+- [ ] API test workflow passes on the exact release commit.
+- [ ] Web ESLint and Next.js production build pass on the exact release commit.
+- [ ] Complete source archive is generated from that same commit and passes ZIP integrity checks.
+
+**Current candidate evidence (v0.3.4, 2026-10-22):** offline web/security tests pass (39/39), API tests pass (107/107), the migration source-order check passes (36 files), and the local candidate ZIP integrity check passes. These checks do not replace an exact-commit CI run. GitHub Actions jobs currently fail before any steps are recorded, with no retrievable job logs. Local npm dependency installation failed because DNS resolution for `registry.npmjs.org` returned `EAI_AGAIN`; therefore ESLint and the Next.js production build have not been verified for this candidate. Do not mark these Gate A checks complete until they pass on the exact release commit.
 - [ ] Database migrations are reviewed, applied to the intended environment, and their grants/policies verified.
 - [ ] No secrets, tokens, local environment files, or production data are included in the source archive.
 
