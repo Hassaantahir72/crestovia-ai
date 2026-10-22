@@ -1,3 +1,9 @@
+## v0.2.84 — Synchronize verified build status
+
+- Updates the build-status dashboard to reflect the merged v0.2.83 commit, successful API and web checks, and verified 207-entry source archive.
+- Adds regression coverage to prevent the current build status and web package version from drifting out of sync.
+- Documentation/test-only milestone. No live database queries, migrations, privilege changes, or deployment are performed.
+
 ## v0.2.83 — Fix README operations formatting
 
 - Replaces literal escaped newline characters in the implemented-capabilities section with actual Markdown line breaks so the operations list and guidance render correctly.
