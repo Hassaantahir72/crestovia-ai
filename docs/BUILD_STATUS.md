@@ -1,4 +1,33 @@
-## Crestovia AI — Current Build Status (2026-10-22)\n\n**Project version:** 0.2.89 (candidate; CI verification pending)\n**Baseline commit:** 64a5771f6335df01b2e4967189671639518d24bc (v0.2.88 merged; API/web/package workflows passed)\n**Milestone:** Record live browser-role privilege audit and release evidence\n**Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).\n**Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).\n**Deployment:** deferred until owner approval.\n\n### v0.2.88 merged verification\n- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726201740\n- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726201648\n- Full source archive passed packaging and credential-pattern verification: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726201668; downloaded ZIP contains 210 entries, package version 0.2.88, and SHA-256 `31c696d1815d07e941504229d6dbcee190582d4fc702c7a0bf050c717037d12a`.\n\n### Live database audit findings (read-only; 2026-10-22)\n- Migration history ends at `0033_retry_unmatched_resend_events_v0_2_56`; migration 0034 is not applied.\n- `anon` has effective SELECT/INSERT/UPDATE/DELETE/TRUNCATE on 11 public tables; `authenticated` has effective TRUNCATE/MAINTAIN on 15 public tables.\n- Default ACLs for `postgres` and `supabase_admin` still grant browser roles broad privileges on future tables, sequences, and functions.\n- The six inventoried RPCs show the expected effective EXECUTE split: `create_organization` and `execute_approved_task_request` are authenticated-callable; the four MFA/rate-limit/Resend RPCs are not executable by browser roles.\n- Full query scope and table names are documented in `docs/database/LIVE_AUDIT_2026-10-22.md`. This is a blocker snapshot, not a remediation; no live changes were made.\n\n### Critical remaining release blockers\n1. Review migration 0034 against all real API/RPC behavior, stage it in non-production, and verify post-migration grants before any owner-approved live apply.\n2. Validate organization isolation with separate organizations and real owner/admin/member/suspended test accounts, including direct API access.\n3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.\n4. Confirm backup retention and complete an isolated non-production restore drill.\n5. Collect evidence for remaining readiness checklist items; public deployment remains owner-gated.\n\n---\n## Crestovia AI — Current Build Status (2026-10-22)
+## Crestovia AI — Current Build Status (2026-10-22)
+
+**Project version:** 0.2.89 (candidate; CI verification pending)
+**Baseline commit:** 64a5771f6335df01b2e4967189671639518d24bc (v0.2.88 merged; API/web/package workflows passed)
+**Milestone:** Record live browser-role privilege audit and release evidence
+**Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
+**Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
+**Deployment:** deferred until owner approval.
+
+### v0.2.88 merged verification
+- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726201740
+- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726201648
+- Full source archive passed packaging and credential-pattern verification: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726201668; downloaded ZIP contains 210 entries, package version 0.2.88, and SHA-256 `31c696d1815d07e941504229d6dbcee190582d4fc702c7a0bf050c717037d12a`.
+
+### Live database audit findings (read-only; 2026-10-22)
+- Migration history ends at `0033_retry_unmatched_resend_events_v0_2_56`; migration 0034 is not applied.
+- `anon` has effective SELECT/INSERT/UPDATE/DELETE/TRUNCATE on 11 public tables; `authenticated` has effective TRUNCATE/MAINTAIN on 15 public tables.
+- Default ACLs for `postgres` and `supabase_admin` still grant browser roles broad privileges on future tables, sequences, and functions.
+- The six inventoried RPCs show the expected effective EXECUTE split: `create_organization` and `execute_approved_task_request` are authenticated-callable; the four MFA/rate-limit/Resend RPCs are not executable by browser roles.
+- Full query scope and table names are documented in `docs/database/LIVE_AUDIT_2026-10-22.md`. This is a blocker snapshot, not a remediation; no live changes were made.
+
+### Critical remaining release blockers
+1. Review migration 0034 against all real API/RPC behavior, stage it in non-production, and verify post-migration grants before any owner-approved live apply.
+2. Validate organization isolation with separate organizations and real owner/admin/member/suspended test accounts, including direct API access.
+3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
+4. Confirm backup retention and complete an isolated non-production restore drill.
+5. Collect evidence for remaining readiness checklist items; public deployment remains owner-gated.
+
+---
+## Crestovia AI — Current Build Status (2026-10-22)
 
 **Project version:** 0.2.88 (candidate; CI verification pending)
 **Baseline commit:** d6cfbd5ea3f7a4821f207aec03d0a7f7a9b2ba53 (v0.2.87 merged; API/web/package workflows passed)
