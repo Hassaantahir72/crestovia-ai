@@ -1,5 +1,28 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
+**Project version:** 0.2.95 (candidate; CI verification pending)
+**Baseline commit:** d71e252fac180130efdb658812fc51497b33bbf5 (v0.2.94 candidate; CI verification pending)
+**Milestone:** Detect credentialed database URLs in source archives
+**Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
+**Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
+**Deployment:** deferred until owner approval.
+
+### v0.2.95 change
+- Adds fail-closed detection for PostgreSQL connection URLs containing embedded passwords, with regression coverage that verifies secrets are not echoed.
+- Source-level archive protection only. It does not prove private configuration is clean, rotate credentials, or change the live database.
+- API/web/package workflows have not yet been verified for this candidate; do not describe it as release-ready until CI passes on the exact commit.
+
+### Critical remaining release blockers
+1. Review migration 0034 and the new reminder RPC grants against live privileges; test migration compatibility in non-production before any owner-approved live apply.
+2. Execute the tenant-isolation matrix with separate organizations and owner/admin/member/suspended test accounts, including direct API access.
+3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
+4. Confirm backup retention and complete an isolated non-production restore drill.
+5. Collect evidence for remaining readiness checklist items; public deployment remains owner-gated.
+
+---
+
+## Crestovia AI — Current Build Status (2026-10-22)
+
 **Project version:** 0.2.94 (candidate; CI verification pending)
 **Baseline commit:** 6b671062113f16785ec9d255d6d6256594a9d605 (v0.2.93 merged; API/web/package workflows passed)
 **Milestone:** Prevent task-reminder starvation using bounded, deduplicated database batches
