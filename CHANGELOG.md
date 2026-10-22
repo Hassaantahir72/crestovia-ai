@@ -2,8 +2,9 @@
 
 - Extends fail-closed source-archive scanning to detect PostgreSQL connection URLs that embed a password, including common `postgres://` and `postgresql://` forms.
 - Adds regression coverage that confirms a matching URL fails verification without printing the password.
-- This is source-level archive protection only; it does not rotate exposed credentials, inspect private hosting settings, or change the live database.
-- v0.2.94 and v0.2.95 CI verification remain pending until the release workflows complete. No deployment or database migration is authorized by this change.
+- API regression tests passed on PR commit `a05cf65ea357f199ef577fde09cb559270002e35`; web preflight tests, ESLint, and Next.js production build passed on the same commit.
+- Full source archive packaging and credential-pattern verification passed on merge commit `150148efe4fbff7f3cbc3f770b16867914ffe76a`; ZIP contains 213 files and SHA-256 `c55a2dc447759055862001b1d4209f3d983fcf3962164e3aeb774d9c7a379ccd`.
+- Source-level archive protection only; it does not rotate exposed credentials, inspect private hosting settings, or change the live database. Migration 0034 and production-readiness blockers remain open.
 
 ## v0.2.94 — Prevent task-reminder starvation with bounded deduplicated batches
 
