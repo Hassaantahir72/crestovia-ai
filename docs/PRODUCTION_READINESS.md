@@ -85,3 +85,12 @@ The following Gate A items are checked only because their workflows completed su
 - **Downloaded archive SHA-256:** `e71ea1e08ea7a08d3fad7fda7ec427be0b13c1f621be2dc229f33cac194c19c5` (214 entries; ZIP integrity and embedded archive verification passed; package version 0.2.97)
 
 This evidence log does not assert that live database security, tenant isolation, provider acceptance, recovery, or launch authorization is complete.
+
+
+## Live environment verification refresh (2026-10-22)
+
+- Read-only Supabase security advisors returned no findings in staging or production. Informational unused-index notices remain (46 staging, 47 production); these are not sufficient evidence to remove indexes.
+- Staging migration inventory is at 0036; production remains at 0033. No production migration or write was performed.
+- Latest GitHub Actions reruns again failed before recording any steps, with no retrievable job logs. The root cause remains unconfirmed.
+- Local npm installation timed out; candidate ESLint and Next.js production build remain unverified. Gate A stays unchecked.
+- The connected Render workspace has no service linked to the Crestovia AI repository, so no Crestovia app deployment was found there. No service was created or deployed.
