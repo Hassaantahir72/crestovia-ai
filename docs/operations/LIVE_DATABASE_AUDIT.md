@@ -13,20 +13,20 @@ A read-only inspection was performed against the connected Crestovia AI Supabase
 - The source tree contains `0018_foreign_key_lookup_indexes.sql`; its exact source filename is not represented as a migration name in the recorded history. Several later entries are recorded with a prefixed source number or release suffix. A read-only index check confirmed representative indexes from the foreign-key index set exist in the database, so **do not assume that the migration itself is absent or re-run it blindly**.
 - The unauthenticated `anon` role had direct table privileges, including effective `TRUNCATE` on 11 public tables. The `authenticated` role had effective `TRUNCATE` and PostgreSQL 17 `MAINTAIN` privileges on 15 public tables. RLS does not constrain table-level `TRUNCATE`/`MAINTAIN`; table grants must be minimized separately.
 - Default ACLs for both `postgres` and `supabase_admin` included broad public-schema table grants to `anon`, `authenticated`, and `service_role`, plus function and sequence defaults. These defaults can reintroduce excess privileges on future objects.
-- The first function audit filtered to `SECURITY DEFINER` routines only, which was too narrow for an RPC permission review. The v0.2.79 source audit now lists all public functions, effective `anon`/`authenticated`/`PUBLIC` EXECUTE access, and whether each routine is `SECURITY DEFINER`.
+- The first function audit filtered to `SECURITY DEFINER` routines only, which was too narrow for an RPC permission review. The v0.2.79 source audit now lists all public functions, effective `anon`/`authenticated`/`PUBLIC` EXECUTE access, and whether each routine is `SECURITY DEFINER`. The v0.2.80 audit also checks effective table row/admin privileges and sequence privileges, including inherited `PUBLIC` grants.
 - The performance advisor reported 47 informational unused-index findings. The tables currently report zero rows, so these warnings are expected for an unexercised database and are not a basis for removing indexes.
 
 ## Required follow-up
 
 1. Reconcile source migration files against the timestamped Supabase migration history using a reviewed mapping/checksum ledger. Do not edit migration history or replay DDL solely to make names match.
 2. Review and approve the proposed `0034_revoke_anon_public_privileges.sql` hardening migration. It removes all `anon` table/sequence/function privileges and limits authenticated table privileges to normal row operations. It has **not** been applied to the live database; confirm application compatibility and apply only after explicit approval.
-3. Re-run the updated read-only audit SQL after approval to confirm browser-role table privileges and function EXECUTE grants are intentional, including default ACLs. Review every function result; do not blanket-revoke an RPC that the app requires.
+3. Re-run the updated read-only audit SQL before and after any approved migration. Compare direct grants with effective table privileges (including inherited `PUBLIC` grants), effective sequence privileges, function EXECUTE grants, and default ACLs. Review every function result; do not blanket-revoke an RPC that the app requires.
 4. Run organization/role isolation acceptance tests using dedicated test users and separate test organizations in a non-production environment. Current zero-row tables mean this has not been demonstrated with real organization data.
 5. Revisit unused-index findings only after representative test traffic or production workload exists.
 6. Record the audit date and evidence owner when updating the production-readiness checklist.
 
 ## Re-run
 
-Run `database/operations/live-db-security-audit.sql` in the Supabase SQL editor or another trusted read-only database session. All statements are SELECT-only. Review results before changing any access policy or migration history.
+Run `database/operations/live-db-security-audit.sql` in the Supabase SQL editor or another trusted read-only database session. All eight statements are SELECT-only. Statements 7–8 check effective table and sequence privileges, including inherited grants; they do not alter permissions. Review results before changing any access policy or migration history.
 
 **Status:** useful point-in-time evidence, not a production-readiness sign-off and not permission to deploy publicly.
