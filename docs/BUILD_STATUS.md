@@ -1,5 +1,18 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
+**Project version:** 0.2.99 candidate (PR #80 open; CI status not yet confirmed)
+**Baseline commit:** `9bc79cba179ebcf8030df1a01d50e74a3c668f58` (v0.2.98 main)
+**Source archive:** candidate archive is generated and checked locally; CI packaging verification is still pending.
+**Milestone:** Dashboard navigation cleanup
+**Change:** Removed a duplicate Notifications shortcut and added a source regression test.
+**Local verification:** dashboard navigation and organization isolation guardrail tests passed (5 tests); migration sequence check passed (36 files, 0001–0036).
+**Database:** no migration applied; staging and production databases unchanged by this UI-only change.
+**Deployment:** no public deployment; owner approval still required.
+
+---
+
+## Crestovia AI — Current Build Status (2026-10-22)
+
 **Project version:** 0.2.98 (merged; API tests, web lint/build, and source packaging passed)
 **Release commit:** `2db9946f093763eaeb2dcd8c7284f58893a9dece` (v0.2.98 merge to main)
 **Milestone:** Staging anonymous schema-boundary hardening
