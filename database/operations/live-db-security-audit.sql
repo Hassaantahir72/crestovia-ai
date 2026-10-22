@@ -105,9 +105,7 @@ select
   has_schema_privilege('anon', 'public', 'USAGE') as anon_can_use_schema,
   has_schema_privilege('anon', 'public', 'CREATE') as anon_can_create_in_schema,
   has_schema_privilege('authenticated', 'public', 'USAGE') as authenticated_can_use_schema,
-  has_schema_privilege('authenticated', 'public', 'CREATE') as authenticated_can_create_in_schema,
-  has_schema_privilege('public', 'public', 'USAGE') as public_can_use_schema,
-  has_schema_privilege('public', 'public', 'CREATE') as public_can_create_in_schema;
+  has_schema_privilege('authenticated', 'public', 'CREATE') as authenticated_can_create_in_schema;
 
 -- 10. List policies and their effective command/role intent for targeted review.
 -- This is an inventory, not proof that policy predicates are correct.
