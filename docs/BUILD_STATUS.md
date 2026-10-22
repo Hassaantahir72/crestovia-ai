@@ -1,3 +1,21 @@
+## Crestovia AI — Current Build Status (2026-10-22)
+
+**Project version:** 0.2.79 (in progress)  
+**Milestone:** Default function privilege hardening and complete effective-function-grant audit  
+**Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).  
+**Deployment:** explicitly deferred until owner approval.
+
+### v0.2.79 changes
+- The source migration `0034_revoke_anon_public_privileges.sql` now also revokes default function EXECUTE from `PUBLIC` for objects created by `postgres` and `supabase_admin`, so new RPCs require explicit grants.
+- The read-only live database audit now inventories SECURITY INVOKER and SECURITY DEFINER functions and reports effective EXECUTE privileges for `anon`, `authenticated`, and `PUBLIC`.
+- Regression tests cover both the default-ACL policy and the expanded read-only audit.
+- **Live DB migration 0034 remains unapplied** pending owner approval and compatibility review. The current live privilege audit still shows excessive browser-role table privileges; this is a release blocker. No live DB writes or deployment were performed for this milestone.
+
+### Verified GitHub main baseline before v0.2.79
+- `main` was at `c55d0b7` / package version `0.2.78`.
+- Latest API CI, web lint/production build, and full-source package workflows passed for that commit.
+- No open PRs were present when checked on 2026-10-22.
+
 ## Crestovia AI — Current Build Status
 
 **Project version:** 0.2.70 (candidate; CI verification pending)  
