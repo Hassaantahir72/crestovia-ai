@@ -274,3 +274,16 @@ def test_live_privilege_audit_includes_global_and_public_schema_default_acls():
     assert "where defaclnamespace = 0" in audit
     assert "or defaclnamespace = 'public'::regnamespace" in audit
     assert "global and public-schema default privileges" in audit
+
+
+def test_task_reminder_batch_rpc_is_bounded_idempotent_and_service_role_only():
+    sql = compact_sql("0035_task_reminder_batch_dedupe_v0_2_94.sql")
+
+    assert "create or replace function public.enqueue_due_task_reminders" in sql
+    assert "security invoker" in sql
+    assert "set search_path = ''" in sql
+    assert "not exists ( select 1 from public.notifications n" in sql
+    assert "on conflict (dedupe_key) do nothing" in sql
+    assert "limit least(greatest(coalesce(p_batch_size, 500), 1), 500)" in sql
+    assert "revoke all on function public.enqueue_due_task_reminders(timestamptz, timestamptz, date, integer) from public, anon, authenticated" in sql
+    assert "grant execute on function public.enqueue_due_task_reminders(timestamptz, timestamptz, date, integer) to service_role" in sql
