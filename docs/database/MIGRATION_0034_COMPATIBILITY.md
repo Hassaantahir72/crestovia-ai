@@ -1,4 +1,4 @@
-# Migration 0034 — RPC compatibility review
+# Migration 0034 — RPC and default-ACL compatibility review
 
 **Scope:** source-level review only. This document does not prove the live database matches repository migrations and does not authorize applying migration `0034_revoke_anon_public_privileges.sql`.
 
@@ -17,16 +17,19 @@
 
 - Revokes all existing table, sequence, and function privileges from `anon` in the public schema.
 - Removes existing table-level administrative privileges (TRUNCATE, REFERENCES, TRIGGER, MAINTAIN) from `authenticated`, while retaining its normal row-level operations subject to RLS.
-- Changes default privileges for future objects created by `postgres` and `supabase_admin`; future RPCs must receive explicit grants.
+- Revokes relevant global default ACL grants for objects created by `postgres` and `supabase_admin`. **This global default-ACL cleanup affects future objects in every schema those roles own**, not only `public`, because global grants are additive and cannot be cancelled by a schema-specific REVOKE. Review this cross-schema scope against the target environment before applying.
+- Retains public-schema-specific default revokes as an additional explicit guard.
 - It does **not** contain a blanket revoke of EXECUTE on all existing functions from `authenticated`. That distinction matters because onboarding and approved-task execution are authenticated-client RPCs.
+- Source changes do not alter the connected live database and do not establish that the live grants/default ACLs match this file.
 
 ## Required live acceptance before applying
 
-1. Run `database/operations/live-db-security-audit.sql` against the intended environment using an authorized, read-only session; retain the output securely. Its default-ACL inventory includes both global ACLs (defaclnamespace = 0) and public-schema-specific ACLs because global defaults also affect objects created in public.
-2. Compare live function signatures and effective EXECUTE privileges to this source inventory and all additional RPCs in the live audit.
-3. Confirm the live `supabase_migrations.schema_migrations` history and determine why migration 0034 is pending before scheduling it.
-4. Review each existing anon grant and authenticated administrative grant against real API/UI paths; verify any required grants are explicitly present.
-5. Apply only to a non-production environment first, run organization isolation and auth/RPC acceptance tests, and compare the post-migration audit.
-6. Obtain explicit owner approval before any live migration. No production apply is authorized by this document.
+1. Run `database/operations/live-db-security-audit.sql` against the intended environment using an authorized, read-only session; retain the output securely. Its default-ACL inventory includes both global ACLs (`defaclnamespace = 0`) and public-schema-specific ACLs.
+2. Compare global and schema-specific ACLs for `postgres` and `supabase_admin`; confirm whether any non-public schema depends on the default grants being removed.
+3. Compare live privilege output, function signatures, and effective EXECUTE privileges to this source inventory and all additional RPCs in the live audit.
+4. Confirm the live `supabase_migrations.schema_migrations` history and determine why migration 0034 is pending before scheduling it.
+5. Review each existing anon grant and authenticated administrative grant against real API/UI paths; verify any required grants are explicitly present.
+6. Apply only to a non-production environment after explicit approval for that test, run non-production acceptance testing including organization isolation and auth/RPC acceptance, and compare the post-migration audit.
+7. Obtain explicit owner approval before any live migration. No production apply is authorized by this document.
 
-**Current conclusion:** the source changes appear designed to preserve the two known authenticated RPCs while making future function grants opt-in, but this is not a substitute for live privilege output, full RPC inventory, and non-production acceptance testing.
+**Current conclusion:** global default ACL handling is now explicit in source and regression-tested, but the cross-schema impact, live grant inventory, full RPC compatibility, and non-production acceptance still require review.

@@ -1,3 +1,10 @@
+## v0.2.96 — Correct global default-ACL hardening
+
+- Fixes migration 0034 so it revokes relevant global default privileges as well as public-schema-specific defaults; global ACL grants are additive and cannot be cancelled by schema-specific revokes.
+- Documents the intentional cross-schema effect on future objects created by `postgres` and `supabase_admin`, and adds regression coverage for the global revoke invariants.
+- Updates the migration compatibility runbook to require reviewing non-public schema dependencies before any application.
+- Source-only change. No live database grants, migration history, data, or deployment were changed. Non-production acceptance and explicit owner approval remain required.
+
 ## v0.2.95 — Detect credentialed database URLs in source archives
 
 - Extends fail-closed source-archive scanning to detect PostgreSQL connection URLs that embed a password, including common `postgres://` and `postgresql://` forms.

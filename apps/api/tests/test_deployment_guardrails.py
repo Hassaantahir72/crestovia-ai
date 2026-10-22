@@ -28,6 +28,6 @@ def test_build_status_matches_current_package_and_merged_baseline():
 
     package = json.loads((ROOT / "apps" / "web" / "package.json").read_text(encoding="utf-8"))
     status = (ROOT / "docs" / "BUILD_STATUS.md").read_text(encoding="utf-8")
-    assert package["version"] == "0.2.95"
-    assert "**Project version:** 0.2.95 (merged; API/web/package workflows passed)" in status
-    assert "**Baseline commit:** 150148efe4fbff7f3cbc3f770b16867914ffe76a (v0.2.95 merged; API/web/package workflows passed)" in status
+    assert package["version"] == "0.2.96"
+    assert "**Project version:** 0.2.96 (candidate; CI verification pending)" in status
+    assert "**Baseline commit:** source branch based on v0.2.95 merge `150148efe4fbff7f3cbc3f770b16867914ffe76a`; this candidate is not yet merged." in status
