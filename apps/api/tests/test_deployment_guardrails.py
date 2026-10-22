@@ -30,4 +30,4 @@ def test_build_status_matches_current_package_and_merged_baseline():
     status = (ROOT / "docs" / "BUILD_STATUS.md").read_text(encoding="utf-8")
     assert package["version"] == "0.2.86"
     assert "**Project version:** 0.2.86" in status
-    assert "**Baseline commit:** c5ae088d72d143cead8b444de4518754b50a8575 (v0.2.85 merged)" in status
+    assert "**Baseline commit:** c5ae088d72d143cead8b444de4518754b50a8575 (v0.2.85 merged and verified)" in status
