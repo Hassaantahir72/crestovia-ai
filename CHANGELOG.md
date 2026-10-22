@@ -1,3 +1,10 @@
+## v0.2.87 — Document migration 0034 RPC compatibility
+
+- Adds a source-level compatibility matrix for browser-callable and server-only RPC functions affected by privilege hardening.
+- Adds regression tests protecting explicit `authenticated` grants for organization bootstrap and approved-task execution while keeping MFA, email webhook, and rate-limit RPCs service-role-only.
+- Explicitly distinguishes source review from live grant verification; migration 0034 remains unapplied until owner approval and live audit review.
+- No live database query, migration, privilege change, or deployment is performed.
+
 ## v0.2.86 — Record verified release evidence
 
 - Marks the API workflow, web lint/production build, and full-source archive checks complete based on successful runs for merge commit `c5ae088d72d143cead8b444de4518754b50a8575`.
