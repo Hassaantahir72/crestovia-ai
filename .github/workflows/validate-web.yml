@@ -27,6 +27,8 @@ jobs:
         run: node --test ../../scripts/health-smoke.test.mjs
       - name: Test database backup verification helper
         run: node --test ../../scripts/verify-db-backup.test.mjs
+      - name: Test read-only tenant isolation acceptance runner
+        run: node --test ../../scripts/tenant-isolation-acceptance.test.mjs
       - name: Test production-readiness report
         run: node --test ../../scripts/readiness-report.test.mjs
       - name: Validate production-readiness checklist structure

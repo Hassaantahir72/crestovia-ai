@@ -1,3 +1,10 @@
+## v0.3.1 — Read-only tenant-isolation acceptance runner
+
+- Adds a staging-only, read-only Supabase REST runner that checks own-organization fixture visibility and cross-organization row invisibility using two distinct user tokens.
+- Restricts queried tables to an explicit tenant-resource allowlist, requires HTTPS for remote Supabase URLs, performs GET-only checks, and never logs tokens, row IDs, or provider response bodies.
+- Adds automated safety tests and runs them in web CI; documents how to use synthetic staging fixtures.
+- Does not prove mutation, server-action, role, stale-context, suspension, or approval replay safety. No database migration, live data change, credential change, or deployment is performed.
+
 ## v0.3.0 — Owner launch-readiness dashboard
 
 - Adds an owner-only, MFA-protected page showing whether core Supabase, MFA, Groq, Resend, and cron environment variables are present.
