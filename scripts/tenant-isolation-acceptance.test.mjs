@@ -6,7 +6,7 @@ const idA = '11111111-1111-4111-8111-111111111111';
 const idB = '22222222-2222-4222-8222-222222222222';
 const fixtures = { tables: [{ table: 'projects', orgAId: idA, orgBId: idB }] };
 const env = {
-  CRESTOVIA_STAGING_SUPABASE_URL: 'https://staging.example.test',
+  CRESTOVIA_STAGING_SUPABASE_URL: 'https://staging.supabase.co',
   CRESTOVIA_STAGING_SUPABASE_PUBLISHABLE_KEY: 'public-test-key',
   CRESTOVIA_STAGING_ORG_A_USER_TOKEN: 'token-a',
   CRESTOVIA_STAGING_ORG_B_USER_TOKEN: 'token-b',
@@ -43,8 +43,9 @@ test('fails closed on missing settings and identical actor tokens', async () => 
   await assert.rejects(() => runAcceptance({ env: { ...env, CRESTOVIA_STAGING_ORG_B_USER_TOKEN: 'token-a' }, fixtures, write: () => {} }), /different user access tokens/);
 });
 
-test('rejects non-HTTPS remote endpoints', async () => {
-  await assert.rejects(() => runAcceptance({ env: { ...env, CRESTOVIA_STAGING_SUPABASE_URL: 'http://staging.example.test' }, fixtures, write: () => {} }), /must use HTTPS/);
+test('rejects non-HTTPS and non-Supabase remote endpoints before sending tokens', async () => {
+  await assert.rejects(() => runAcceptance({ env: { ...env, CRESTOVIA_STAGING_SUPABASE_URL: 'http://staging.supabase.co' }, fixtures, write: () => {} }), /must use a \\*\\.supabase.co HTTPS host/);
+  await assert.rejects(() => runAcceptance({ env: { ...env, CRESTOVIA_STAGING_SUPABASE_URL: 'https://attacker.example' }, fixtures, write: () => {} }), /must use a \\*\\.supabase.co HTTPS host/);
 });
 
 test('does not expose provider response bodies when a request fails', async () => {
