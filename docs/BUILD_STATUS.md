@@ -1,20 +1,20 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.86
-**Baseline commit:** c5ae088d72d143cead8b444de4518754b50a8575 (v0.2.85 merged and verified)
-**Milestone:** Record verified automated release evidence in the readiness gate
+**Project version:** 0.2.87
+**Baseline commit:** 672ef261d7b24b8050ed338483e84048cccf9207 (v0.2.86 merged)
+**Milestone:** Source-level RPC compatibility review for migration 0034
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
 **Deployment:** deferred until owner approval.
 
-### v0.2.85 merged verification
-- Added tests for the readiness report's six gates, 30-item total, JSON summary consistency, and strict-mode behavior; added these checks to web CI.
-- API tests, web lint/production build, and source archive packaging/content verification passed on merge commit `c5ae088d72d143cead8b444de4518754b50a8575`.
-- The complete source ZIP was verified: 208 entries, ZIP integrity passed, package version 0.2.85, and read-only database audit SQL and readiness-report tests are present.
+### v0.2.86 merged verification
+- Recorded successful API tests, web lint/production build, and source archive checks for the exact v0.2.85 merge commit.
+- The full source archive was verified: 208 entries, ZIP integrity passed, package version 0.2.86, and the readiness checklist now records three verified Gate A items with links and a SHA-256 hash.
+- Added a source-level compatibility inventory and regression coverage for RPC grants affected by migration 0034.
 - No live database query, migration, grant change, or deployment was performed.
 
-### Remaining release blockers
-1. Review effective database grants and migration 0034 against required API/RPC behavior before approval. Migration 0034 remains unapplied; source changes do not resolve live privilege risk.
+### Critical remaining release blockers
+1. Compare the source-level RPC inventory to live function signatures/effective grants and review migration 0034 against actual API/RPC behavior before approval. Migration 0034 remains unapplied.
 2. Validate organization isolation with separate organizations and real owner/admin/member/suspended test accounts, including direct API access.
 3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
 4. Confirm backup retention and complete an isolated non-production restore drill.

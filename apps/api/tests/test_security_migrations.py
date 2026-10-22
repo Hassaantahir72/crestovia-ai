@@ -213,3 +213,44 @@ def test_public_anon_privileges_are_revoked_and_authenticated_admin_privileges_a
         assert f"alter default privileges for role {owner_role} in schema public revoke truncate, references, trigger, maintain on tables from authenticated" in sql
     assert "drop table" not in sql
     assert "delete from" not in sql
+
+
+def test_privilege_hardening_preserves_required_authenticated_rpc_grants():
+    hardening = compact_sql("0034_revoke_anon_public_privileges.sql")
+    bootstrap = compact_sql("0006_safe_organization_bootstrap.sql")
+    approval = compact_sql("0023_approval_execution_org_scope_v0_2_41.sql")
+
+    assert "revoke execute on all functions in schema public from anon" in hardening
+    assert "revoke execute on all functions in schema public from authenticated" not in hardening
+    assert "revoke execute on functions from authenticated" in hardening
+    assert "revoke all on function public.create_organization(text, text) from public" in bootstrap
+    assert "grant execute on function public.create_organization(text, text) to authenticated" in bootstrap
+    assert "grant execute on function public.execute_approved_task_request(uuid, uuid) to authenticated" in approval
+
+
+def test_privilege_hardening_keeps_sensitive_server_rpcs_service_role_only():
+    hardening = compact_sql("0034_revoke_anon_public_privileges.sql")
+    rate_limit = compact_sql("0032_user_rate_limits_v0_2_52.sql")
+    mfa_issue = compact_sql("0016_atomic_email_mfa_challenge_issuance.sql")
+    mfa_verify = compact_sql("0017_atomic_email_mfa_failed_attempts.sql")
+    resend = compact_sql("0030_resend_delivery_webhooks_v0_2_47.sql")
+
+    assert "revoke execute on all functions in schema public from anon" in hardening
+    for sql, signature in [
+        (rate_limit, "consume_user_rate_limit(uuid, text, integer, integer)"),
+        (mfa_issue, "issue_email_mfa_challenge(uuid, text, text, text, timestamptz)"),
+        (mfa_verify, "record_email_mfa_failed_attempt(uuid)"),
+        (resend, "apply_resend_delivery_event(text, text, text, text)"),
+    ]:
+        normalized = re.sub(r"\s+", "", sql)
+        normalized_signature = re.sub(r"\s+", "", signature)
+        assert f"revokeallonfunctionpublic.{normalized_signature}frompublic,anon,authenticated" in normalized
+        assert f"grantexecuteonfunctionpublic.{normalized_signature}toservice_role" in normalized
+
+
+def test_migration_0034_compatibility_runbook_warns_that_source_review_is_not_live_approval():
+    source = (ROOT / "docs" / "database" / "MIGRATION_0034_COMPATIBILITY.md").read_text(encoding="utf-8")
+    assert "does not authorize applying migration" in source
+    assert "explicit owner approval" in source
+    assert "non-production acceptance testing" in source
+    assert "live privilege output" in source
