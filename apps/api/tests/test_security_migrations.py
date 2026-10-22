@@ -242,8 +242,8 @@ def test_privilege_hardening_keeps_sensitive_server_rpcs_service_role_only():
         (mfa_verify, "record_email_mfa_failed_attempt(uuid)"),
         (resend, "apply_resend_delivery_event(text, text, text, text)"),
     ]:
-        normalized = re.sub(r"\\s+", "", sql)
-        normalized_signature = re.sub(r"\\s+", "", signature)
+        normalized = re.sub(r"\s+", "", sql)
+        normalized_signature = re.sub(r"\s+", "", signature)
         assert f"revokeallonfunctionpublic.{normalized_signature}frompublic,anon,authenticated" in normalized
         assert f"grantexecuteonfunctionpublic.{normalized_signature}toservice_role" in normalized
 
