@@ -1,3 +1,12 @@
+## Live verification refresh — 2026-10-22 11:06 UTC
+
+- Re-ran source archive tests from the cumulative candidate: Node web/security suite **39/39 passed**; API pytest **107/107 passed**; migration source-order check passed for **36 files (0001–0036)**; ZIP integrity/path/environment/credential-pattern verification passed.
+- Read-only Supabase advisor check: staging (xpwrsxmwqptrpwycibub) and production (nnzxslnkpjlfbjmrvxaw) both report **zero security findings**. Performance advisors report informational unused-index notices (46 staging, 47 production); no indexes were removed.
+- Migration inventory confirms staging through migration 0036 and production through migration 0033. No migration or production database write was made.
+- GitHub Actions rerun requests were accepted, but both jobs again completed as failures with no recorded steps and no retrievable logs. The cause is still unconfirmed; no speculative workflow/runner change was made.
+- A fresh local npm install attempt timed out. ESLint and the Next.js production build remain unverified for this candidate.
+- The connected Render workspace currently lists services for other repositories, not Hassaantahir72/crestovia-ai; no Crestovia deployment is configured in that workspace. No service was created and nothing was deployed.
+
 ## Crestovia AI — Current Build Status (2026-10-22)
 
 **Project version:** 0.3.4 (candidate; CI verification pending)
