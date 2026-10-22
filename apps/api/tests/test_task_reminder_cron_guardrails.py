@@ -2,7 +2,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 ROUTE = ROOT / "apps" / "web" / "app" / "api" / "cron" / "task-reminders" / "route.ts"
-MIGRATION = ROOT / "database" / "migrations" / "0035_task_reminder_batch_dedupe_v0_2_94.sql"
+MIGRATION = ROOT / "database" / "migrations" / "0036_fair_task_reminder_batches_v0_2_95.sql"
 
 
 def test_task_reminder_cron_requires_server_secret_before_admin_access():
@@ -23,7 +23,11 @@ def test_task_reminder_sweep_uses_bounded_deduplicated_database_batch():
     assert "p_batch_size:500" in source
     assert "p_day:day" in source
     assert '.from("tasks")' not in source
-    assert "limit least(greatest(coalesce(p_batch_size, 500), 1), 500)" in " ".join(migration.split())
+    assert "least(greatest(coalesce(p_batch_size, 500), 1), 500) as batch_size" in " ".join(migration.split())
+    assert "limit (select ceil(batch_size / 2.0)::integer from settings)" in " ".join(migration.split())
+    assert "limit (select floor(batch_size / 2.0)::integer from settings)" in " ".join(migration.split())
+    assert "from overdue_candidates" in migration
+    assert "from due_soon_candidates" in migration
     assert "not exists" in migration
     assert "on conflict (dedupe_key) do nothing" in migration
     assert "p_now" in source and "p_window_end" in source
@@ -64,3 +68,19 @@ def test_task_reminder_cron_rejects_short_secrets_before_auth_or_admin_access():
     assert secret_check < strength_check < auth_check < admin_client
     assert 'error:"cron_secret_weak"' in source
     assert "status:503" in source
+
+ 
+
+def test_task_reminder_batch_reserves_capacity_for_both_due_categories():
+    migration = MIGRATION.read_text().lower()
+    overdue = migration.index("overdue_candidates as")
+    due_soon = migration.index("due_soon_candidates as")
+    candidates = migration.index("candidates as")
+    assert overdue < due_soon < candidates
+    assert "t.due_at <= p_now" in migration
+    assert "t.due_at > p_now" in migration
+    assert "ceil(batch_size / 2.0)" in migration
+    assert "floor(batch_size / 2.0)" in migration
+    assert "security invoker" in migration
+    assert "from public, anon, authenticated" in migration
+    assert "to service_role" in migration
