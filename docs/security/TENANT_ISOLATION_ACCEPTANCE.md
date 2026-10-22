@@ -46,6 +46,7 @@ Apply each relevant row to projects, tasks, departments, conversations/memories,
 - Verify the authenticated browser can execute only the intended authenticated RPCs; sensitive rate-limit, MFA, and delivery-webhook RPCs remain service-role-only.
 - Confirm a rejected, expired, already-executed, or cross-organization request cannot be replayed to produce a second side effect.
 - Use the read-only SQL in database/operations/live-db-security-audit.sql to capture effective table, sequence, schema, function, and default-ACL privileges before and after any separately authorized non-production migration test.
+- Confirm `has_schema_privilege('anon', 'public', 'USAGE')` is false while the same check is true for `authenticated` and `service_role`; treat any unexpected change as a release blocker.
 
 ## 4. Evidence worksheet
 
