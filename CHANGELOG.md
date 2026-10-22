@@ -1,3 +1,11 @@
+## v0.3.2 — Provider connectivity diagnostics
+
+- Adds read-only Groq and Resend connectivity checks against fixed HTTPS endpoints; no email is sent and no provider resources are modified.
+- Redacts credentials, response bodies, and raw network errors from output; distinguishes missing settings, rejected credentials, provider errors, and network timeouts.
+- Adds offline automated safety tests, CI coverage, and an operations runbook.
+- Does not establish end-to-end AI, email, webhook, or cron functionality until real staging credentials and approved test fixtures are configured.
+- No database migration, live data change, credential change, or deployment is performed.
+
 ## v0.3.1 — Read-only tenant-isolation acceptance runner
 
 - Adds a staging-only, read-only Supabase REST runner that checks own-organization fixture visibility and cross-organization row invisibility using two distinct user tokens.
