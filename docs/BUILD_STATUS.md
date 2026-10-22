@@ -1,16 +1,17 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.95 (candidate; CI verification pending)
-**Baseline commit:** d71e252fac180130efdb658812fc51497b33bbf5 (v0.2.94 candidate; CI verification pending)
+**Project version:** 0.2.95 (merged; API/web/package workflows passed)
+**Baseline commit:** 150148efe4fbff7f3cbc3f770b16867914ffe76a (v0.2.95 merged; API/web/package workflows passed)
 **Milestone:** Detect credentialed database URLs in source archives
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
 **Deployment:** deferred until owner approval.
 
-### v0.2.95 change
-- Adds fail-closed detection for PostgreSQL connection URLs containing embedded passwords, with regression coverage that verifies secrets are not echoed.
-- Source-level archive protection only. It does not prove private configuration is clean, rotate credentials, or change the live database.
-- API/web/package workflows have not yet been verified for this candidate; do not describe it as release-ready until CI passes on the exact commit.
+### v0.2.95 verified evidence
+- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39741397807
+- Web configuration preflight, smoke-helper tests, readiness tests, ESLint, and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39741397804
+- Full source archive packaging and credential-pattern verification passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39741611545
+- Downloaded source ZIP contains 213 files; ZIP integrity passed; package version is 0.2.95; SHA-256 is `c55a2dc447759055862001b1d4209f3d983fcf3962164e3aeb774d9c7a379ccd`.
 
 ### Critical remaining release blockers
 1. Review migration 0034 and the new reminder RPC grants against live privileges; test migration compatibility in non-production before any owner-approved live apply.
