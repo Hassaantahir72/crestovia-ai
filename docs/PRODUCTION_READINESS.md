@@ -55,4 +55,14 @@ Use two separate organizations and at least an owner, an administrator/manager, 
 **Current state:** Not release-ready by assertion. Automated checks can pass while live-account acceptance, provider setup, recovery drills, and launch authorization remain outstanding. Keep deployment private until the gates are completed.
 
 
-## Verified evidence log\n\nThe following Gate A items are checked only because their workflows completed successfully on the exact merged release commit.\n\n- **Release commit:** `64a5771f6335df01b2e4967189671639518d24bc` (v0.2.88)\n- **API tests:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726201740)\n- **Web lint and production build:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726201648)\n- **Source archive packaging and content/credential-pattern verification:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726201668)\n- **Downloaded archive SHA-256:** `31c696d1815d07e941504229d6dbcee190582d4fc702c7a0bf050c717037d12a` (210 entries; ZIP integrity passed; package version 0.2.88)\n\nThis evidence log does not assert that live database security, tenant isolation, provider acceptance, recovery, or launch authorization is complete.\n
+## Verified evidence log
+
+The following Gate A items are checked only because their workflows completed successfully on the exact merged release commit.
+
+- **Release commit:** `64a5771f6335df01b2e4967189671639518d24bc` (v0.2.88)
+- **API tests:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726201740)
+- **Web lint and production build:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726201648)
+- **Source archive packaging and content/credential-pattern verification:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726201668)
+- **Downloaded archive SHA-256:** `31c696d1815d07e941504229d6dbcee190582d4fc702c7a0bf050c717037d12a` (210 entries; ZIP integrity passed; package version 0.2.88)
+
+This evidence log does not assert that live database security, tenant isolation, provider acceptance, recovery, or launch authorization is complete.
