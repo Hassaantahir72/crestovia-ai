@@ -59,10 +59,10 @@ Use two separate organizations and at least an owner, an administrator/manager, 
 
 The following Gate A items are checked only because their workflows completed successfully on the exact merged release commit.
 
-- **Release commit:** `793f7013af1ba0943f7353bd9b4ef6f6c7a70262` (v0.2.91)
-- **API tests:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39735966422)
-- **Web lint and production build:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39735966513)
-- **Source archive packaging and content/credential-pattern verification:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39735966406)
-- **Downloaded archive SHA-256:** `b41656220b0f07a029095ee1981b4e657d5c2789110b051283a53d3a23c361aa` (211 entries; ZIP integrity passed; package version 0.2.91)
+- **Release commit:** `0e01366fd2862f003503b4b5717b9bc43d2eb874` (v0.2.92)
+- **API tests:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39736901884)
+- **Web lint and production build:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39736901821)
+- **Source archive packaging and content/credential-pattern verification:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39736901788)
+- **Downloaded archive SHA-256:** `8ce22e3ae57fb48b095602c46cb62954ee5f261891bd34e8ba6eabe7dcf856bf` (212 entries; ZIP integrity passed; package version 0.2.92)
 
 This evidence log does not assert that live database security, tenant isolation, provider acceptance, recovery, or launch authorization is complete.

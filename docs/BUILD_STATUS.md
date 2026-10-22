@@ -1,20 +1,20 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.92 (candidate; CI verification pending)
-**Baseline commit:** 793f7013af1ba0943f7353bd9b4ef6f6c7a70262 (v0.2.91 merged; API/web/package workflows passed)
-**Milestone:** Add repeatable tenant-isolation acceptance matrix
+**Project version:** 0.2.93 (candidate; CI verification pending)
+**Baseline commit:** 0e01366fd2862f003503b4b5717b9bc43d2eb874 (v0.2.92 merged; API/web/package workflows passed)
+**Milestone:** Expand source-archive credential scanning and fail closed on unscanned oversized members
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
 **Deployment:** deferred until owner approval.
 
-### v0.2.91 merged verification
-- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39735966422
-- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39735966513
-- Full source archive packaging and credential-pattern verification passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39735966406; downloaded ZIP contains 211 entries, package version 0.2.91, and SHA-256 `b41656220b0f07a029095ee1981b4e657d5c2789110b051283a53d3a23c361aa`.
+### v0.2.92 merged verification
+- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39736901884
+- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39736901821
+- Full source archive packaging and credential-pattern verification passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39736901788; downloaded ZIP contains 212 entries, package version 0.2.92, and SHA-256 `8ce22e3ae57fb48b095602c46cb62954ee5f261891bd34e8ba6eabe7dcf856bf`.
 
-### v0.2.92 change
-- Adds a repeatable manual acceptance matrix for tenant isolation across organizations, roles, direct API requests, stale context, assistant data, exports, and approval replay.
-- This is an acceptance plan, not proof of a successful live test. The tenant-isolation gate remains open until run with synthetic non-production accounts and reviewed evidence.
+### v0.2.93 change
+- Source archive verification now recognizes more common provider tokens and rejects oversized members that previously could be skipped by the credential scanner.
+- The change affects source packaging safeguards only; it does not alter runtime credentials or live systems.
 
 ### Critical remaining release blockers
 1. Review migration 0034 against live RPC grants and run post-migration acceptance in non-production before any owner-approved live apply.

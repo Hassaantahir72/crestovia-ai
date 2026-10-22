@@ -23,6 +23,11 @@ SECRET_PATTERNS = (
     re.compile(r"\bsk-[A-Za-z0-9]{20,}\b"),
     re.compile(r"\bAIza[0-9A-Za-z_-]{30,}\b"),
     re.compile(r"\bsb_secret_[A-Za-z0-9_-]{20,}\b"),
+    re.compile(r"\bsk_(?:live|test)_[A-Za-z0-9]{16,}\b"),
+    re.compile(r"\brk_(?:live|test)_[A-Za-z0-9]{16,}\b"),
+    re.compile(r"\bxox[baprs]-[A-Za-z0-9-]{20,}\b"),
+    re.compile(r"\bglpat-[A-Za-z0-9_-]{20,}\b"),
+    re.compile(r"\bnpm_[A-Za-z0-9]{30,}\b"),
 )
 MAX_SCAN_BYTES = 2_000_000
 
@@ -54,6 +59,7 @@ def verify_archive(archive_path: str) -> list[str]:
             if (basename == ".env" or basename.startswith(".env.") or basename == ".env.local") and name not in ALLOWED_ENV_EXAMPLES:
                 problems.append(f"local environment file included: {name}")
             if info.file_size > MAX_SCAN_BYTES:
+                problems.append(f"archive member exceeds credential scan size limit: {name}")
                 continue
             try:
                 content = archive.read(info).decode("utf-8")

@@ -1,3 +1,11 @@
+## v0.2.93 — Expand source-archive credential scanning
+
+- Detects additional common Stripe live/restricted keys, Slack tokens, GitLab personal access tokens, and npm tokens during source archive verification.
+- Fails closed on archive members larger than the verifier's credential-scan size limit instead of silently skipping their contents.
+- Adds regression tests that ensure tokens are not echoed in failure output and oversized members cannot bypass scanning.
+- Refreshes the readiness evidence log to the verified v0.2.92 release archive.
+- No live database changes, migrations, or deployments were performed.
+
 ## v0.2.92 — Add tenant-isolation acceptance runbook
 
 - Adds a non-production acceptance matrix for cross-organization reads/mutations, multi-org context switching, suspended users, notifications, assistant context, exports, and approval replay.
