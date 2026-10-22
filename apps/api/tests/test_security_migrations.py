@@ -204,13 +204,15 @@ def test_public_anon_privileges_are_revoked_and_authenticated_admin_privileges_a
     assert "revoke all privileges on all sequences in schema public from anon" in sql
     assert "revoke execute on all functions in schema public from anon" in sql
     assert "revoke truncate, references, trigger, maintain on all tables in schema public from authenticated" in sql
-    for owner_role in ("postgres", "supabase_admin"):
-        assert f"alter default privileges for role {owner_role} in schema public revoke all on tables from anon" in sql
-        assert f"alter default privileges for role {owner_role} in schema public revoke execute on functions from anon" in sql
-        assert f"alter default privileges for role {owner_role} in schema public revoke execute on functions from authenticated" in sql
-        assert f"alter default privileges for role {owner_role} in schema public revoke execute on functions from public" in sql
-        assert f"alter default privileges for role {owner_role} in schema public revoke all on sequences from anon" in sql
-        assert f"alter default privileges for role {owner_role} in schema public revoke truncate, references, trigger, maintain on tables from authenticated" in sql
+    owner_role = "postgres"
+    assert f"alter default privileges for role {owner_role} in schema public revoke all on tables from anon" in sql
+    assert f"alter default privileges for role {owner_role} in schema public revoke execute on functions from anon" in sql
+    assert f"alter default privileges for role {owner_role} in schema public revoke execute on functions from authenticated" in sql
+    assert f"alter default privileges for role {owner_role} in schema public revoke execute on functions from public" in sql
+    assert f"alter default privileges for role {owner_role} in schema public revoke all on sequences from anon" in sql
+    assert f"alter default privileges for role {owner_role} in schema public revoke truncate, references, trigger, maintain on tables from authenticated" in sql
+    assert "not a member of supabase_admin" in sql
+    assert "separate privileged platform operation" in sql
     assert "revoke usage, select on sequences from anon" not in sql
     assert "drop table" not in sql
     assert "delete from" not in sql
