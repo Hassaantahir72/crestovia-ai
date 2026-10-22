@@ -55,7 +55,24 @@ Use two separate organizations and at least an owner, an administrator/manager, 
 **Current state:** Not release-ready by assertion. Automated checks can pass while live-account acceptance, provider setup, recovery drills, and launch authorization remain outstanding. Keep deployment private until the gates are completed.
 
 
-## Verified evidence log
+## v0.2.98 staging acceptance evidence
+
+The v0.2.98 source and web build workflows passed on the release merge commit. Staging database acceptance is recorded separately from production launch authorization.
+
+- **Release commit:** `2db9946f093763eaeb2dcd8c7284f58893a9dece` (v0.2.98; main)
+- **API tests:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39754326941)
+- **Web lint and production build:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39754326771)
+- **Source archive packaging and secret-pattern verification:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39754326746)
+- **Staging project:** `crestovia-ai-staging` (`xpwrsxmwqptrpwycibub`); migrations 0001–0036 applied.
+- **Effective schema privileges:** `anon` has no USAGE on schema `public`; `authenticated` and `service_role` retain USAGE.
+- **RLS / table grants:** all 21 public tables have RLS enabled; no table has RLS disabled; no effective anonymous table DML grants remain.
+- **Security advisor:** no findings.
+- **Known limitation:** platform-managed `supabase_admin` default ACL entries remain unchanged. The schema boundary blocks anonymous access unless schema USAGE is later re-granted; re-audit after future role/schema changes.
+
+This does **not** complete the live tenant-isolation, provider, backup/restore, or launch-authorization gates. Production remains at migration 0033 and was not changed by staging acceptance. Keep public deployment disabled until the remaining gates are evidenced and the owner explicitly approves launch.
+
+
+## Historical verified evidence log (v0.2.97)
 
 The following Gate A items are checked only because their workflows completed successfully on the exact v0.2.97 release source commit recorded below.
 
