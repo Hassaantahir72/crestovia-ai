@@ -61,3 +61,35 @@ from information_schema.tables
 where table_schema = 'public'
   and table_type = 'BASE TABLE'
 order by table_name;
+
+
+-- 7. Check effective table privileges, including inherited PUBLIC grants.
+select
+  table_name,
+  has_table_privilege('anon', format('public.%I', table_name), 'SELECT') as anon_can_select,
+  has_table_privilege('anon', format('public.%I', table_name), 'INSERT') as anon_can_insert,
+  has_table_privilege('anon', format('public.%I', table_name), 'UPDATE') as anon_can_update,
+  has_table_privilege('anon', format('public.%I', table_name), 'DELETE') as anon_can_delete,
+  has_table_privilege('anon', format('public.%I', table_name), 'TRUNCATE') as anon_can_truncate,
+  has_table_privilege('authenticated', format('public.%I', table_name), 'SELECT') as authenticated_can_select,
+  has_table_privilege('authenticated', format('public.%I', table_name), 'INSERT') as authenticated_can_insert,
+  has_table_privilege('authenticated', format('public.%I', table_name), 'UPDATE') as authenticated_can_update,
+  has_table_privilege('authenticated', format('public.%I', table_name), 'DELETE') as authenticated_can_delete,
+  has_table_privilege('authenticated', format('public.%I', table_name), 'TRUNCATE') as authenticated_can_truncate,
+  has_table_privilege('authenticated', format('public.%I', table_name), 'MAINTAIN') as authenticated_can_maintain
+from information_schema.tables
+where table_schema = 'public' and table_type = 'BASE TABLE'
+order by table_name;
+
+-- 8. Check effective sequence privileges, not only direct grants.
+select
+  c.relname as sequence_name,
+  has_sequence_privilege('anon', c.oid, 'USAGE') as anon_can_use,
+  has_sequence_privilege('anon', c.oid, 'SELECT') as anon_can_select,
+  has_sequence_privilege('anon', c.oid, 'UPDATE') as anon_can_update,
+  has_sequence_privilege('authenticated', c.oid, 'USAGE') as authenticated_can_use,
+  has_sequence_privilege('authenticated', c.oid, 'SELECT') as authenticated_can_select,
+  has_sequence_privilege('authenticated', c.oid, 'UPDATE') as authenticated_can_update
+from pg_class c join pg_namespace n on n.oid = c.relnamespace
+where n.nspname = 'public' and c.relkind = 'S'
+order by c.relname;
