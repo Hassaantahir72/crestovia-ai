@@ -1,3 +1,10 @@
+## v0.2.86 — Record verified release evidence
+
+- Marks the API workflow, web lint/production build, and full-source archive checks complete based on successful runs for merge commit `c5ae088d72d143cead8b444de4518754b50a8575`.
+- Records the workflow links and source archive SHA-256 in the production-readiness checklist so the evidence count reflects verified facts rather than remaining artificially at zero.
+- Leaves live database migration/grant verification, tenant acceptance, real provider tests, restore drill, and owner launch approval unchecked.
+- Documentation/test-only change. No live database query, migration, privilege change, or deployment is performed.
+
 ## v0.2.85 — Test the production-readiness report
 
 - Adds automated tests for readiness checklist structure, JSON summary totals, gate grouping, and strict-mode blocking while evidence remains pending.
