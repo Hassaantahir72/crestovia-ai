@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "preflight": "node ../../scripts/preflight.mjs web",
+    "preflight": "node --env-file=.env.local ../../scripts/preflight.mjs web",
     "preflight:production": "node ../../scripts/preflight.mjs web --production",
     "smoke:production": "node ../../scripts/health-smoke.mjs",
     "verify:db-backup": "node ../../scripts/verify-db-backup.mjs",
