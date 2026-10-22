@@ -21,4 +21,7 @@ def test_live_database_audit_covers_rls_grants_definer_functions_and_migrations(
     assert "pg_default_acl" in source
     assert "has_table_privilege" in source
     assert "prosecdef" in source
+    assert "has_function_privilege('anon', p.oid, 'execute')" in source
+    assert "has_function_privilege('authenticated', p.oid, 'execute')" in source
+    assert "public_can_execute" in source
     assert "supabase_migrations.schema_migrations" in source

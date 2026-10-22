@@ -22,18 +22,19 @@ where table_schema = 'public'
   and grantee in ('anon', 'authenticated')
 order by table_name, grantee, privilege_type;
 
--- 3. Inventory SECURITY DEFINER functions exposed in public and their effective execute privileges.
--- Each returned function needs an intentional authorization review; do not revoke blindly.
+-- 3. Inventory public functions and effective EXECUTE privileges for browser-facing roles.
+-- Includes SECURITY INVOKER and SECURITY DEFINER functions; review intended RPC grants individually.
 select
   n.nspname as schema_name,
   p.proname as function_name,
   pg_get_function_identity_arguments(p.oid) as arguments,
+  p.prosecdef as security_definer,
   has_function_privilege('anon', p.oid, 'EXECUTE') as anon_can_execute,
-  has_function_privilege('authenticated', p.oid, 'EXECUTE') as authenticated_can_execute
+  has_function_privilege('authenticated', p.oid, 'EXECUTE') as authenticated_can_execute,
+  has_function_privilege('public', p.oid, 'EXECUTE') as public_can_execute
 from pg_proc p
 join pg_namespace n on n.oid = p.pronamespace
 where n.nspname = 'public'
-  and p.prosecdef
 order by p.proname, arguments;
 
 -- 4. Review the recorded migration history. Compare it to source files manually before any repair.
