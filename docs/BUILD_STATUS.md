@@ -1,28 +1,29 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.94 (candidate; CI verification pending)
-**Baseline commit:** 6b671062113f16785ec9d255d6d6256594a9d605 (v0.2.93 merged; API/web/package workflows passed)
-**Milestone:** Prevent task-reminder starvation using bounded, deduplicated database batches
+**Project version:** 0.2.95 (candidate; CI verification pending)
+**Baseline commit:** d71e252fac180130efdb658812fc51497b33bbf5 (v0.2.94 merged; API/web/package workflows passed)
+**Milestone:** Prevent overdue-task backlogs from starving due-soon reminders
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
 **Deployment:** deferred until owner approval.
 
-### v0.2.93 merged verification
-- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39737683024
-- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39737683076
-- Full source archive packaging and credential-pattern verification passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39737683082; downloaded ZIP contains 212 entries, package version 0.2.93, and SHA-256 `8732e6089f0a519d3ab825a684ff1fa6a8721b688fc716387a3b8de2495739d2`.
+### v0.2.95 change
+- Migration 0036 independently selects overdue and due-soon tasks and reserves half of the default 500-row batch for each category.
+- Existing per-task/type/day deduplication remains in place; function remains SECURITY INVOKER and callable only by service_role.
+- Regression tests now protect fair category selection and migration numbering.
+- This is source-only. Migration 0036 has not been applied to the live database.
 
-### v0.2.94 change
-- Reminder selection now excludes task/type/day reminders already queued, allowing subsequent scheduled runs to progress beyond the first 250 overdue and 250 due-soon records.
-- The RPC has a hard 500-row maximum and is executable only by service_role. This is a source migration; it has not been applied to the live database.
+### v0.2.94 merged verification
+- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39738666060
+- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39738666167
+- Full source archive packaging and credential-pattern verification passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39738666041
 
 ### Critical remaining release blockers
-1. Review migration 0034 and the new reminder RPC grants against live privileges; test migration compatibility in non-production before any owner-approved live apply.
-2. Execute the tenant-isolation matrix with separate organizations and owner/admin/member/suspended test accounts, including direct API access.
+1. Review migration 0034 and reminder migration 0036 against live privileges, notification schema, indexes, and RPC compatibility; validate in non-production before any owner-approved live apply.
+2. Execute tenant-isolation acceptance with separate organizations and owner/admin/member/suspended test accounts, including direct API access.
 3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
 4. Confirm backup retention and complete an isolated non-production restore drill.
 5. Collect evidence for remaining readiness checklist items; public deployment remains owner-gated.
-
 ---
 ## Crestovia AI — Current Build Status (2026-10-22)
 
