@@ -24,3 +24,7 @@ The request uses the fixed HTTPS Groq endpoint, blocks redirects, times out afte
 - `timeout` / `network_or_tls_error`: the request did not complete normally.
 
 CI tests use mocked fetch responses and do not contact Groq. Passing this smoke check is not proof of full assistant UX, authorization, reliability, or production readiness.
+
+## Assistant chat runtime behavior
+
+The production assistant chat request is separately bounded to 20 seconds and blocks HTTP redirects. An invalid model identifier is rejected locally. Timeout and malformed JSON errors are mapped to safe UI messages; the application does not display raw provider error bodies. The smoke command verifies a single provider completion only and does not prove full chat or authorization behavior.
