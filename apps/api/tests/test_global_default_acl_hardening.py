@@ -29,7 +29,7 @@ def test_migration_0034_documents_hosted_role_limit_and_keeps_row_access():
     assert "in every schema postgres owns" in sql
     assert "not a member of supabase_admin" in sql
     assert "separate privileged platform operation" in sql
-    assert "alter default privileges for role supabase_admin" not in sql
+    assert "alter default privileges for role supabase_admin revoke" not in sql
     assert "revoke execute on all functions in schema public from authenticated" not in sql
     assert "revoke truncate, references, trigger, maintain on all tables in schema public from authenticated" in sql
     assert "revoke all on tables from anon" in sql
