@@ -1,20 +1,20 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.90 (candidate; CI verification pending)
-**Baseline commit:** 9b073b9d0e1915e500d4f9141da04c6be01add0e (v0.2.89 merged; API/web/package workflows passed)
-**Milestone:** Close default-sequence UPDATE privilege gap in migration 0034
+**Project version:** 0.2.91 (candidate; CI verification pending)
+**Baseline commit:** f672bcd50824d85b8854b6959942d0ab03343282 (v0.2.90 merged; API/web/package workflows passed)
+**Milestone:** Include global default ACLs in the live database security audit
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
 **Deployment:** deferred until owner approval.
 
-### v0.2.89 merged verification
-- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726917672
-- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726917661
-- Full source archive passed packaging and credential-pattern verification: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726917650; downloaded ZIP contains 211 entries, package version 0.2.89, and SHA-256 `b7fb2e254f131588122490a3aff3fbf26c530673c0e8493d95965ecd466f72b7`.
+### v0.2.90 merged verification
+- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39727361569
+- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39727361473
+- Full source archive packaging and credential-pattern verification passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39727361474; downloaded ZIP contains 211 entries, package version 0.2.90, and SHA-256 `344685f809a56b3a50c913f40b900a8b12481ea82a51da636a7ed051651fc797`.
 
-### v0.2.90 change
-- The live default ACL showed `anon=rwU` on sequences; the old migration only revoked USAGE and SELECT. Migration 0034 now revokes ALL default sequence privileges for both `postgres` and `supabase_admin`, and regression tests enforce this.
-- This is a source migration fix only. The live database has not been changed; migration 0034 remains pending compatibility review, non-production acceptance, and owner approval.
+### v0.2.91 change
+- The read-only live privilege audit now shows both global default ACLs and schema-specific ACLs for public, avoiding an incomplete review when global defaults apply to objects created in the public schema.
+- This change improves audit coverage only; migration 0034 remains unapplied, and no live database state was changed.
 
 ### Critical remaining release blockers
 1. Review all migration 0034 grants against API/RPC behavior and run post-migration acceptance in non-production before any owner-approved live apply.

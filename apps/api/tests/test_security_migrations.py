@@ -265,3 +265,12 @@ def test_live_privilege_audit_snapshot_documents_unapplied_migration_and_browser
     assert "11 public tables" in report
     assert "15 public tables" in report
     assert "no live grants, migration history, data, or deployment were changed" in report
+
+
+def test_live_privilege_audit_includes_global_and_public_schema_default_acls():
+    audit = (ROOT / "database" / "operations" / "live-db-security-audit.sql").read_text(encoding="utf-8").lower()
+
+    assert "when defaclnamespace = 0 then '<global>'" in audit
+    assert "where defaclnamespace = 0" in audit
+    assert "or defaclnamespace = 'public'::regnamespace" in audit
+    assert "global and public-schema default privileges" in audit

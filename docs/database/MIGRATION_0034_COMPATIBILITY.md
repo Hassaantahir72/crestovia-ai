@@ -22,7 +22,7 @@
 
 ## Required live acceptance before applying
 
-1. Run `database/operations/live-db-security-audit.sql` against the intended environment using an authorized, read-only session; retain the output securely.
+1. Run `database/operations/live-db-security-audit.sql` against the intended environment using an authorized, read-only session; retain the output securely. Its default-ACL inventory includes both global ACLs (defaclnamespace = 0) and public-schema-specific ACLs because global defaults also affect objects created in public.
 2. Compare live function signatures and effective EXECUTE privileges to this source inventory and all additional RPCs in the live audit.
 3. Confirm the live `supabase_migrations.schema_migrations` history and determine why migration 0034 is pending before scheduling it.
 4. Review each existing anon grant and authenticated administrative grant against real API/UI paths; verify any required grants are explicitly present.

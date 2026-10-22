@@ -46,14 +46,20 @@ select version, name
 from supabase_migrations.schema_migrations
 order by version;
 
--- 5. Inspect default privileges for public objects and their owner roles.
+-- 5. Inspect global and public-schema default privileges for their owner roles.
+-- Global ACLs (defaclnamespace = 0) also affect objects created in public, so include both scopes.
 select
   defaclrole::regrole::text as owner_role,
+  case
+    when defaclnamespace = 0 then '<global>'
+    else defaclnamespace::regnamespace::text
+  end as privilege_scope,
   defaclobjtype as object_type,
   defaclacl::text as default_acl
 from pg_default_acl
-where defaclnamespace = 'public'::regnamespace
-order by owner_role, object_type;
+where defaclnamespace = 0
+   or defaclnamespace = 'public'::regnamespace
+order by owner_role, privilege_scope, object_type;
 
 -- 6. Check effective table-level administrative privileges that RLS does not filter.
 select
