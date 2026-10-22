@@ -1,3 +1,9 @@
+## v0.2.82 — Fix RLS audit query grouping
+
+- Corrects the first read-only database audit query to group by every selected non-aggregate relation/RLS field, including relation kind and FORCE RLS.
+- Adds a regression assertion for the complete GROUP BY clause so PostgreSQL will not reject the audit query at execution time.
+- No live database change or deployment is performed.
+
 ## v0.2.81 — Expand RLS and schema permission audit
 
 - Includes ordinary and partitioned public tables in RLS coverage checks and reports FORCE RLS plus permissive/restrictive policy counts.
