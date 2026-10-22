@@ -1,13 +1,21 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.99 candidate (PR #80 open; CI status not yet confirmed)
-**Baseline commit:** `9bc79cba179ebcf8030df1a01d50e74a3c668f58` (v0.2.98 main)
-**Source archive:** candidate archive is generated and checked locally; CI packaging verification is still pending.
+**Project version:** 0.2.99 (PR #80 merged; API and web CI passed)
+**Release commit:** `e580ffa558702a409217f64e296bc54593f34d56`
 **Milestone:** Dashboard navigation cleanup
-**Change:** Removed a duplicate Notifications shortcut and added a source regression test.
-**Local verification:** dashboard navigation and organization isolation guardrail tests passed (5 tests); migration sequence check passed (36 files, 0001–0036).
-**Database:** no migration applied; staging and production databases unchanged by this UI-only change.
+**Change:** Removed the duplicate Notifications shortcut and added a regression test.
+**Verification:** API CI passed (105 tests in the source archive verification run); web preflight, helper tests, readiness validation, ESLint, and Next.js production build passed. The source archive is separately checked locally for integrity and secret patterns.
+**Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
+**Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
+**Database:** no migration applied by this release. Staging and production remain unchanged; staging is at migration 0036 and production at migration 0033.
 **Deployment:** no public deployment; owner approval still required.
+
+### Remaining release blockers
+1. Complete tenant-isolation acceptance using two organizations and owner/admin/member/suspended staging accounts, including direct API access and approval replay attempts.
+2. Configure and verify Groq, Resend delivery/webhooks, scheduled reminders/alerts, duplicate suppression, and failure recovery with privately stored credentials.
+3. Confirm backup retention and complete a non-production restore drill.
+4. Re-audit effective schema/object privileges after schema or role changes; resolve or formally accept the platform-managed default-ACL limitation.
+5. Collect the remaining readiness evidence and obtain explicit owner approval before public deployment.
 
 ---
 
