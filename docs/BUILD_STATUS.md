@@ -1,5 +1,25 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
+**Project version:** 0.2.80 (in progress)
+**Milestone:** Effective browser-role table and sequence privilege audit
+**Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
+**Deployment:** deferred until owner approval.
+
+### v0.2.80 changes
+- Read-only SQL audit now checks effective table row-operation and administrative privileges for anon and authenticated, including inherited PUBLIC grants.
+- Adds effective sequence privilege checks; direct grants alone do not describe all effective access.
+- Adds regression checks that all eight audit statements remain SELECT-only.
+- No live migration, grant change, or deployment is performed. Migration 0034 remains unapplied pending compatibility review and explicit owner approval.
+
+### Current release blockers
+1. Review the effective privilege audit against required API/RPC behavior before approving migration 0034.
+2. Validate organization isolation with separate organizations and real owner/admin/member/suspended test accounts.
+3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
+4. Confirm backup retention and complete an isolated non-production restore drill.
+5. Collect evidence for the production-readiness checklist; public deployment remains owner-gated.
+
+## Crestovia AI — Current Build Status (2026-10-22)
+
 **Project version:** 0.2.79 (in progress)  
 **Milestone:** Default function privilege hardening and complete effective-function-grant audit  
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).  
