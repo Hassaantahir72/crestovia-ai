@@ -1,5 +1,29 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
+**Project version:** 0.2.88 (candidate; CI verification pending)
+**Baseline commit:** d6cfbd5ea3f7a4821f207aec03d0a7f7a9b2ba53 (v0.2.87 merged; API/web/package workflows passed)
+**Milestone:** Refresh exact-release evidence and archive checksum
+**Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
+**Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
+**Deployment:** deferred until owner approval.
+
+### v0.2.87 merged verification
+- Source-level migration 0034 RPC compatibility review and regression coverage were merged.
+- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39725699732
+- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39725699689
+- Full source archive passed packaging and credential-pattern verification: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39725699753; downloaded ZIP contains 210 entries, package version 0.2.87, and SHA-256 `a13919e382eb823a3df54eefa5696b023e83465bca307a05122a9c8797a8fa85`.
+- Migration 0034 remains unapplied; no live database query, migration, grant change, or deployment was performed by this release.
+
+### Critical remaining release blockers
+1. Compare the source-level RPC inventory to live function signatures/effective grants and review migration 0034 against actual API/RPC behavior before approval. Migration 0034 remains unapplied.
+2. Validate organization isolation with separate organizations and real owner/admin/member/suspended test accounts, including direct API access.
+3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
+4. Confirm backup retention and complete an isolated non-production restore drill.
+5. Collect evidence for remaining readiness checklist items; public deployment remains owner-gated.
+
+---
+## Crestovia AI — Current Build Status (2026-10-22)
+
 **Project version:** 0.2.87
 **Baseline commit:** 672ef261d7b24b8050ed338483e84048cccf9207 (v0.2.86 merged)
 **Milestone:** Source-level RPC compatibility review for migration 0034
