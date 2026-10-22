@@ -40,7 +40,7 @@ export default async function ReadinessPage(){
    </div>
    {requiredMissing>0?<p className="notice notice-error">Required server configuration is incomplete. Add missing values privately in the hosting environment, then restart or redeploy.</p>:<p className="notice notice-success">Required variable presence checks passed. Continue with live authentication and security acceptance tests.</p>}
   </section>
-  <section className="panel"><h2>Server settings</h2><div className="stack">
+  <section className="panel"><h2>Server settings</h2><div style={{display:"grid",gap:12}}>
    {checks.map(check=><article key={check.name} className="panel">
     <div style={{display:"flex",justifyContent:"space-between",gap:12,alignItems:"start",flexWrap:"wrap"}}>
      <div><strong>{check.name}</strong><p className="muted">{check.purpose}</p></div>
