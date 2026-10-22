@@ -1,20 +1,20 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.95 (merged; API/web/package workflows passed)
-**Baseline commit:** 150148efe4fbff7f3cbc3f770b16867914ffe76a (v0.2.95 merged; API/web/package workflows passed)
-**Milestone:** Detect credentialed database URLs in source archives
+**Project version:** 0.2.96 (candidate; CI verification pending)
+**Baseline commit:** source branch based on v0.2.95 merge `150148efe4fbff7f3cbc3f770b16867914ffe76a`; this candidate is not yet merged.
+**Milestone:** Correct global default-ACL handling in migration 0034
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
 **Deployment:** deferred until owner approval.
 
-### v0.2.95 verified evidence
-- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39741397807
-- Web configuration preflight, smoke-helper tests, readiness tests, ESLint, and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39741397804
-- Full source archive packaging and credential-pattern verification passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39741611545
-- Downloaded source ZIP contains 213 files; ZIP integrity passed; package version is 0.2.95; SHA-256 is `c55a2dc447759055862001b1d4209f3d983fcf3962164e3aeb774d9c7a379ccd`.
+### v0.2.96 candidate changes
+- Migration 0034 now revokes relevant global default ACL grants in addition to schema-specific defaults; PostgreSQL global defaults are additive and schema-level REVOKE statements cannot cancel them.
+- Documents that the global cleanup affects future objects created by `postgres` and `supabase_admin` in all schemas they own, requiring review of non-public schema dependencies before applying.
+- Adds focused regression tests for global default-ACL revocations and keeps live migration/deployment owner-gated.
+- CI, release archive, and checksum verification are pending for this candidate.
 
 ### Critical remaining release blockers
-1. Review migration 0034 and the new reminder RPC grants against live privileges; test migration compatibility in non-production before any owner-approved live apply.
+1. Review the global ACL cross-schema scope and migration 0034/RPC compatibility; run non-production acceptance only after explicit approval.
 2. Execute the tenant-isolation matrix with separate organizations and owner/admin/member/suspended test accounts, including direct API access.
 3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
 4. Confirm backup retention and complete an isolated non-production restore drill.
