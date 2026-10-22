@@ -289,3 +289,14 @@ def test_task_reminder_batch_rpc_is_bounded_idempotent_and_service_role_only():
     assert "limit least(greatest(coalesce(p_batch_size, 500), 1), 500)" in sql
     assert "revoke all on function public.enqueue_due_task_reminders(timestamptz, timestamptz, date, integer) from public, anon, authenticated" in sql
     assert "grant execute on function public.enqueue_due_task_reminders(timestamptz, timestamptz, date, integer) to service_role" in sql
+
+
+
+def test_migration_0036_blocks_anonymous_public_schema_access_without_breaking_signed_in_roles():
+    sql = compact_sql("0036_revoke_anon_public_schema_usage.sql")
+
+    assert "revoke usage on schema public from anon" in sql
+    assert "revoke usage on schema public from public" in sql
+    assert "grant usage on schema public to authenticated" in sql
+    assert "grant usage on schema public to service_role" in sql
+    assert "alter default privileges" not in sql

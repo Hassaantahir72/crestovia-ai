@@ -11,10 +11,11 @@
 
 ## Database migrations
 
-Migrations `0001` through `0035` have been applied to staging in sequence. The database migration history confirms all 35 entries, including:
+Migrations `0001` through `0036` have been applied to staging in sequence. The database migration history confirms all 36 entries, including:
 
 - `0034_revoke_anon_public_privileges`
 - `0035_task_reminder_batch_dedupe_v0_2_94`
+- `0036_revoke_anon_public_schema_usage`
 
 Staging began with an empty public schema and currently has no seeded company or user data.
 
@@ -28,6 +29,9 @@ Staging began with an empty public schema and currently has no seeded company or
 | Public tables where `anon` retains table DML privileges | 0 |
 | Public tables where `authenticated` retains TRUNCATE / MAINTAIN / REFERENCES / TRIGGER | 0 |
 | Public functions executable by `anon` | 0 |
+| `anon` has `USAGE` on schema `public` | No |
+| `authenticated` has `USAGE` on schema `public` | Yes |
+| `service_role` has `USAGE` on schema `public` | Yes |
 | Supabase security advisor findings | 0 |
 
 ### RPC grant checks
@@ -38,15 +42,19 @@ Staging began with an empty public schema and currently has no seeded company or
 
 These are database privilege checks; they do not replace end-to-end sign-in and tenant-isolation tests with real test accounts.
 
-## Known hosted-role limitation
+## Hosted-role default-ACL mitigation
 
-The original migration `0034` attempted to change default privileges for `supabase_admin`. The connected hosted project runs the migration as `postgres`, which is not a member of `supabase_admin`; PostgreSQL rejects that statement with `permission denied to change default privileges` and rolls the migration back.
+The platform-managed `supabase_admin` role has schema-specific default ACLs in `public` that include `anon`. The connected `postgres` role is not a member of `supabase_admin`, so PostgreSQL rejects attempts to alter that role's defaults from this connection.
 
-A compatibility revision now hardens existing public objects and default privileges for objects created by `postgres`, while explicitly documenting that it cannot change `supabase_admin` defaults. The live catalog still shows schema-specific defaults for `supabase_admin` in `public` that grant privileges to `anon`. Therefore:
+Migration `0036_revoke_anon_public_schema_usage` applies a verified schema-boundary mitigation:
 
-- Existing staging tables/functions passed the checks above.
-- Any future public object created as `supabase_admin` would need a separate privileged platform operation or a documented, verified alternative.
-- Do not describe the default-ACL story as fully resolved, and do not promote this change to production until the remaining default-ACL behavior is resolved and accepted.
+- `anon` does not have effective `USAGE` on schema `public`.
+- The `PUBLIC` role also no longer has `USAGE` on schema `public`.
+- `authenticated` and `service_role` retain `USAGE`.
+- All 21 existing public tables still have RLS enabled, and none have RLS disabled.
+- The effective privilege audit reports zero anonymous table DML grants and the security advisor reports no findings.
+
+The `supabase_admin` default ACL entries themselves remain in the catalog. A future object created under that role could still receive latent object-level grants to `anon`, but anonymous access to that object remains blocked by the schema boundary unless schema access is later re-granted. Re-run the schema and object privilege audit after future migrations or platform changes. Do not claim that the platform-managed default ACL entries themselves were changed.
 
 ## Advisor notes
 

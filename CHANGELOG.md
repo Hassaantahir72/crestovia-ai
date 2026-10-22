@@ -1,3 +1,11 @@
+## v0.2.98 — Staging anonymous schema-boundary hardening
+
+- Adds migration 0036 to revoke effective `USAGE` on the exposed `public` schema from `anon` and `PUBLIC`, while retaining `authenticated` and `service_role` access.
+- Applied and verified on the separate staging project: 36 migrations recorded, all 21 public tables have RLS enabled, anonymous schema usage is false, authenticated/service-role schema usage remains true, and the Supabase security advisor reports no findings.
+- Adds regression coverage for the new migration and updates the tenant-isolation runbook and staging acceptance evidence.
+- The platform-managed `supabase_admin` default ACL entries remain unchanged; the schema boundary mitigates anonymous access unless schema usage is later re-granted. Re-audit after future schema/privilege changes.
+- Staging only. Production remains at migration 0033; no production database changes or public deployment are authorized. Real multi-organization account tests, live provider integration checks, and backup/restore evidence remain open.
+
 ## v0.2.97 — Reminder RPC grant and dedupe regression coverage
 
 - Adds focused CI assertions that the task-reminder batch RPC runs as SECURITY INVOKER with an empty search path and is executable only by `service_role`.
