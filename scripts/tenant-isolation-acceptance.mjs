@@ -44,6 +44,7 @@ async function checkRow({ baseUrl, publishableKey, token, table, id, expectedVis
     method: 'GET',
     headers: { apikey: publishableKey, Authorization: 'Bearer ' + token, Accept: 'application/json' },
     signal: AbortSignal.timeout(10000),
+    redirect: 'error',
   });
   if (!response.ok) throw new Error('Supabase returned HTTP ' + response.status + ' while checking ' + table + '.');
   const rows = await response.json();
@@ -63,9 +64,9 @@ export async function runAcceptance({ env = process.env, fixtures, fetchImpl = f
   let parsedUrl;
   try { parsedUrl = new URL(baseUrl); } catch { throw new Error('CRESTOVIA_STAGING_SUPABASE_URL must be a valid URL.'); }
   const localTestHost = parsedUrl.hostname === 'localhost' || parsedUrl.hostname === '127.0.0.1';
-  const supabaseHostedHost = parsedUrl.hostname.endsWith('.supabase.co');
-  if ((!supabaseHostedHost && !localTestHost) || (parsedUrl.protocol !== 'https:' && !localTestHost)) {
-    throw new Error('Staging URL must use a *.supabase.co HTTPS host (localhost is allowed for local tests).');
+  const approvedStagingHost = parsedUrl.hostname === 'xpwrsxmwqptrpwycibub.supabase.co';
+  if ((!approvedStagingHost && !localTestHost) || (parsedUrl.protocol !== 'https:' && !localTestHost) || parsedUrl.username || parsedUrl.password || parsedUrl.search || parsedUrl.hash) {
+    throw new Error('Staging URL must use the approved staging project HTTPS host (localhost is allowed for local tests); URL credentials, query, and hash are forbidden.');
   }
   if (tokenA === tokenB) throw new Error('Org A and Org B must use different user access tokens.');
   const tableFixtures = validateFixtureDocument(fixtures);
