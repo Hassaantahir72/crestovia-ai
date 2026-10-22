@@ -1,20 +1,20 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.96 (candidate; CI verification pending)
-**Baseline commit:** source branch based on v0.2.95 merge `150148efe4fbff7f3cbc3f770b16867914ffe76a`; this candidate is not yet merged.
+**Project version:** 0.2.96 (merged; API/web/package workflows passed)
+**Baseline commit:** 073606c6d54e34b14201160e53786cb44ae32f1e (v0.2.96 merged; API/web/package workflows passed)
 **Milestone:** Correct global default-ACL handling in migration 0034
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
 **Deployment:** deferred until owner approval.
 
-### v0.2.96 candidate changes
-- Migration 0034 now revokes relevant global default ACL grants in addition to schema-specific defaults; PostgreSQL global defaults are additive and schema-level REVOKE statements cannot cancel them.
-- Documents that the global cleanup affects future objects created by `postgres` and `supabase_admin` in all schemas they own, requiring review of non-public schema dependencies before applying.
-- Adds focused regression tests for global default-ACL revocations and keeps live migration/deployment owner-gated.
-- CI, release archive, and checksum verification are pending for this candidate.
+### v0.2.96 verified evidence
+- API regression tests passed on PR source commit `f40f6628e2e71223b0943873881e9866cb58fa2f`: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39742671464
+- Web configuration preflight, smoke-helper tests, readiness checks, ESLint, and Next.js production build passed on the same PR source commit: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39742668196
+- Complete source archive packaging and credential-pattern verification passed on merge commit `073606c6d54e34b14201160e53786cb44ae32f1e`: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39742833528
+- Verified merge-commit source ZIP contained 214 files, passed ZIP integrity and embedded archive verification, package version 0.2.96, SHA-256 `e1c90b4dcdf96b70861234caea9957cc30e948e3e080f32ec17424d886b98017`.
 
 ### Critical remaining release blockers
-1. Review the global ACL cross-schema scope and migration 0034/RPC compatibility; run non-production acceptance only after explicit approval.
+1. Review migration 0034 global ACL cross-schema scope and RPC compatibility; run non-production acceptance only after explicit approval.
 2. Execute the tenant-isolation matrix with separate organizations and owner/admin/member/suspended test accounts, including direct API access.
 3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
 4. Confirm backup retention and complete an isolated non-production restore drill.
