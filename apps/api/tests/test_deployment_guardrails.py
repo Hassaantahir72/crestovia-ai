@@ -21,3 +21,14 @@ def test_readme_operations_section_uses_real_line_breaks():
     assert "\\n" not in source
     assert "- Deployment smoke checks, local backup archive verification" in source
     assert "Operational guidance:" in source
+
+
+def test_build_status_matches_current_package_and_merged_baseline():
+    import json
+
+    package = json.loads((ROOT / "apps" / "web" / "package.json").read_text(encoding="utf-8"))
+    status = (ROOT / "docs" / "BUILD_STATUS.md").read_text(encoding="utf-8")
+    assert package["version"] == "0.2.84"
+    assert "**Project version:** 0.2.84 (candidate; CI verification pending)" in status
+    assert "**Latest merged version:** 0.2.83" in status
+    assert "**Latest merged commit:** c314398e4bd55b856d730b9f06372ba351635ab8" in status
