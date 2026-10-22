@@ -1,0 +1,54 @@
+name: Web production validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/web/**"
+      - "scripts/**"
+      - ".github/workflows/web-ci.yml"
+      - "render.yaml"
+  pull_request:
+    paths:
+      - "apps/web/**"
+      - "scripts/**"
+      - ".github/workflows/web-ci.yml"
+      - "render.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-web:
+    name: Install, lint, and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies with network retries
+        run: npm install --no-audit --no-fund --fetch-retries=5 --fetch-timeout=120000 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Build Next.js production bundle
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: build-validation-placeholder
+        run: npm run build
