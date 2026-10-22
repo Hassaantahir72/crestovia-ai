@@ -113,7 +113,7 @@ def test_source_archive_rejects_additional_common_provider_tokens_without_echoin
         "glpat-" + "D" * 24,
         "npm_" + "E" * 36,
     ]
-    archive = make_archive(tmp_path, {"credentials.txt": "\\n".join(tokens)})
+    archive = make_archive(tmp_path, {"credentials.txt": "\n".join(tokens)})
     result = run_verifier(archive)
     assert result.returncode == 1
     assert "credential or private key detected" in result.stdout
