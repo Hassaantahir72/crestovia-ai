@@ -1,3 +1,10 @@
+## v0.2.81 — Expand RLS and schema permission audit
+
+- Includes ordinary and partitioned public tables in RLS coverage checks and reports FORCE RLS plus permissive/restrictive policy counts.
+- Adds a policy inventory with command, role, predicate, and check expressions for targeted review.
+- Audits effective public-schema USAGE/CREATE privileges for anon and authenticated, including inherited grants.
+- Adds read-only regression coverage for all ten SQL statements. No live DB changes or deployment performed.
+
 ## v0.2.80 — Audit effective table and sequence privileges
 
 - Extends the read-only live database audit to check effective table SELECT, INSERT, UPDATE, DELETE, and administrative privileges for anon and authenticated, including grants inherited through PUBLIC.
