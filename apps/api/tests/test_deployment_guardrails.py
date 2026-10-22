@@ -18,6 +18,6 @@ def test_preview_instructions_require_explicit_owner_approval():
 
 def test_readme_operations_section_uses_real_line_breaks():
     source = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert r"\\n" not in source
+    assert "\\n" not in source
     assert "- Deployment smoke checks, local backup archive verification" in source
     assert "Operational guidance:" in source
