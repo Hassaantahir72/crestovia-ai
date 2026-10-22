@@ -1,5 +1,24 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
+**Project version:** 0.3.4 (candidate; CI verification pending)
+**Baseline:** v0.3.3 Groq smoke-check branch; PR #84 remains open pending workflow investigation.
+**Milestone:** Real assistant-provider resilience.
+**Change:** Live assistant requests now have a 20-second timeout, blocked redirects, model identifier validation, and safe timeout/malformed-response errors. The owner diagnostic remains limited to 10 seconds.
+**Database:** no migration or database change. Staging remains at migration 0036; production remains at migration 0033.
+**Deployment:** no public deployment; owner approval remains required.
+
+### Current release blockers
+1. Diagnose GitHub Actions jobs failing before steps run; verify PR #84 and this increment before merging.
+2. Run tenant-isolation acceptance with two synthetic staging users, then complete mutation, role, stale-context, suspension, and approval-replay tests.
+3. Run the Groq smoke check with a privately configured staging key, then test the app real assistant flow. Verify Resend delivery/webhooks, reminders, duplicate suppression, and failure recovery with approved fixtures.
+4. Confirm backup retention and complete an isolated non-production restore drill.
+5. Re-audit effective schema/object privileges after schema or role changes; the platform-managed default-ACL limitation remains documented.
+6. Collect release evidence and obtain explicit owner approval before public deployment.
+
+---
+
+## Crestovia AI — Current Build Status (2026-10-22)
+
 **Project version:** 0.3.3 (candidate; CI verification pending)
 **Baseline:** v0.3.2 / merge commit `59b84f7e1defbbb11b77c2dc6a3ee55ec0e9a8e3`
 **Milestone:** Opt-in live Groq completion smoke check
