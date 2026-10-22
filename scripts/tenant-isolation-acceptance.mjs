@@ -62,8 +62,10 @@ export async function runAcceptance({ env = process.env, fixtures, fetchImpl = f
   }
   let parsedUrl;
   try { parsedUrl = new URL(baseUrl); } catch { throw new Error('CRESTOVIA_STAGING_SUPABASE_URL must be a valid URL.'); }
-  if (parsedUrl.protocol !== 'https:' && parsedUrl.hostname !== 'localhost') {
-    throw new Error('Staging Supabase URL must use HTTPS (localhost is allowed for local tests).');
+  const localTestHost = parsedUrl.hostname === 'localhost' || parsedUrl.hostname === '127.0.0.1';
+  const supabaseHostedHost = parsedUrl.hostname.endsWith('.supabase.co');
+  if ((!supabaseHostedHost && !localTestHost) || (parsedUrl.protocol !== 'https:' && !localTestHost)) {
+    throw new Error('Staging URL must use a *.supabase.co HTTPS host (localhost is allowed for local tests).');
   }
   if (tokenA === tokenB) throw new Error('Org A and Org B must use different user access tokens.');
   const tableFixtures = validateFixtureDocument(fixtures);
