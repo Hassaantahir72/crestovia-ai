@@ -1,17 +1,20 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.3.0 candidate (PR in preparation; CI verification pending)
-**Baseline:** v0.2.99 merged to main at `e580ffa558702a409217f64e296bc54593f34d56`
+**Project version:** 0.3.0 (PR #81 merged; API and web CI passed)
+**Release commit:** `129d414bd663490a18d5887698f1a68d0eb9305d`
 **Milestone:** Owner launch-readiness dashboard
-**Change:** Adds an MFA-protected owner page that checks server-side configuration presence without displaying secret values.
-**Database:** no migration or database change. Staging remains at migration 0036; production remains at migration 0033.
-**Deployment:** no live deployment; owner approval remains required.
+**Change:** Added an owner-only, MFA-protected configuration presence dashboard; secret values are not rendered.
+**Verification:** API workflow passed; web preflight, helper tests, readiness validation, ESLint, and Next.js production build passed on the candidate head immediately before merge.
+**Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
+**Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
+**Database:** no migration applied. Staging remains at migration 0036; production remains at migration 0033.
+**Deployment:** no public deployment; owner approval remains required.
 
 ### Remaining release blockers
-1. Complete tenant-isolation acceptance with separate organizations and owner/admin/member/suspended test accounts, including direct API and approval replay attempts.
-2. Configure and verify Groq, Resend delivery/webhooks, cron reminders/alerts, duplicate suppression, and failure recovery using privately stored credentials.
+1. Complete tenant-isolation acceptance using two organizations and owner/admin/member/suspended staging accounts, including direct API access and approval replay attempts.
+2. Configure and verify Groq, Resend delivery/webhooks, scheduled reminders/alerts, duplicate suppression, and failure recovery with privately stored credentials.
 3. Confirm backup retention and complete a non-production restore drill.
-4. Re-audit effective schema/object privileges after schema or role changes and resolve or formally accept the platform-managed default-ACL limitation.
+4. Re-audit effective schema/object privileges after schema or role changes; resolve or formally accept the platform-managed default-ACL limitation.
 5. Collect the remaining readiness evidence and obtain explicit owner approval before public deployment.
 
 ---
