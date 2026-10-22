@@ -1,5 +1,7 @@
 ## v0.3.4 — Assistant provider timeout and response hardening
 
+- Corrected release-readiness checklist evidence so current CI/build checks are not marked complete before exact-candidate verification. Recorded reproducible offline test results and the unresolved CI/npm-network blockers.
+
 - The real assistant chat request now blocks redirects and aborts after 20 seconds; the owner-only provider diagnostic remains bounded at 10 seconds and also blocks redirects.
 - Invalid model identifiers are rejected before the external request. Timeouts, malformed JSON, and invalid configuration are mapped to safe, user-actionable errors; raw provider/network details are not shown.
 - Adds regression checks for request bounds and safe error handling.
