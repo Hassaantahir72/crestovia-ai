@@ -1,3 +1,9 @@
+## v0.2.80 — Audit effective table and sequence privileges
+
+- Extends the read-only live database audit to check effective table SELECT, INSERT, UPDATE, DELETE, and administrative privileges for anon and authenticated, including grants inherited through PUBLIC.
+- Adds effective sequence USAGE, SELECT, and UPDATE checks so direct-grant inventory is not mistaken for the complete permission picture.
+- Adds regression coverage that keeps every audit statement read-only. No live database changes or deployment are performed; migration 0034 remains unapplied pending owner approval and compatibility review.
+
 ## v0.2.79 — Default function privilege hardening and live audit coverage
 
 - Updates the unapplied privilege-hardening migration to revoke default `EXECUTE` from `PUBLIC` for future functions created by `postgres` and `supabase_admin`; future RPC grants must be explicit.
