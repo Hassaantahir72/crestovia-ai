@@ -125,3 +125,13 @@ def test_source_archive_rejects_members_that_would_skip_credential_scanning(tmp_
     result = run_verifier(archive)
     assert result.returncode == 1
     assert "archive member exceeds credential scan size limit" in result.stdout
+
+
+def test_source_archive_rejects_credentialed_database_urls_without_echoing_password(tmp_path):
+    password = "supersecretvalue123"
+    url = f"postgresql://app_user:{password}@db.example.invalid:5432/crestovia"
+    archive = make_archive(tmp_path, {"database-url.txt": url})
+    result = run_verifier(archive)
+    assert result.returncode == 1
+    assert "credential or private key detected" in result.stdout
+    assert password not in result.stdout
