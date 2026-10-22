@@ -1,3 +1,10 @@
+## v0.2.88 — Refresh verified release evidence
+
+- Updates the production-readiness evidence log to the exact v0.2.87 merge commit after its API tests, web lint/production build, and full-source archive workflow completed successfully.
+- Records the current archive SHA-256, entry count, package version, and exact workflow links without marking any live acceptance item complete.
+- Refreshes the build-status header and keeps live database migration/grant review, multi-organization acceptance, real provider tests, restore drill, and owner launch approval outstanding.
+- Documentation and release-metadata update only. No live database query, migration, privilege change, or deployment is performed.
+
 ## v0.2.87 — Document migration 0034 RPC compatibility
 
 - Adds a source-level compatibility matrix for browser-callable and server-only RPC functions affected by privilege hardening.
