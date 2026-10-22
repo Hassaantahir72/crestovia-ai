@@ -13,7 +13,10 @@ Crestovia AI is a private company-operations workspace built with Next.js, FastA
 - Daily briefing, in-app notifications, bounded reminder scans, and a secret-protected reminder endpoint.
 - Resend email delivery integration scaffolding, signed webhook verification, delivery-event reconciliation, and retry controls.
 - Rate limits for sensitive assistant, invitation, approval, and provider-diagnostic operations.
-- Audit history and server-side configuration preflight checks.\n- Deployment smoke checks, local backup archive verification, and operator runbooks for recovery and incident response.\n\nOperational guidance: `docs/operations/MONITORING_INCIDENT_RESPONSE.md` and `docs/deployment/BACKUP_RESTORE_RUNBOOK.md`.
+- Audit history and server-side configuration preflight checks.
+- Deployment smoke checks, local backup archive verification, and operator runbooks for recovery and incident response.
+
+Operational guidance: `docs/operations/MONITORING_INCIDENT_RESPONSE.md` and `docs/deployment/BACKUP_RESTORE_RUNBOOK.md`.
 
 ## Verification and limitations
 

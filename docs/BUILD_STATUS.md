@@ -1,5 +1,29 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
+**Project version:** 0.2.83 (candidate; CI verification pending)
+**Latest merged version:** 0.2.82
+**Milestone:** README rendering fix and documentation regression coverage
+**Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
+**Deployment:** deferred until owner approval.
+
+### v0.2.82 merged verification
+- Corrected the read-only RLS audit query to group by every selected non-aggregate relation/RLS field.
+- API tests passed; web production build is being verified on the merge commit. The complete source ZIP was packaged and verified (207 entries; package version 0.2.82).
+- No live database query, migration, grant change, or deployment was performed.
+
+### v0.2.83 proposed changes
+- Fixes literal escaped newline sequences in README.md and adds a regression test.
+- No application runtime or database changes. CI must pass before merge.
+
+### Current release blockers
+1. Review effective database grants and migration 0034 against required API/RPC behavior before approval.
+2. Validate organization isolation with separate organizations and real owner/admin/member/suspended test accounts.
+3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
+4. Confirm backup retention and complete an isolated non-production restore drill.
+5. Collect evidence for the production-readiness checklist; public deployment remains owner-gated.
+
+## Crestovia AI — Current Build Status (2026-10-22)
+
 **Project version:** 0.2.82 (candidate; CI verification pending)
 **Milestone:** Correct audit SQL grouping before live use
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
