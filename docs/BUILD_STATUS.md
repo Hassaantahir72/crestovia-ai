@@ -1,5 +1,24 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
+**Project version:** 0.2.81 (in progress)
+**Milestone:** Expanded RLS policy and schema privilege audit
+**Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
+**Deployment:** deferred until owner approval.
+
+### v0.2.81 changes
+- Read-only audit includes partitioned public tables, FORCE RLS, permissive/restrictive policy counts, policy command/predicate inventory, and effective schema USAGE/CREATE privileges.
+- Regression tests require all ten audit statements to remain SELECT-only.
+- No live migration, grant change, or deployment is performed. Migration 0034 remains unapplied pending compatibility review and explicit owner approval.
+
+### Current release blockers
+1. Review effective database grants and migration 0034 against required API/RPC behavior before approval.
+2. Validate organization isolation with separate organizations and real owner/admin/member/suspended test accounts.
+3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
+4. Confirm backup retention and complete an isolated non-production restore drill.
+5. Collect evidence for the production-readiness checklist; public deployment remains owner-gated.
+
+## Crestovia AI — Current Build Status (2026-10-22)
+
 **Project version:** 0.2.80 (in progress)
 **Milestone:** Effective browser-role table and sequence privilege audit
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).

@@ -4,13 +4,17 @@
 -- 1. Confirm exposed public tables have RLS enabled and inspect policy coverage.
 select
   c.relname as table_name,
+  c.relkind as relation_kind,
   c.relrowsecurity as rls_enabled,
-  count(p.policyname)::integer as policy_count
+  c.relforcerowsecurity as force_rls,
+  count(p.policyname)::integer as policy_count,
+  count(p.policyname) filter (where p.permissive = 'PERMISSIVE')::integer as permissive_policy_count,
+  count(p.policyname) filter (where p.permissive = 'RESTRICTIVE')::integer as restrictive_policy_count
 from pg_class c
 join pg_namespace n on n.oid = c.relnamespace
 left join pg_policies p on p.schemaname = n.nspname and p.tablename = c.relname
 where n.nspname = 'public'
-  and c.relkind = 'r'
+  and c.relkind in ('r', 'p')
 group by c.relname, c.relrowsecurity
 order by c.relname;
 
@@ -93,3 +97,19 @@ select
 from pg_class c join pg_namespace n on n.oid = c.relnamespace
 where n.nspname = 'public' and c.relkind = 'S'
 order by c.relname;
+
+
+-- 9. Check effective public-schema USAGE and CREATE privileges inherited by browser roles.
+-- CREATE is usually unnecessary for browser-facing roles; review before changing grants.
+select
+  has_schema_privilege('anon', 'public', 'USAGE') as anon_can_use_schema,
+  has_schema_privilege('anon', 'public', 'CREATE') as anon_can_create_in_schema,
+  has_schema_privilege('authenticated', 'public', 'USAGE') as authenticated_can_use_schema,
+  has_schema_privilege('authenticated', 'public', 'CREATE') as authenticated_can_create_in_schema;
+
+-- 10. List policies and their effective command/role intent for targeted review.
+-- This is an inventory, not proof that policy predicates are correct.
+select schemaname, tablename, policyname, permissive, roles, cmd, qual, with_check
+from pg_policies
+where schemaname = 'public'
+order by tablename, policyname;
