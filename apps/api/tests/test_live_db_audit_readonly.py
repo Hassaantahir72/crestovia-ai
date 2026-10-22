@@ -9,7 +9,7 @@ def test_live_database_audit_sql_is_read_only():
     source = AUDIT_SQL.read_text(encoding="utf-8")
     without_comments = re.sub(r"--[^\n]*", "", source)
     statements = [statement.strip() for statement in without_comments.split(";") if statement.strip()]
-    assert len(statements) == 6
+    assert len(statements) == 8
     assert all(re.match(r"^select\b", statement, re.IGNORECASE) for statement in statements)
     assert all(not re.match(r"^(insert|update|delete|alter|drop|create|grant|revoke|truncate)\b", statement, re.IGNORECASE) for statement in statements)
 
@@ -20,6 +20,10 @@ def test_live_database_audit_covers_rls_grants_definer_functions_and_migrations(
     assert "role_table_grants" in source
     assert "pg_default_acl" in source
     assert "has_table_privilege" in source
+    assert "anon_can_select" in source
+    assert "authenticated_can_insert" in source
+    assert "has_sequence_privilege('anon', c.oid, 'usage')" in source
+    assert "has_sequence_privilege('authenticated', c.oid, 'update')" in source
     assert "prosecdef" in source
     assert "has_function_privilege('anon', p.oid, 'execute')" in source
     assert "has_function_privilege('authenticated', p.oid, 'execute')" in source
