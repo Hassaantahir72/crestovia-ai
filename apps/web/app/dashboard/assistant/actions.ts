@@ -25,7 +25,7 @@ export async function testAssistantProvider(){
   const response=await fetch("https://api.groq.com/openai/v1/chat/completions",{
    method:"POST",headers:{Authorization:"Bearer "+apiKey,"Content-Type":"application/json"},
    body:JSON.stringify({model,messages:[{role:"user",content:"Reply with OK only."}],temperature:0,max_tokens:8}),
-   cache:"no-store",signal:AbortSignal.timeout(10000)
+   cache:"no-store",redirect:"error",signal:AbortSignal.timeout(10000)
   });
   if(!response.ok){
    if(response.status===401||response.status===403)redirect("/dashboard/assistant?provider_test=auth_failed");
@@ -61,7 +61,7 @@ export async function sendAssistantMessage(data:FormData){
  await supabase.from("assistant_conversations").update({title,updated_at:new Date().toISOString()}).eq("id",id).eq("user_id",user.id);
  let answer="";
  try{const workspaceContext=await runReadOnlyAssistantTools(supabase,membership.organization_id,user.id,content);answer=await generateAssistantReply([...(prior??[]) as AssistantMessage[],{role:"user",content}],savedMemories??[],workspaceContext)}
- catch(e){const code=e instanceof Error?e.message:"AI_PROVIDER_REQUEST_FAILED";const allowed=["AI_PROVIDER_NOT_CONFIGURED","AI_PROVIDER_AUTH_FAILED","AI_PROVIDER_RATE_LIMITED","AI_PROVIDER_REQUEST_FAILED","AI_PROVIDER_EMPTY_RESPONSE"];redirect("/dashboard/assistant?conversation="+id+"&error="+(allowed.includes(code)?code.toLowerCase():"ai_provider_request_failed"))}
+ catch(e){const code=e instanceof Error?e.message:"AI_PROVIDER_REQUEST_FAILED";const allowed=["AI_PROVIDER_NOT_CONFIGURED","AI_PROVIDER_INVALID_CONFIGURATION","AI_PROVIDER_AUTH_FAILED","AI_PROVIDER_RATE_LIMITED","AI_PROVIDER_REQUEST_FAILED","AI_PROVIDER_TIMEOUT","AI_PROVIDER_INVALID_RESPONSE","AI_PROVIDER_EMPTY_RESPONSE"];redirect("/dashboard/assistant?conversation="+id+"&error="+(allowed.includes(code)?code.toLowerCase():"ai_provider_request_failed"))}
  const {error:assistantErr}=await supabase.from("assistant_messages").insert({conversation_id:id,user_id:user.id,role:"assistant",content:answer});if(assistantErr)redirect("/dashboard/assistant?conversation="+id+"&error=reply_save_failed");
  revalidatePath("/dashboard/assistant");redirect("/dashboard/assistant?conversation="+id);
 }
