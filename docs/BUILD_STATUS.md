@@ -7,6 +7,13 @@
 **Database:** no migration or database change. Staging remains at migration 0036; production remains at migration 0033.
 **Deployment:** no public deployment; owner approval remains required.
 
+### Validation refresh (2026-10-22)
+- Re-run offline web/security suite: 39 passed, 0 failed.
+- Re-run API suite: 107 passed, 0 failed.
+- Migration source-order check: 36 files, 0001–0036; this is not live database validation.
+- GitHub Actions failed jobs expose no steps and their logs are unavailable through the current GitHub API response; root cause remains unknown.
+- npm registry lookup failed with DNS `EAI_AGAIN`, so ESLint and Next.js production build remain unverified for this candidate.
+
 ### Current release blockers
 1. Diagnose GitHub Actions jobs failing before steps run; verify PR #84 and this increment before merging.
 2. Run tenant-isolation acceptance with two synthetic staging users, then complete mutation, role, stale-context, suspension, and approval-replay tests.
