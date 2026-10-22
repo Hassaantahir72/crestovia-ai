@@ -44,8 +44,8 @@ test('fails closed on missing settings and identical actor tokens', async () => 
 });
 
 test('rejects non-HTTPS and non-Supabase remote endpoints before sending tokens', async () => {
-  await assert.rejects(() => runAcceptance({ env: { ...env, CRESTOVIA_STAGING_SUPABASE_URL: 'http://staging.supabase.co' }, fixtures, write: () => {} }), /must use a \\*\\.supabase.co HTTPS host/);
-  await assert.rejects(() => runAcceptance({ env: { ...env, CRESTOVIA_STAGING_SUPABASE_URL: 'https://attacker.example' }, fixtures, write: () => {} }), /must use a \\*\\.supabase.co HTTPS host/);
+  await assert.rejects(() => runAcceptance({ env: { ...env, CRESTOVIA_STAGING_SUPABASE_URL: 'http://staging.supabase.co' }, fixtures, write: () => {} }), /must use a \*\.supabase.co HTTPS host/);
+  await assert.rejects(() => runAcceptance({ env: { ...env, CRESTOVIA_STAGING_SUPABASE_URL: 'https://attacker.example' }, fixtures, write: () => {} }), /must use a \*\.supabase.co HTTPS host/);
 });
 
 test('does not expose provider response bodies when a request fails', async () => {
