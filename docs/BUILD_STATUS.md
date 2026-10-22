@@ -1,23 +1,24 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.97 (merged; API and web workflows passed)
-**Baseline commit:** 9f3c5adce12eb795ccd4f7630b983d90976e3f28 (v0.2.97 merge; source archive workflow pending)
-**Milestone:** Automated security regression coverage for the task-reminder batch RPC
+**Project version:** 0.2.98 (candidate; staging security checks passed; CI verification pending)
+**Baseline commit:** `fix/staging-anon-schema-access` (v0.2.98 candidate; awaiting merge and source archive workflow)
+**Milestone:** Staging anonymous schema-boundary hardening
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
 **Deployment:** deferred until owner approval.
 
-### v0.2.97 verified evidence
-- API regression tests passed on PR source commit `4ef1f4e274df6d67e8f0930d03da82d6eb517ea9`: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744400619
-- Web preflight, smoke-helper tests, backup helper tests, readiness checks, ESLint, and Next.js production build passed on the same PR source commit: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744400665
-- Source archive packaging on the merged release commit is pending.
-- Added tests assert migration 0035's reminder RPC remains SECURITY INVOKER, has an empty search_path, grants EXECUTE only to service_role, and uses stable dedupe keys.
+### v0.2.98 staging verification
+- Separate staging project `crestovia-ai-staging` (`xpwrsxmwqptrpwycibub`) has migrations 0001 through 0036 applied; production remains at migration 0033 and was not changed.
+- Effective `anon` USAGE on schema `public` is false; `authenticated` and `service_role` retain USAGE.
+- All 21 public tables have RLS enabled; zero public tables have RLS disabled; zero effective anonymous table DML grants remain; zero public functions are executable by anon.
+- Supabase security advisor returned no findings. The platform-managed `supabase_admin` default ACL entries remain in catalog; schema-boundary mitigation blocks anonymous access unless schema USAGE is later re-granted.
+- API regression tests and web production build are being rerun against the final candidate commit. Source archive packaging will run after merge.
 
 ### Critical remaining release blockers
-1. Review migration 0034's global ACL cross-schema scope and RPC compatibility; only test migrations in non-production after explicit authorization.
-2. Run tenant-isolation acceptance using two organizations and owner/admin/member/suspended test accounts, including direct API calls.
-3. Configure and verify Groq, Resend delivery/webhooks, and the reminder scheduler/alerts with privately stored credentials.
-4. Confirm backup retention and complete a non-production restore drill.
+1. Complete tenant-isolation acceptance using two organizations and owner/admin/member/suspended staging accounts, including direct API requests and approval replay attempts.
+2. Configure and verify Groq, Resend delivery/webhooks, and scheduled reminders/alerts with privately stored credentials.
+3. Confirm backup retention and complete a non-production restore drill.
+4. Review and accept the remaining platform-managed default-ACL limitation; rerun the privilege audit after any schema/role changes.
 5. Collect remaining readiness evidence; public deployment remains owner-gated.
 
 ---
