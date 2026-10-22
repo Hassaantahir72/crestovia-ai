@@ -6,7 +6,7 @@ MIGRATION = ROOT / "database" / "migrations" / "0034_revoke_anon_public_privileg
 
 
 def normalized_sql() -> str:
-    return re.sub(r"\\s+", " ", MIGRATION.read_text(encoding="utf-8").lower()).strip()
+    return re.sub(r"\s+", " ", MIGRATION.read_text(encoding="utf-8").lower()).strip()
 
 
 def test_migration_0034_revokes_global_defaults_for_postgres_created_objects():
