@@ -94,3 +94,10 @@ This evidence log does not assert that live database security, tenant isolation,
 - Latest GitHub Actions reruns again failed before recording any steps, with no retrievable job logs. The root cause remains unconfirmed.
 - Local npm installation timed out; candidate ESLint and Next.js production build remain unverified. Gate A stays unchecked.
 - The connected Render workspace has no service linked to the Crestovia AI repository, so no Crestovia app deployment was found there. No service was created or deployed.
+
+
+## Latest CI blocker detail — 2026-10-22
+
+- The latest web and API jobs failed before any workflow step ran: each job has no runner name, zero steps, and a two-second run window. Job-log retrieval returns 404 (BlobNotFound). Root cause is unknown; application code should not be changed speculatively to mask this infrastructure-level symptom.
+- Local npm dependency installation fails at DNS resolution (`EAI_AGAIN registry.npmjs.org`), so current frontend lint and production build are not verified. Historical successful builds on earlier versions do not prove this candidate builds.
+- Release Gate A remains unchecked until a fresh exact-commit workflow run completes, including lint and Next.js production build. Do not bypass CI or merge the stacked PRs while checks are failing.
