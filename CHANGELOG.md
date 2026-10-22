@@ -1,3 +1,10 @@
+## v0.3.0 — Owner launch-readiness dashboard
+
+- Adds an owner-only, MFA-protected page showing whether core Supabase, MFA, Groq, Resend, and cron environment variables are present.
+- Shows no secret values and explicitly warns that presence checks do not prove credential validity or live provider delivery.
+- Adds dashboard navigation and regression tests for owner-only access and secret-safe output.
+- No database migration, live credential change, or deployment is performed.
+
 ## v0.2.99 — Dashboard navigation cleanup
 
 - Removes a duplicated Notifications shortcut from the workspace overview so each navigation action appears once.
