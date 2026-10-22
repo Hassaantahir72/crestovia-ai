@@ -4,7 +4,6 @@ import {createAdminClient} from "@/lib/supabase/admin";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
 const jsonHeaders={"Cache-Control":"no-store, max-age=0","Pragma":"no-cache"};
-const TASK_FIELDS="id,organization_id,title,assigned_to,due_at,status";
 
 async function runReminderSweep(request:Request){
  const startedAt=Date.now();
@@ -20,41 +19,28 @@ async function runReminderSweep(request:Request){
  }
 
  const now=new Date(),nowIso=now.toISOString(),windowEnd=new Date(now.getTime()+24*60*60*1000),day=nowIso.slice(0,10);
- const overdueResult=await admin.from("tasks").select(TASK_FIELDS)
-  .not("assigned_to","is",null).not("due_at","is",null).not("status","in","(done,cancelled)")
-  .lte("due_at",nowIso).order("due_at",{ascending:false}).limit(250);
- if(overdueResult.error){
-  console.error("task_reminder_sweep_failed",{stage:"overdue_query",reason:"database_query_error"});
-  return NextResponse.json({error:"task_query_failed"},{status:500,headers:jsonHeaders});
- }
-
- const dueSoonResult=await admin.from("tasks").select(TASK_FIELDS)
-  .not("assigned_to","is",null).not("due_at","is",null).not("status","in","(done,cancelled)")
-  .gt("due_at",nowIso).lte("due_at",windowEnd.toISOString()).order("due_at",{ascending:true}).limit(250);
- if(dueSoonResult.error){
-  console.error("task_reminder_sweep_failed",{stage:"due_soon_query",reason:"database_query_error"});
-  return NextResponse.json({error:"task_query_failed"},{status:500,headers:jsonHeaders});
- }
-
- const overdueTasks=overdueResult.data??[],dueSoonTasks=dueSoonResult.data??[],tasks=[...overdueTasks,...dueSoonTasks];
- const rows=tasks.flatMap(task=>{
-  if(!task.assigned_to||!task.due_at)return [];
-  const overdue=new Date(task.due_at).getTime()<=now.getTime();
-  const type=overdue?"task_overdue":"task_due_soon";
-  return [{organization_id:task.organization_id,recipient_id:task.assigned_to,created_by:null,type,title:overdue?"Task overdue":"Task due within 24 hours",body:task.title,entity_type:"task",entity_id:task.id,dedupe_key:type+":"+task.id+":"+day}];
+ const {data,error}=await admin.rpc("enqueue_due_task_reminders",{
+  p_now:nowIso,
+  p_window_end:windowEnd.toISOString(),
+  p_day:day,
+  p_batch_size:500,
  });
- const summary={scanned:tasks.length,overdueScanned:overdueTasks.length,dueSoonScanned:dueSoonTasks.length,queued:0,durationMs:Date.now()-startedAt};
- if(!rows.length){
-  console.info("task_reminder_sweep_completed",summary);
-  return NextResponse.json({ok:true,...summary},{headers:jsonHeaders});
+ if(error){
+  console.error("task_reminder_sweep_failed",{stage:"enqueue_rpc",reason:"database_rpc_error"});
+  return NextResponse.json({error:"task_reminder_batch_failed"},{status:500,headers:jsonHeaders});
  }
- const {data:inserted,error:insertError}=await admin.from("notifications").upsert(rows,{onConflict:"dedupe_key",ignoreDuplicates:true}).select("id");
- if(insertError){
-  console.error("task_reminder_sweep_failed",{stage:"notification_upsert",reason:"database_write_error",scanned:tasks.length});
-  return NextResponse.json({error:"notification_queue_failed"},{status:500,headers:jsonHeaders});
+ const row=Array.isArray(data)?data[0]:null;
+ if(!row){
+  console.error("task_reminder_sweep_failed",{stage:"enqueue_rpc",reason:"unexpected_rpc_result"});
+  return NextResponse.json({error:"task_reminder_batch_failed"},{status:500,headers:jsonHeaders});
  }
- summary.queued=inserted?.length??0;
- summary.durationMs=Date.now()-startedAt;
+ const summary={
+  scanned:Number(row.scanned??0),
+  overdueScanned:Number(row.overdue_scanned??0),
+  dueSoonScanned:Number(row.due_soon_scanned??0),
+  queued:Number(row.queued??0),
+  durationMs:Date.now()-startedAt,
+ };
  console.info("task_reminder_sweep_completed",summary);
  return NextResponse.json({ok:true,...summary},{headers:jsonHeaders});
  }catch{
