@@ -282,7 +282,7 @@ def test_task_reminder_batch_rpc_is_bounded_idempotent_and_service_role_only():
     assert "create or replace function public.enqueue_due_task_reminders" in sql
     assert "security invoker" in sql
     assert "set search_path = ''" in sql
-    assert "not exists ( select 1 from public.notifications n" in sql
+    assert "not exists ( select 1 from public.notifications as n" in sql
     assert "on conflict (dedupe_key) do nothing" in sql
     assert "limit least(greatest(coalesce(p_batch_size, 500), 1), 500)" in sql
     assert "revoke all on function public.enqueue_due_task_reminders(timestamptz, timestamptz, date, integer) from public, anon, authenticated" in sql
