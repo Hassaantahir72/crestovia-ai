@@ -57,9 +57,9 @@ Use two separate organizations and at least an owner, an administrator/manager, 
 
 ## Verified evidence log
 
-The following Gate A items are checked only because their workflows completed successfully on the v0.2.97 release source. The release PR's merge commit is recorded below; the workflow links are the successful runs for that release.
+The following Gate A items are checked only because their workflows completed successfully on the exact v0.2.97 release source commit recorded below.
 
-- **Release commit:** `9f3c5adce12eb795ccd4f7630b983d90976e3f28` (v0.2.97; PR #76)
+- **Release commit:** `6f0f24a36aa28f7a5f2dedb36dfffd2f90e498ba` (v0.2.97; main)
 - **API tests:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744623714)
 - **Web lint and production build:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744623697)
 - **Source archive packaging and content/credential-pattern verification:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744623706)
