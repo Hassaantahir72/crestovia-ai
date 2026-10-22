@@ -1,3 +1,9 @@
+## v0.2.85 — Test the production-readiness report
+
+- Adds automated tests for readiness checklist structure, JSON summary totals, gate grouping, and strict-mode blocking while evidence remains pending.
+- Runs readiness-report tests in web CI so release evidence cannot silently regress.
+- Updates build status and adds a version/base-commit consistency guard. No live database query, migration, privilege change, or deployment is performed.
+
 ## v0.2.84 — Synchronize verified build status
 
 - Updates the build-status dashboard to reflect the merged v0.2.83 commit, successful API and web checks, and verified 207-entry source archive.
