@@ -57,12 +57,12 @@ Use two separate organizations and at least an owner, an administrator/manager, 
 
 ## Verified evidence log
 
-The following Gate A items are checked only because their workflows completed successfully on the exact merged release commit.
+The following Gate A items are checked only because their workflows completed successfully on the v0.2.97 release source. The release PR's merge commit is recorded below; the workflow links are the successful runs for that release.
 
-- **Release commit:** `6b671062113f16785ec9d255d6d6256594a9d605` (v0.2.93)
-- **API tests:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39737683024)
-- **Web lint and production build:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39737683076)
-- **Source archive packaging and content/credential-pattern verification:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39737683082)
-- **Downloaded archive SHA-256:** `8732e6089f0a519d3ab825a684ff1fa6a8721b688fc716387a3b8de2495739d2` (212 entries; ZIP integrity passed; package version 0.2.93)
+- **Release commit:** `9f3c5adce12eb795ccd4f7630b983d90976e3f28` (v0.2.97; PR #76)
+- **API tests:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744623714)
+- **Web lint and production build:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744623697)
+- **Source archive packaging and content/credential-pattern verification:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744623706)
+- **Downloaded archive SHA-256:** `e71ea1e08ea7a08d3fad7fda7ec427be0b13c1f621be2dc229f33cac194c19c5` (214 entries; ZIP integrity and embedded archive verification passed; package version 0.2.97)
 
 This evidence log does not assert that live database security, tenant isolation, provider acceptance, recovery, or launch authorization is complete.
