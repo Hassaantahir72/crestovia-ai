@@ -1,16 +1,17 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.97 (candidate; CI verification pending)
-**Baseline commit:** v0.2.96 merge `073606c6d54e34b14201160e53786cb44ae32f1e`; this candidate is not yet merged.
-**Milestone:** Regression coverage for privileged task-reminder RPC grants and deduplication
+**Project version:** 0.2.97 (merged; API and web workflows passed)
+**Baseline commit:** 9f3c5adce12eb795ccd4f7630b983d90976e3f28 (v0.2.97 merge; source archive workflow pending)
+**Milestone:** Automated security regression coverage for the task-reminder batch RPC
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
 **Deployment:** deferred until owner approval.
 
-### v0.2.97 candidate changes
-- Adds API CI tests for the task-reminder batch RPC's SECURITY INVOKER context, empty search path, service-role-only EXECUTE grant, stable dedupe keys, and conflict-safe insertion.
-- No runtime behavior or live database state is changed by this test-only update.
-- CI and a fresh cumulative source archive are pending.
+### v0.2.97 verified evidence
+- API regression tests passed on PR source commit `4ef1f4e274df6d67e8f0930d03da82d6eb517ea9`: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744400619
+- Web preflight, smoke-helper tests, backup helper tests, readiness checks, ESLint, and Next.js production build passed on the same PR source commit: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744400665
+- Source archive packaging on the merged release commit is pending.
+- Added tests assert migration 0035's reminder RPC remains SECURITY INVOKER, has an empty search_path, grants EXECUTE only to service_role, and uses stable dedupe keys.
 
 ### Critical remaining release blockers
 1. Review migration 0034's global ACL cross-schema scope and RPC compatibility; only test migrations in non-production after explicit authorization.
