@@ -1,16 +1,16 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.3.1 (tenant-isolation acceptance runner candidate)
-**Milestone:** Read-only staging tenant-isolation acceptance runner
-**Change:** Added a safe Supabase REST check for own-tenant fixture visibility and cross-tenant read denial, with an explicit table allowlist and no-write behavior.
-**Local verification:** runner tests passed (5/5); full API suite passed (107 tests). Web lint/build verification is pending for this candidate.
+**Project version:** 0.3.2 (provider connectivity diagnostics candidate)
+**Milestone:** Read-only provider connectivity checks for Groq and Resend
+**Change:** Adds fixed-endpoint HTTPS GET checks, safe status reporting, offline tests, CI coverage, and an operator runbook. The checks never send email or print secrets.
+**Verification:** Provider tests and web CI/build are pending for this candidate; API suite is unchanged.
 **Database:** no migration applied. Staging remains at migration 0036; production remains at migration 0033.
-**GitHub:** candidate changes are on a feature branch and awaiting CI/review; not merged.
+**GitHub:** changes are on a feature branch and awaiting CI/review; not merged.
 **Deployment:** no public deployment; owner approval remains required.
 
 ### Remaining release blockers
-1. Run the read-only check with two real synthetic staging users and fixture rows; then complete direct mutation/server-action tests, stale organization context, suspended memberships, role boundaries, and approval replay.
-2. Configure and verify Groq, Resend delivery/webhooks, scheduled reminders/alerts, duplicate suppression, and failure recovery with privately stored credentials.
+1. Run tenant-isolation checks with two real synthetic staging users; complete mutation/server-action tests, stale organization context, suspended memberships, role boundaries, and approval replay.
+2. Run provider connectivity diagnostics with privately configured staging credentials, then verify Groq completions, Resend delivery/webhooks, scheduled reminders, duplicate suppression, and failure recovery end-to-end.
 3. Confirm backup retention and complete a non-production restore drill.
 4. Re-audit effective schema/object privileges after schema or role changes; resolve or formally accept the platform-managed default-ACL limitation.
 5. Collect remaining readiness evidence and obtain explicit owner approval before public deployment.
