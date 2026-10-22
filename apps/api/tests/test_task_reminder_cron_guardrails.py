@@ -75,7 +75,7 @@ def test_task_reminder_batch_reserves_capacity_for_both_due_categories():
     migration = MIGRATION.read_text().lower()
     overdue = migration.index("overdue_candidates as")
     due_soon = migration.index("due_soon_candidates as")
-    candidates = migration.index("candidates as")
+    candidates = migration.index("\n  candidates as (")
     assert overdue < due_soon < candidates
     assert "t.due_at <= p_now" in migration
     assert "t.due_at > p_now" in migration
