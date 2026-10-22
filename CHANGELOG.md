@@ -1,3 +1,9 @@
+## v0.2.90 — Revoke all default sequence privileges from anon
+
+- Fixes migration 0034 so future sequences created by `postgres` and `supabase_admin` revoke ALL privileges from `anon`, including UPDATE; the previous USAGE/SELECT-only revocation left UPDATE in the default ACL.
+- Updates migration regression tests to require the complete default-sequence revoke and prevent the narrower statement from returning.
+- Refreshes release metadata and verified v0.2.89 CI/archive evidence.
+- Source-only hardening fix. Migration 0034 remains unapplied; no live privileges, schema, data, or deployment were changed. Non-production acceptance and explicit owner approval remain required.
 ## v0.2.89 — Record live browser-role privilege audit
 
 - Records a fresh read-only Supabase privilege audit: migration history still ends at 0033, migration 0034 is not applied, and excessive effective browser-role table/default privileges remain.

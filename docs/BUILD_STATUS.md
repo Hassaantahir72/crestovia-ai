@@ -1,5 +1,31 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
+**Project version:** 0.2.90 (candidate; CI verification pending)
+**Baseline commit:** 9b073b9d0e1915e500d4f9141da04c6be01add0e (v0.2.89 merged; API/web/package workflows passed)
+**Milestone:** Close default-sequence UPDATE privilege gap in migration 0034
+**Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
+**Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
+**Deployment:** deferred until owner approval.
+
+### v0.2.89 merged verification
+- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726917672
+- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726917661
+- Full source archive passed packaging and credential-pattern verification: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39726917650; downloaded ZIP contains 211 entries, package version 0.2.89, and SHA-256 `b7fb2e254f131588122490a3aff3fbf26c530673c0e8493d95965ecd466f72b7`.
+
+### v0.2.90 change
+- The live default ACL showed `anon=rwU` on sequences; the old migration only revoked USAGE and SELECT. Migration 0034 now revokes ALL default sequence privileges for both `postgres` and `supabase_admin`, and regression tests enforce this.
+- This is a source migration fix only. The live database has not been changed; migration 0034 remains pending compatibility review, non-production acceptance, and owner approval.
+
+### Critical remaining release blockers
+1. Review all migration 0034 grants against API/RPC behavior and run post-migration acceptance in non-production before any owner-approved live apply.
+2. Validate organization isolation with separate organizations and real owner/admin/member/suspended test accounts, including direct API access.
+3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
+4. Confirm backup retention and complete an isolated non-production restore drill.
+5. Collect evidence for remaining readiness checklist items; public deployment remains owner-gated.
+
+---
+## Crestovia AI — Current Build Status (2026-10-22)
+
 **Project version:** 0.2.89 (candidate; CI verification pending)
 **Baseline commit:** 64a5771f6335df01b2e4967189671639518d24bc (v0.2.88 merged; API/web/package workflows passed)
 **Milestone:** Record live browser-role privilege audit and release evidence
