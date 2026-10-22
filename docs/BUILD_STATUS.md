@@ -1,5 +1,24 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
+**Project version:** 0.2.82 (candidate; CI verification pending)
+**Milestone:** Correct audit SQL grouping before live use
+**Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
+**Deployment:** deferred until owner approval.
+
+### v0.2.82 changes
+- Fixes the v0.2.81 read-only RLS audit's first SELECT to include all selected non-aggregate columns in `GROUP BY`, avoiding a PostgreSQL grouping error.
+- Adds a regression assertion for the exact grouping clause. No live DB query, migration, grant change, or deployment is performed.
+- v0.2.81 was merged and its full source ZIP was verified; v0.2.82 is a proposed follow-up pending CI.
+
+### Current release blockers
+1. Review effective database grants and migration 0034 against required API/RPC behavior before approval.
+2. Validate organization isolation with separate organizations and real owner/admin/member/suspended test accounts.
+3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
+4. Confirm backup retention and complete an isolated non-production restore drill.
+5. Collect evidence for the production-readiness checklist; public deployment remains owner-gated.
+
+## Crestovia AI — Current Build Status (2026-10-22)
+
 **Project version:** 0.2.81 (in progress)
 **Milestone:** Expanded RLS policy and schema privilege audit
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
