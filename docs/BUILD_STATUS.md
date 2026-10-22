@@ -1,24 +1,24 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.91 (candidate; CI verification pending)
-**Baseline commit:** f672bcd50824d85b8854b6959942d0ab03343282 (v0.2.90 merged; API/web/package workflows passed)
-**Milestone:** Include global default ACLs in the live database security audit
+**Project version:** 0.2.92 (candidate; CI verification pending)
+**Baseline commit:** 793f7013af1ba0943f7353bd9b4ef6f6c7a70262 (v0.2.91 merged; API/web/package workflows passed)
+**Milestone:** Add repeatable tenant-isolation acceptance matrix
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
 **Deployment:** deferred until owner approval.
 
-### v0.2.90 merged verification
-- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39727361569
-- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39727361473
-- Full source archive packaging and credential-pattern verification passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39727361474; downloaded ZIP contains 211 entries, package version 0.2.90, and SHA-256 `344685f809a56b3a50c913f40b900a8b12481ea82a51da636a7ed051651fc797`.
+### v0.2.91 merged verification
+- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39735966422
+- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39735966513
+- Full source archive packaging and credential-pattern verification passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39735966406; downloaded ZIP contains 211 entries, package version 0.2.91, and SHA-256 `b41656220b0f07a029095ee1981b4e657d5c2789110b051283a53d3a23c361aa`.
 
-### v0.2.91 change
-- The read-only live privilege audit now shows both global default ACLs and schema-specific ACLs for public, avoiding an incomplete review when global defaults apply to objects created in the public schema.
-- This change improves audit coverage only; migration 0034 remains unapplied, and no live database state was changed.
+### v0.2.92 change
+- Adds a repeatable manual acceptance matrix for tenant isolation across organizations, roles, direct API requests, stale context, assistant data, exports, and approval replay.
+- This is an acceptance plan, not proof of a successful live test. The tenant-isolation gate remains open until run with synthetic non-production accounts and reviewed evidence.
 
 ### Critical remaining release blockers
-1. Review all migration 0034 grants against API/RPC behavior and run post-migration acceptance in non-production before any owner-approved live apply.
-2. Validate organization isolation with separate organizations and real owner/admin/member/suspended test accounts, including direct API access.
+1. Review migration 0034 against live RPC grants and run post-migration acceptance in non-production before any owner-approved live apply.
+2. Execute the tenant-isolation matrix with separate organizations and owner/admin/member/suspended test accounts, including direct API access.
 3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
 4. Confirm backup retention and complete an isolated non-production restore drill.
 5. Collect evidence for remaining readiness checklist items; public deployment remains owner-gated.
