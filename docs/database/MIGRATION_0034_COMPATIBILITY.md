@@ -29,7 +29,7 @@
 3. Compare live function signatures and effective EXECUTE privileges to this source inventory and all additional RPCs in the live audit.
 4. Confirm the live `supabase_migrations.schema_migrations` history and determine why migration 0034 is pending before scheduling it.
 5. Review each existing anon grant and authenticated administrative grant against real API/UI paths; verify any required grants are explicitly present.
-6. Apply only to a non-production environment after explicit approval for that test, run organization isolation and auth/RPC acceptance tests, and compare the post-migration audit.
+6. Apply only to a non-production environment after explicit approval for that test, run non-production acceptance testing including organization isolation and auth/RPC acceptance, and compare the post-migration audit.
 7. Obtain explicit owner approval before any live migration. No production apply is authorized by this document.
 
 **Current conclusion:** global default ACL handling is now explicit in source and regression-tested, but the cross-schema impact, live grant inventory, full RPC compatibility, and non-production acceptance still require review.
