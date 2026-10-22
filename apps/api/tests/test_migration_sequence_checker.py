@@ -32,7 +32,7 @@ def test_repository_migration_sequence_is_contiguous():
         text=True,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "34 files, 0001 through 0034" in result.stdout
+    assert "35 files, 0001 through 0035" in result.stdout
     assert "does not verify a live database" in result.stdout
 
 

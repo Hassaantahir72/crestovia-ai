@@ -1,3 +1,11 @@
+## v0.2.94 — Prevent task-reminder starvation with bounded deduplicated batches
+
+- Moves reminder selection and notification insertion into a service-role-only database RPC with a strict maximum batch of 500.
+- Excludes reminders already queued for the task/type/day so repeated cron runs advance to additional eligible tasks instead of repeatedly selecting the same first page.
+- Preserves secret checks, generic errors, no-store responses, and PII-minimized metrics.
+- Adds regression coverage for the bounded/idempotent RPC and route contract.
+- Source migration only; no live migration was applied. Migration 0034 and non-production acceptance remain blockers for live rollout.
+
 ## v0.2.93 — Expand source-archive credential scanning
 
 - Detects additional common Stripe live/restricted keys, Slack tokens, GitLab personal access tokens, and npm tokens during source archive verification.

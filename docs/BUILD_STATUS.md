@@ -1,23 +1,23 @@
 ## Crestovia AI — Current Build Status (2026-10-22)
 
-**Project version:** 0.2.93 (candidate; CI verification pending)
-**Baseline commit:** 0e01366fd2862f003503b4b5717b9bc43d2eb874 (v0.2.92 merged; API/web/package workflows passed)
-**Milestone:** Expand source-archive credential scanning and fail closed on unscanned oversized members
+**Project version:** 0.2.94 (candidate; CI verification pending)
+**Baseline commit:** 6b671062113f16785ec9d255d6d6256594a9d605 (v0.2.93 merged; API/web/package workflows passed)
+**Milestone:** Prevent task-reminder starvation using bounded, deduplicated database batches
 **Overall product implementation estimate:** approximately 70% (rough engineering estimate; not a production-readiness score).
 **Readiness evidence:** 3 of 30 checklist items verified (10% evidence recorded; not a product-completion percentage).
 **Deployment:** deferred until owner approval.
 
-### v0.2.92 merged verification
-- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39736901884
-- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39736901821
-- Full source archive packaging and credential-pattern verification passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39736901788; downloaded ZIP contains 212 entries, package version 0.2.92, and SHA-256 `8ce22e3ae57fb48b095602c46cb62954ee5f261891bd34e8ba6eabe7dcf856bf`.
+### v0.2.93 merged verification
+- API tests passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39737683024
+- Web ESLint and Next.js production build passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39737683076
+- Full source archive packaging and credential-pattern verification passed: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39737683082; downloaded ZIP contains 212 entries, package version 0.2.93, and SHA-256 `8732e6089f0a519d3ab825a684ff1fa6a8721b688fc716387a3b8de2495739d2`.
 
-### v0.2.93 change
-- Source archive verification now recognizes more common provider tokens and rejects oversized members that previously could be skipped by the credential scanner.
-- The change affects source packaging safeguards only; it does not alter runtime credentials or live systems.
+### v0.2.94 change
+- Reminder selection now excludes task/type/day reminders already queued, allowing subsequent scheduled runs to progress beyond the first 250 overdue and 250 due-soon records.
+- The RPC has a hard 500-row maximum and is executable only by service_role. This is a source migration; it has not been applied to the live database.
 
 ### Critical remaining release blockers
-1. Review migration 0034 against live RPC grants and run post-migration acceptance in non-production before any owner-approved live apply.
+1. Review migration 0034 and the new reminder RPC grants against live privileges; test migration compatibility in non-production before any owner-approved live apply.
 2. Execute the tenant-isolation matrix with separate organizations and owner/admin/member/suspended test accounts, including direct API access.
 3. Verify Groq, Resend delivery/webhooks, cron scheduling/alerts, and failure recovery with privately configured credentials.
 4. Confirm backup retention and complete an isolated non-production restore drill.
