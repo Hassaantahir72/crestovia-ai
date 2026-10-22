@@ -1,3 +1,8 @@
+## v0.2.99 — Dashboard navigation cleanup
+
+- Removes a duplicated Notifications shortcut from the workspace overview so each navigation action appears once.
+- UI-only change. No database migrations, data, credentials, or deployment settings changed.
+
 ## v0.2.98 — Staging anonymous schema-boundary hardening
 
 - Adds migration 0036 to revoke effective `USAGE` on the exposed `public` schema from `anon` and `PUBLIC`, while retaining `authenticated` and `service_role` access.
