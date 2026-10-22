@@ -1,3 +1,10 @@
+## v0.2.91 — Include global default ACLs in live security audit
+
+- Fixes audit query 5 so it reports both global (defaclnamespace = 0) and public-schema default privileges; global ACLs can affect new objects in public and were omitted by the prior schema-only filter.
+- Adds a regression test to prevent the default-privilege audit from silently excluding global ACLs.
+- Updates the migration 0034 compatibility runbook to require reviewing both default-ACL scopes.
+- Source audit/documentation improvement only. No live database changes, migrations, or deployments were performed.
+
 ## v0.2.90 — Revoke all default sequence privileges from anon
 
 - Fixes migration 0034 so future sequences created by `postgres` and `supabase_admin` revoke ALL privileges from `anon`, including UPDATE; the previous USAGE/SELECT-only revocation left UPDATE in the default ACL.
