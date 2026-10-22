@@ -37,8 +37,12 @@ export async function executeApprovedEmailRequest(data: FormData) {
     try { return { ok: true, payload: validateApprovedEmailPayload(request.details) }; }
     catch { return { ok: false }; }
   })();
-  if (!parsedPayload.ok) redirect("/dashboard/approvals?error=email_payload_invalid");
-  const payload = parsedPayload.payload;
+  const payload: ApprovedEmailPayload = "payload" in parsedPayload
+    ? parsedPayload.payload
+    : (() => {
+        redirect("/dashboard/approvals?error=email_payload_invalid");
+        throw new Error("EMAIL_PAYLOAD_INVALID");
+      })();
 
   const admin = createAdminClient();
   const { data: claimed, error: claimError } = await admin.from("action_approval_requests")
