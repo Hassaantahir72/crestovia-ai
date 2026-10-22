@@ -54,6 +54,7 @@ def verify_archive(archive_path: str) -> list[str]:
             if (basename == ".env" or basename.startswith(".env.") or basename == ".env.local") and name not in ALLOWED_ENV_EXAMPLES:
                 problems.append(f"local environment file included: {name}")
             if info.file_size > MAX_SCAN_BYTES:
+                problems.append(f"archive member exceeds credential scan size limit: {name}")
                 continue
             try:
                 content = archive.read(info).decode("utf-8")
