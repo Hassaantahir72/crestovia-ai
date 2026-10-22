@@ -1,3 +1,10 @@
+## v0.2.95 — Detect credentialed database URLs in source archives
+
+- Extends fail-closed source-archive scanning to detect PostgreSQL connection URLs that embed a password, including common `postgres://` and `postgresql://` forms.
+- Adds regression coverage that confirms a matching URL fails verification without printing the password.
+- This is source-level archive protection only; it does not rotate exposed credentials, inspect private hosting settings, or change the live database.
+- v0.2.94 and v0.2.95 CI verification remain pending until the release workflows complete. No deployment or database migration is authorized by this change.
+
 ## v0.2.94 — Prevent task-reminder starvation with bounded deduplicated batches
 
 - Moves reminder selection and notification insertion into a service-role-only database RPC with a strict maximum batch of 500.
