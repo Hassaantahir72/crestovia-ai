@@ -15,7 +15,7 @@ function field(data:FormData,name:string,max:number){return String(data.get(name
 export async function testAssistantProvider(){
  const {membership,user}=await getUserContext();
  if(membership.role!=="owner")redirect("/dashboard/assistant?provider_test=owner_only");
- let providerTestAllowed:boolean;
+ let providerTestAllowed = false;
  try{providerTestAllowed=await consumeUserRateLimit(user.id,"assistant_provider_test_minute",3,60)&&await consumeUserRateLimit(user.id,"assistant_provider_test_hour",10,3600)}catch{redirect("/dashboard/assistant?provider_test=rate_limit_unavailable")}
  if(!providerTestAllowed)redirect("/dashboard/assistant?provider_test=app_rate_limited");
  const apiKey=process.env.GROQ_API_KEY;
@@ -49,7 +49,7 @@ export async function sendAssistantMessage(data:FormData){
  const {supabase,user,membership}=await getUserContext();const id=field(data,"conversation_id",64),content=field(data,"content",12000);
  if(!id||!content)redirect("/dashboard/assistant?error=empty_message");
  const {data:conversation}=await supabase.from("assistant_conversations").select("id,title").eq("id",id).eq("user_id",user.id).maybeSingle();if(!conversation)redirect("/dashboard/assistant?error=conversation_not_found");
- let messageAllowed:boolean;
+ let messageAllowed = false;
  try{messageAllowed=await consumeUserRateLimit(user.id,"assistant_message_minute",12,60)&&await consumeUserRateLimit(user.id,"assistant_message_hour",100,3600)}catch{redirect("/dashboard/assistant?conversation="+id+"&error=rate_limit_unavailable")}
  if(!messageAllowed)redirect("/dashboard/assistant?conversation="+id+"&error=assistant_rate_limited");
  const {data:prior,error:historyError}=await supabase.from("assistant_messages").select("role,content").eq("conversation_id",id).eq("user_id",user.id).order("created_at",{ascending:true}).limit(20);
@@ -104,7 +104,7 @@ export async function proposeAssistantActionForApproval(data:FormData){
  const details=String(message.content??"").trim().slice(0,4000);
  const summary=details.replace(/\s+/g," ").slice(0,200);
  if(summary.length<3)redirect("/dashboard/assistant?error=invalid_approval_proposal");
- let approvalAllowed:boolean;
+ let approvalAllowed = false;
  try{approvalAllowed=await consumeUserRateLimit(user.id,"approval_request_minute",3,60)&&await consumeUserRateLimit(user.id,"approval_request_hour",10,3600)&&await consumeUserRateLimit(user.id,"approval_request_day",30,86400)}catch{redirect("/dashboard/assistant?conversation="+message.conversation_id+"&error=approval_rate_limit_unavailable")}
  if(!approvalAllowed)redirect("/dashboard/assistant?conversation="+message.conversation_id+"&error=approval_rate_limited");
  const {data:created,error}=await supabase.from("action_approval_requests").insert({organization_id:membership.organization_id,requested_by:user.id,action_type:actionType,summary,details}).select("id").single();
