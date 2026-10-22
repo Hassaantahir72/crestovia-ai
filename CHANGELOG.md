@@ -1,3 +1,10 @@
+## v0.2.89 — Record live browser-role privilege audit
+
+- Records a fresh read-only Supabase privilege audit: migration history still ends at 0033, migration 0034 is not applied, and excessive effective browser-role table/default privileges remain.
+- Documents the 11 public tables where `anon` currently has effective SELECT/INSERT/UPDATE/DELETE/TRUNCATE and the 15 tables where `authenticated` has effective TRUNCATE/MAINTAIN, while noting that RLS does not filter administrative privileges.
+- Confirms the six inventoried RPCs have the intended effective EXECUTE split: two authenticated client RPCs and four service-only RPCs.
+- Adds a regression check that keeps the audit snapshot explicit about its read-only scope and unapplied migration status.
+- No live grants, migration history, data, or deployment were changed. Migration 0034 remains blocked pending compatibility review, non-production acceptance, and owner approval.
 ## v0.2.88 — Refresh verified release evidence
 
 - Updates the production-readiness evidence log to the exact v0.2.87 merge commit after its API tests, web lint/production build, and full-source archive workflow completed successfully.

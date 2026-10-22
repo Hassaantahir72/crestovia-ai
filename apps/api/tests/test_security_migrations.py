@@ -254,3 +254,13 @@ def test_migration_0034_compatibility_runbook_warns_that_source_review_is_not_li
     assert "explicit owner approval" in source
     assert "non-production acceptance testing" in source
     assert "live privilege output" in source
+
+
+def test_live_privilege_audit_snapshot_documents_unapplied_migration_and_browser_grants():
+    report = (ROOT / "docs" / "database" / "LIVE_AUDIT_2026-10-22.md").read_text(encoding="utf-8").lower()
+    assert "read-only" in report
+    assert "0033_retry_unmatched_resend_events_v0_2_56" in report
+    assert "migration 0034 is not applied" in report
+    assert "11 public tables" in report
+    assert "15 public tables" in report
+    assert "no live grants, migration history, data, or deployment were changed" in report
