@@ -66,3 +66,21 @@ Use two separate organizations and at least an owner, an administrator/manager, 
 - [ ] The owner explicitly approves public deployment.
 
 **Current state:** Not release-ready. Automated code/build checks pass and the preview is reported live, but the source archive, real-account acceptance, live integrations, tenant-isolation acceptance, recovery drill, and launch authorization remain outstanding. Keep public launch deferred until these gates are completed and explicitly approved.
+
+
+## Security hardening phase 1 — 2026-10-23 follow-up
+
+- [x] Security branch `security/company-hardening-v1` contains baseline web/API security headers, production API docs disabled, stricter API readiness checks, regression tests, CodeQL, Dependabot, and the security audit.
+- [x] API validation, web lint/type-check/production build, and CodeQL both-language jobs passed on documentation follow-up commit `170b22a9d20c94e9d28f9594a0ad52dc3bbbcff1` (web run [39967765741](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39967765741), API run [39967765807](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39967765807), CodeQL run [39967765939](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39967765939)).
+- [x] Read-only staging catalog verification confirms migration 0035 RPC exists as SECURITY INVOKER, denies EXECUTE to anon/authenticated, grants EXECUTE to service_role, and the referenced tasks/notifications columns and constraints exist.
+- [ ] Rebuild and integrity-check a complete source ZIP from the exact current commit `170b22a9d20c94e9d28f9594a0ad52dc3bbbcff1`. The previous archive predates this audit-document follow-up and must not be represented as the exact current commit's archive.
+- [ ] Run staging runtime acceptance with controlled test organizations, tasks, memberships, and reminder dedupe; current staging tasks and notifications tables are empty.
+- [ ] Review and execute a production backup/restore drill and migration rollback plan.
+- [ ] Apply production privilege migrations only after the controlled rollout is approved; no production database changes have been made.
+- [ ] Enable leaked-password protection in production Supabase Auth and re-check the security advisor.
+- [ ] Confirm Groq key and cron secret are set privately in Render; run live assistant and cron tests.
+- [ ] Perform real-account cross-organization authorization tests and browser voice/assistant acceptance.
+- [ ] Review MFA/session lifecycle, email/webhook delivery, alerting, storage policies, CSP/provider compatibility, and public repository visibility.
+- [ ] Obtain explicit owner launch authorization after all applicable gates have evidence.
+
+**Deployment status:** Render web and API services still track `chore/render-build-gates-api-service-v034`; the security branch is not deployed. The web service's latest live deploy is commit `0a90ae92527fe2ab87b40f48d9c4bf1dac460b2c`. Production remains unchanged.
