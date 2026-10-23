@@ -16,7 +16,8 @@ This checklist is the release gate for the private Crestovai AI deployment. A so
 - Web CI completed successfully: locked dependency installation, regression checks, configuration preflight, smoke tests, helper tests, readiness checklist validation, ESLint, TypeScript, and Next.js production build all passed.
 - API CI completed successfully. These are automated source/build checks, not live integration acceptance.
 - Render preview service `crestovia-ai` reports candidate commit `f2aed9081944a79cfc35f95f3879a2e9bbcee96f` live at https://crestovia-ai.onrender.com. This confirms the platform's deployment status, not interactive browser acceptance.
-- UI additions in the candidate include the illustrated assistant avatar, a dashboard-wide launcher that links to the assistant page, browser speech-to-text where supported, and read-aloud controls. Browser behavior and permission/error handling have not yet been independently tested.
+- UI additions in the candidate include the illustrated assistant avatar, a dashboard-wide launcher that links to the assistant page, browser speech-to-text where supported, and read-aloud controls. A follow-up commit improves speech recognition continuity, cleanup, and microphone error guidance; it still requires CI and browser acceptance.
+- Voice input should work with normal speaking volume when the browser, operating system, and microphone can detect speech. The app cannot directly set Web Speech API microphone gain/sensitivity; if normal speech is missed, check OS input level, selected microphone, distance/obstructions, site permission, and background noise. This is browser/device dependent and must be tested on the target device.
 - The launcher is a navigation shortcut, not an embedded chat overlay. Speech-to-text is user-initiated browser functionality, not an always-listening wake-word assistant.
 
 ## Gate B — organization and role isolation
