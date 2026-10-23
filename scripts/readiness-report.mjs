@@ -11,13 +11,16 @@ const json = args.has("--json");
 const validateOnly = args.has("--validate");
 
 const source = await readFile(checklistPath, "utf8");
-const headings = [...source.matchAll(/^## (Gate [A-F] — .+)$/gm)];
+// Operational notes may contain their own checkboxes. Count only the six formal
+// release gates so follow-up/security tracking does not silently change report totals.
+const gateSource = source.split(/^## Security hardening phase 1/m)[0];
+const headings = [...gateSource.matchAll(/^## (Gate [A-F] — .+)$/gm)];
 const requiredGates = ["A", "B", "C", "D", "E", "F"];
 const foundGates = headings.map((match) => match[1].match(/^Gate ([A-F])/)[1]);
-const checks = [...source.matchAll(/^- \[([ xX])\] (.+)$/gm)].map((match) => ({
+const checks = [...gateSource.matchAll(/^- \[([ xX])\] (.+)$/gm)].map((match) => ({
   checked: match[1].toLowerCase() === "x",
   label: match[2].trim(),
-  gate: source.slice(0, match.index).match(/^## Gate ([A-F]) —/gm)?.at(-1)?.match(/^## Gate ([A-F])/)[1] ?? null,
+  gate: gateSource.slice(0, match.index).match(/^## Gate ([A-F]) —/gm)?.at(-1)?.match(/^## Gate ([A-F])/)[1] ?? null,
 }));
 const problems = [];
 if (JSON.stringify(foundGates) !== JSON.stringify(requiredGates)) problems.push("readiness checklist must contain Gates A through F exactly once and in order");

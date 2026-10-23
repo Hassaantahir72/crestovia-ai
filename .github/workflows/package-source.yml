@@ -1,7 +1,7 @@
 name: Package full source
 on:
   push:
-    branches: [main, chore/render-build-gates-api-service-v034]
+    branches: [main, chore/render-build-gates-api-service-v034, security/company-hardening-v1]
   workflow_dispatch:
 permissions:
   contents: read
@@ -11,8 +11,8 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-      - name: Create complete source archive
-        run: zip -r crestovia-ai-source.zip . -x '.git/*' -x 'node_modules/*' -x '**/node_modules/*' -x 'crestovia-ai-source.zip'
+      - name: Create complete source archive outside the checkout
+        run: zip -r /tmp/crestovia-ai-source.zip . -x '.git/*' -x 'node_modules/*' -x '**/node_modules/*' && cp /tmp/crestovia-ai-source.zip crestovia-ai-source.zip
       - name: Verify archive contents and secret patterns
         run: python scripts/verify-source-archive.py crestovia-ai-source.zip
       - name: Upload source archive
