@@ -15,3 +15,14 @@ The audit checks:
 - `enqueue_due_task_reminders` exists as SECURITY INVOKER, is executable by `service_role`, and is not executable by browser roles.
 
 It is intentionally read-only and does not inspect secret values or mutate database objects/data. It does not replace Supabase Security Advisor, live user/role acceptance, or a production backup/restore drill. Save the date, project ref, result, and reviewer in the release evidence record.
+
+## Observed staging result — 2026-10-23
+
+- Project ref checked: `xpwrsxmwqptrpwycibub` (staging; production was not queried or modified by this audit).
+- The read-only SQL audit returned **zero findings**.
+- Catalog summary: 21 public base tables; RLS enabled on all 21; zero tables with effective `anon` SELECT; zero public functions executable by `anon`.
+- Supabase Security Advisor security result: zero lints/findings at the time of the check.
+- The expected reminder RPC was present and passed the audit's SECURITY INVOKER and service-role-only execution checks.
+- The staging project recorded migrations `0001` through `0036`.
+
+This is a point-in-time staging result, not proof of role-based application behavior for every user, reminder delivery, or a successful backup restore. The production database was not changed.
