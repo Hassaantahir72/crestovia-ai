@@ -76,7 +76,11 @@ export default async function PlatformAdminPage() {
         <article className="panel">
           <h2>Connected services</h2>
           <p className="muted">Provider credentials and platform secrets must be configured privately in the hosting dashboard. This page never displays secret values.</p>
-          <p className="notice notice-error">Admin allowlist is a separate server-side setting. Configure PLATFORM_ADMIN_EMAILS privately before expecting this panel to open.</p>
+          {allowlist.length === 0 ? (
+            <p className="notice notice-error">The server-side admin allowlist is not configured. Add PLATFORM_ADMIN_EMAILS in the hosting dashboard before using this panel.</p>
+          ) : (
+            <p className="muted">The server-side admin allowlist is configured. Its value is intentionally not displayed here.</p>
+          )}
         </article>
       </section>
     </main>
