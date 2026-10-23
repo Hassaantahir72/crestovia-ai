@@ -25,6 +25,8 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Test public landing page regression checks
         run: node --test ../../scripts/landing-page.test.mjs
+      - name: Test password recovery flow guards
+        run: node --test ../../scripts/password-recovery.test.mjs
       - name: Run web configuration preflight
         run: npm run preflight
       - name: Test configuration preflight
