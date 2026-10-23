@@ -1,7 +1,7 @@
 name: Package full source
 on:
   push:
-    branches: [main]
+    branches: [main, chore/render-build-gates-api-service-v034]
   workflow_dispatch:
 permissions:
   contents: read
