@@ -21,6 +21,9 @@ jobs:
           paths:
             - ~/.npm
       - run:
+          name: Public landing page regression tests
+          command: cd apps/web && node --test ../../scripts/landing-page.test.mjs
+      - run:
           name: Web configuration preflight
           command: cd apps/web && npm run preflight
       - run:
