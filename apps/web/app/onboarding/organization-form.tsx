@@ -8,6 +8,15 @@ function slugify(value: string) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+function workspaceCreationMessage(error: unknown): string {
+  const code = typeof error === "object" && error !== null && "code" in error
+    ? String((error as { code?: unknown }).code ?? "")
+    : "";
+  if (code === "23505") return "That workspace URL identifier is already in use. Choose another identifier and try again.";
+  if (code === "42501") return "Your account is not allowed to create this workspace. Please sign in again or contact support.";
+  return "We couldn't create your workspace right now. Check the workspace name and URL identifier, then try again.";
+}
+
 export function OrganizationForm() {
   const [name, setName] = useState("Crestovia");
   const [slug, setSlug] = useState("crestovia");
@@ -18,18 +27,28 @@ export function OrganizationForm() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    const normalizedName = name.trim();
+    const normalizedSlug = slugify(slug);
+    if (normalizedName.length < 2 || normalizedName.length > 120) {
+      setError("Company name must be between 2 and 120 characters.");
+      return;
+    }
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalizedSlug) || normalizedSlug.length > 80) {
+      setError("Use a workspace identifier with lowercase letters, numbers, and single hyphens.");
+      return;
+    }
     setBusy(true);
     try {
       const supabase = createClient();
       const { error: rpcError } = await supabase.rpc("create_organization", {
-        p_name: name.trim(),
-        p_slug: slugify(slug),
+        p_name: normalizedName,
+        p_slug: normalizedSlug,
       });
       if (rpcError) throw rpcError;
       router.replace("/dashboard");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to create organization.");
+      setError(workspaceCreationMessage(err));
     } finally {
       setBusy(false);
     }
