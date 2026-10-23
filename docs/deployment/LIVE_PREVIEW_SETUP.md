@@ -41,3 +41,7 @@ Do not trigger a deploy until the owner has explicitly approved the preview and 
 - [ ] No paid plan/add-on/domain was enabled.
 
 Render Free web services sleep after inactivity and are for preview/testing, not production uptime guarantees. The application is not considered live until the URL and auth flow are tested.
+
+## If Render cannot fetch the private GitHub repository
+
+If direct service creation reports that the repository is invalid or unfetchable, do not make the repository public and do not create a duplicate service. In Render Dashboard, connect the GitHub account under account/integration settings and authorize access to `Hassaantahir72/crestovia-ai` (prefer repository-specific access when GitHub offers it). Then retry creating only the `crestovia-ai-preview` web service from branch `chore/render-build-gates-api-service-v034`. Use the Singapore region, Free plan, and keep auto-deploy disabled. The service build should run from the repository root with commands scoped to `apps/web`. The temporary Supabase values are only for bootstrapping a preview build; replace them in Render's private environment settings with the real project URL and publishable key before testing authentication. Never make the repository public or put credentials in source control/chat.
