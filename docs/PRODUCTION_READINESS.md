@@ -2,6 +2,8 @@
 
 This checklist is the release gate for the private Crestovai AI deployment. A source-code merge or a green CI run is not proof that a live integration is configured correctly. Do not deploy publicly until the owner explicitly approves launch.
 
+**Current state:** Not release-ready by assertion.
+
 ## Gate A — automated source and build checks
 
 - [x] API test workflow passes on candidate commit `f2aed9081944a79cfc35f95f3879a2e9bbcee96f` (workflow run [39959386670](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39959386670)).
