@@ -1,0 +1,20 @@
+name: Temporary Runner Diagnostics
+on:
+  push:
+    branches:
+      - chore/render-build-gates-api-service-v034
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/runner-diagnostics.yml"
+jobs:
+  runner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Confirm GitHub runner starts
+        run: |
+          echo "runner_started=true"
+          echo "node_version=$(node --version)"
+          echo "python_version=$(python --version)"
