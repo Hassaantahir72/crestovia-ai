@@ -7,10 +7,11 @@ import {ACTIVE_ORGANIZATION_COOKIE} from "@/lib/organizations/active-membership"
 import {selectActiveOrganization} from "./organization-actions";
 export default async function DashboardPage(){
  const supabase=await createClient();const {data:{user},error}=await supabase.auth.getUser();if(error||!user)redirect("/login");
- const {data:memberships}=await supabase.from("memberships").select("role,status,organizations(id,name,slug)").eq("user_id",user.id).eq("status","active");if(!memberships?.length)redirect("/onboarding");await enforceOwnerMfa(supabase,memberships[0].role);
+ const {data:memberships}=await supabase.from("memberships").select("organization_id,role,status,organizations(id,name,slug)").eq("user_id",user.id).eq("status","active");if(!memberships?.length)redirect("/onboarding");
  const cookieStore=await cookies();
  const preferredOrganizationId=cookieStore.get(ACTIVE_ORGANIZATION_COOKIE)?.value;
- const selectedMembership=memberships.find(m=>m.organizations && (Array.isArray(m.organizations)?m.organizations[0]?.id:m.organizations.id)===preferredOrganizationId)??memberships[0];
+ const selectedMembership=memberships.find(m=>m.organization_id===preferredOrganizationId)??memberships[0];
+ await enforceOwnerMfa(supabase,selectedMembership.role);
  const isOwner=selectedMembership.role==="owner";
  const canViewAudit=selectedMembership.role==="owner"||selectedMembership.role==="admin";
  return <main className="container"><header style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:16,flexWrap:"wrap",marginBottom:28}}><div><p className="brand">CRESTOVIA AI</p><h1 style={{marginBottom:4}}>Workspace overview</h1><p className="muted">Your personal and company operating workspace</p></div><SignOutButton/></header>
