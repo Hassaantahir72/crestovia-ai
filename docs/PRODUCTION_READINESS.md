@@ -125,3 +125,14 @@ The user synced the current `chore/render-build-gates-api-service-v034` branch a
 The validation script explicitly states that these checks validate local code only; they do not verify production secrets, live tenant isolation, backups, or deployment. The run leaves `apps/web/tsconfig.tsbuildinfo` modified, a generated TypeScript build artifact; it should not be committed as a source change.
 
 This newer local run supersedes the earlier local-validation details above for the candidate branch. It does not supersede the requirement for exact-commit remote build evidence, archive integrity verification, live acceptance tests, and owner launch approval.
+
+
+## Verification refresh — 2026-10-23 (commit 910878f)
+
+- Exact candidate commit: `910878f8b1c3ef6c96e5473d8768fa4a3adcf9bd` (`ci: include workspace onboarding tests in web validation`).
+- GitHub Actions web workflow run [1197](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39951805904) completed successfully. Its recorded steps include dependency installation, workspace onboarding regression tests, password recovery/admin security checks, preflight and smoke tests, backup helper tests, tenant runner tests, provider/AI guardrail checks, readiness checks, ESLint, TypeScript, and the Next.js production build.
+- GitHub Actions API workflow run [1201](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39951805851) completed successfully; API test job passed.
+- Render still reports commit `1e8923d9927cf74c941b20d2bf7ef2eed740a69a` as the latest live deployment at the time of this refresh. The newer `910878f` commit is not yet confirmed live. Service URL: https://crestovia-ai.onrender.com; dashboard: https://dashboard.render.com/web/srv-dbdi16ei0phs739sj34g.
+- The source archive workflow artifact for this exact commit was not returned by the queried CI runs; a fresh archive from this exact commit is therefore not yet verified.
+- Live acceptance remains outstanding: owner login/recovery and MFA, first workspace creation and membership, two-organization authorization checks, real AI/email delivery, backup/restore drill, production migration review, and explicit launch authorization. No production database changes were made as part of this refresh.
+- This evidence supersedes older statements in this document claiming the current candidate's CI had failed before any steps. Historical dated notes are retained as history; use this section for the latest candidate status.
