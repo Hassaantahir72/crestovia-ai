@@ -161,7 +161,7 @@ export async function inviteTeamMember(data:FormData){
 }
 
 export async function revokeTeamInvitation(data:FormData){
- const {supabase,user,membership}=await context();if(membership.role!=="owner")redirect("/dashboard/team?error=owner_only");
+ const {user,membership}=await context();if(membership.role!=="owner")redirect("/dashboard/team?error=owner_only");
  const id=value(data,"invitation_id",64);if(!id)redirect("/dashboard/team?error=invalid_invitation");
  let adminClient:ReturnType<typeof import("@/lib/supabase/admin").createAdminClient>;
  try{const {createAdminClient}=await import("@/lib/supabase/admin");adminClient=createAdminClient()}catch{redirect("/dashboard/team?error=admin_secret_missing")}
