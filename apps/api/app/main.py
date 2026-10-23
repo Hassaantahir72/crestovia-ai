@@ -31,7 +31,7 @@ async def security_response_headers(request: Request, call_next):
     response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
     response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
     response.headers.setdefault("Cache-Control", "no-store")
-    if settings.app_env == "production":
+    if getattr(settings, "app_env", "development") == "production":
         response.headers.setdefault(
             "Strict-Transport-Security", "max-age=63072000; includeSubDomains"
         )
