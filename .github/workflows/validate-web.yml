@@ -5,7 +5,7 @@ on:
 jobs:
   web:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: apps/web
@@ -19,8 +19,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Run web configuration preflight
+        run: npm run preflight
       - name: Test configuration preflight
         run: node --test ../../scripts/preflight.test.mjs
       - name: Test deployment smoke checks
@@ -41,5 +45,7 @@ jobs:
         run: npm run readiness:validate
       - name: Run ESLint
         run: npm run lint
+      - name: Type-check TypeScript
+        run: npx tsc --noEmit
       - name: Build Next.js app
         run: npm run build
