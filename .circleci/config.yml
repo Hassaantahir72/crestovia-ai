@@ -1,0 +1,90 @@
+version: 2.1
+
+jobs:
+  validate-web:
+    docker:
+      - image: cimg/node:22.16
+    working_directory: ~/project
+    environment:
+      NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-v1-{{ checksum "apps/web/package-lock.json" }}
+      - run:
+          name: Install locked web dependencies
+          command: cd apps/web && npm ci --no-audit --no-fund
+      - save_cache:
+          key: npm-v1-{{ checksum "apps/web/package-lock.json" }}
+          paths:
+            - ~/.npm
+      - run:
+          name: Web configuration preflight
+          command: cd apps/web && npm run preflight
+      - run:
+          name: Preflight regression tests
+          command: cd apps/web && node --test ../../scripts/preflight.test.mjs
+      - run:
+          name: Deployment smoke-check tests
+          command: cd apps/web && node --test ../../scripts/health-smoke.test.mjs
+      - run:
+          name: Database backup helper tests
+          command: cd apps/web && node --test ../../scripts/verify-db-backup.test.mjs
+      - run:
+          name: Tenant-isolation runner tests
+          command: cd apps/web && node --test ../../scripts/tenant-isolation-acceptance.test.mjs
+      - run:
+          name: Provider connectivity helper tests
+          command: cd apps/web && node --test ../../scripts/provider-connectivity-check.test.mjs
+      - run:
+          name: Mocked Groq smoke tests
+          command: cd apps/web && node --test ../../scripts/groq-live-smoke.test.mjs
+      - run:
+          name: AI provider guardrail tests
+          command: cd apps/web && node --test ../../scripts/ai-provider-guardrails.test.mjs
+      - run:
+          name: Readiness report tests
+          command: cd apps/web && node --test ../../scripts/readiness-report.test.mjs
+      - run:
+          name: Validate release-readiness checklist
+          command: cd apps/web && npm run readiness:validate
+      - run:
+          name: ESLint
+          command: cd apps/web && npm run lint
+      - run:
+          name: TypeScript
+          command: cd apps/web && npx tsc --noEmit
+      - run:
+          name: Next.js production build
+          command: cd apps/web && npm run build
+
+  validate-api:
+    docker:
+      - image: cimg/python:3.11
+    working_directory: ~/project
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - pip-v1-{{ checksum "apps/api/requirements.txt" }}
+      - run:
+          name: Install API dependencies
+          command: python -m pip install --user -r apps/api/requirements.txt
+      - save_cache:
+          key: pip-v1-{{ checksum "apps/api/requirements.txt" }}
+          paths:
+            - ~/.cache/pip
+      - run:
+          name: Compile API Python sources
+          command: python -m compileall -q apps/api
+      - run:
+          name: Run API tests
+          command: python -m pytest apps/api/tests -q
+
+workflows:
+  validate:
+    jobs:
+      - validate-web
+      - validate-api
