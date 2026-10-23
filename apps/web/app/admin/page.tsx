@@ -104,11 +104,11 @@ export default async function PlatformAdminPage() {
               </li>
             ))}
           </ul>
-          <p className="muted">Fix missing settings in the hosting provider's private environment configuration, then redeploy if required. Never paste credentials into this panel or source control.</p>
+          <p className="muted">Fix missing settings in the hosting provider&apos;s private environment configuration, then redeploy if required. Never paste credentials into this panel or source control.</p>
         </article>
         <article className="panel">
           <h2>Company AI</h2>
-          <p className="muted">The assistant can read bounded, active-organization summaries and the signed-in member's assigned tasks. It cannot directly modify company data or execute external actions.</p>
+          <p className="muted">The assistant can read bounded, active-organization summaries and the signed-in member&apos;s assigned tasks. It cannot directly modify company data or execute external actions.</p>
           <p className="muted">AI-generated actions must be submitted to the owner approval queue. Personal conversations and saved memories remain scoped to the individual account.</p>
           <div className="action-links"><Link className="button" href="/dashboard/assistant">Open Company AI</Link><Link className="button button-secondary" href="/dashboard/approvals">Review approvals</Link></div>
         </article>
