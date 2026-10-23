@@ -52,7 +52,20 @@ export default async function PlatformAdminPage() {
       <section className="grid">
         <article className="panel">
           <h2>Company workspaces</h2>
-          <p className="muted">Manage your authorized organization through the existing workspace controls. Workspace membership remains the boundary for team data.</p>
+          <p className="muted">Your active owner memberships. Workspace membership remains the boundary for team data; this panel does not bypass organization access policies.</p>
+          <ul className="admin-workspace-list">
+            {memberships.filter((membership) => membership.role === "owner").map((membership) => {
+              const organization = Array.isArray(membership.organizations)
+                ? membership.organizations[0]
+                : membership.organizations;
+              return (
+                <li key={membership.organization_id}>
+                  <strong>{organization?.name ?? "Company workspace"}</strong>
+                  <span className="muted">{organization?.slug ? `/${organization.slug}` : "Workspace identifier unavailable"}</span>
+                </li>
+              );
+            })}
+          </ul>
           <div className="action-links"><Link className="button" href="/dashboard">Open owner workspace</Link><Link className="button button-secondary" href="/dashboard/team">Team access</Link></div>
         </article>
         <article className="panel">
