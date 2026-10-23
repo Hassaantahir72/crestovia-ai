@@ -27,6 +27,8 @@ jobs:
         run: |
           node --test ../../scripts/release-gates-preflight.test.mjs
           node ../../scripts/release-gates-preflight.mjs
+      - name: Test approval RPC security invariants
+        run: node --test ../../scripts/approval-rpc-security.test.mjs
       - name: Test web security headers
         run: node --test ../../scripts/web-security-headers.test.mjs
       - name: Test public landing page regression checks

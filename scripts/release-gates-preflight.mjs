@@ -25,6 +25,7 @@ export const RELEASE_GATES = [
       "scripts/tenant-isolation-acceptance.test.mjs",
       "docs/security/TENANT_ISOLATION_ACCEPTANCE.md",
       "database/migrations/0023_approval_execution_org_scope_v0_2_41.sql",
+      "scripts/approval-rpc-security.test.mjs",
     ],
   },
   {
