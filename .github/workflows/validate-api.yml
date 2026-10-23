@@ -23,3 +23,5 @@ jobs:
         run: python -m pytest scripts/test_staging_security_audit.py -q
       - name: Test production ACL rollout record guardrails
         run: python -m pytest scripts/test_production_acl_remediation_record.py -q
+      - name: Test staging RPC permission review guardrails
+        run: python -m pytest scripts/test_staging_rpc_permission_review.py -q
