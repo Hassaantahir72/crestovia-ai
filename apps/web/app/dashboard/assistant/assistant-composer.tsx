@@ -59,7 +59,13 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
   useEffect(() => () => {
     recognizerRef.current?.abort?.();
     recognizerRef.current = null;
-    stopMicrophoneCheck(false);
+    if (animationFrameRef.current !== null) window.cancelAnimationFrame(animationFrameRef.current);
+    micStreamRef.current?.getTracks().forEach((track) => track.stop());
+    micStreamRef.current = null;
+    if (audioContextRef.current && audioContextRef.current.state !== "closed") {
+      void audioContextRef.current.close().catch(() => undefined);
+    }
+    audioContextRef.current = null;
   }, []);
 
   async function toggleMicrophoneCheck() {
