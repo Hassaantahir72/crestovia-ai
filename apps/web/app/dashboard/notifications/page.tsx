@@ -2,6 +2,7 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
+import {getActiveOrganizationMembership} from "@/lib/organizations/active-membership";
 import {markAllNotificationsRead,markNotificationRead} from "./actions";
 
 type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
@@ -10,8 +11,7 @@ function dateLabel(value:string){return new Intl.DateTimeFormat("en",{dateStyle:
 export default async function NotificationsPage({searchParams}:Props){
  const params=await searchParams,supabase=await createClient();
  const {data:{user},error}=await supabase.auth.getUser();if(error||!user)redirect("/login");
- const {data:memberships}=await supabase.from("memberships").select("organization_id,role,organizations(name)").eq("user_id",user.id).eq("status","active").limit(1);
- const membership=memberships?.[0];if(!membership)redirect("/onboarding");await enforceOwnerMfa(supabase,membership.role);
+ const {membership}=await getActiveOrganizationMembership(supabase,user);if(!membership)redirect("/onboarding");await enforceOwnerMfa(supabase,membership.role);
  const organization=Array.isArray(membership.organizations)?membership.organizations[0]:membership.organizations;
  const {data, error:loadError}=await supabase.from("notifications").select("id,type,title,body,entity_type,entity_id,read_at,created_at").eq("organization_id",membership.organization_id).eq("recipient_id",user.id).order("created_at",{ascending:false}).limit(100);
  const notifications=(data??[]) as Notification[],unread=notifications.filter(item=>!item.read_at).length;
