@@ -21,11 +21,19 @@ type SpeechWindow = Window & {
   webkitSpeechRecognition?: new () => SpeechRecognizer;
 };
 
+const speechLanguages = [
+  { value: "auto", label: "Use browser language" },
+  { value: "en-US", label: "English (US)" },
+  { value: "en-GB", label: "English (UK)" },
+  { value: "ur-PK", label: "Urdu (Pakistan)" },
+];
+
 export default function AssistantComposer({ conversationId }: { conversationId: string }) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognizerRef = useRef<SpeechRecognizer | null>(null);
   const [listening, setListening] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState("");
+  const [speechLanguage, setSpeechLanguage] = useState("auto");
 
   useEffect(() => () => {
     recognizerRef.current?.abort?.();
@@ -47,7 +55,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
     }
     try {
       const recognizer = new SpeechApi();
-      recognizer.lang = navigator.language || "en-US";
+      recognizer.lang = speechLanguage === "auto" ? (navigator.language || "en-US") : speechLanguage;
       recognizer.continuous = true;
       recognizer.interimResults = true;
       recognizer.maxAlternatives = 1;
@@ -77,7 +85,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
         recognizerRef.current = null;
       };
       recognizerRef.current = recognizer;
-      setVoiceMessage("Listening. Speak naturally at your normal volume; keep the microphone unobstructed and reduce background noise. Your browser may ask for microphone permission.");
+      setVoiceMessage("Listening. Speak naturally at your normal volume. If recognition is poor, try selecting English (US/UK) or Urdu (Pakistan), move closer to the microphone, and reduce background noise. Your browser may ask for microphone permission.");
       setListening(true);
       recognizer.start();
     } catch {
@@ -91,10 +99,21 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
     <form action={sendAssistantMessage} className="chat-composer">
       <input type="hidden" name="conversation_id" value={conversationId} />
       <label htmlFor="assistant-message">Message</label>
-      <textarea ref={inputRef} className="input chat-input" id="assistant-message" name="content" rows={3} maxLength={12000} required placeholder="Ask Crestovai AI…" />
+      <textarea ref={inputRef} className="input chat-input" id="assistant-message" name="content" rows={3} maxLength={12000} required placeholder="Ask Crestovia AI…" />
       <div className="chat-compose-footer">
         <span className="muted">Workspace context is read-only. Company changes and external actions remain disabled.</span>
         <div className="chat-compose-actions">
+          <label htmlFor="speech-language" className="muted">Speech language</label>
+          <select
+            className="input"
+            id="speech-language"
+            value={speechLanguage}
+            onChange={(event) => setSpeechLanguage(event.target.value)}
+            disabled={listening}
+            aria-label="Speech recognition language"
+          >
+            {speechLanguages.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}
+          </select>
           <button className="button button-secondary" type="button" onClick={toggleVoiceInput} aria-pressed={listening}>
             {listening ? "Stop listening" : "Use voice"}
           </button>
@@ -102,6 +121,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
         </div>
       </div>
       {voiceMessage ? <p className="muted" role="status" aria-live="polite">{voiceMessage}</p> : null}
+      <p className="muted" style={{ fontSize: 12 }}>Voice recognition support and accuracy depend on your browser, operating system, microphone, and network. This page cannot directly change the microphone's hardware gain.</p>
     </form>
   );
 }
