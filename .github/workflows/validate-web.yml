@@ -23,6 +23,8 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
+      - name: Test web security headers
+        run: node --test ../../scripts/web-security-headers.test.mjs
       - name: Test public landing page regression checks
         run: node --test ../../scripts/landing-page.test.mjs
       - name: Test workspace onboarding regression checks
