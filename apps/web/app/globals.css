@@ -118,3 +118,6 @@ body{
   .container,.grid>.panel,.chat-message{animation:none!important}
   *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
 }
+
+.chat-compose-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+@media(max-width:640px){.chat-compose-actions{width:100%}.chat-compose-actions .button{flex:1}}
