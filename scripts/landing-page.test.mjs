@@ -8,7 +8,7 @@ const styles = await readFile(new URL("../apps/web/app/globals.css", import.meta
 test("public landing page presents the core Crestovia AI value proposition", () => {
   assert.match(page, /Less busywork/);
   assert.match(page, /More forward/);
-  assert.match(page, /company.?s AI command center/i);
+  assert.match(page, /Crestovai AI/i);
   assert.match(page, /human-approved actions/i);
 });
 
@@ -18,9 +18,9 @@ test("landing page links into the existing sign-in flow", () => {
 });
 
 test("landing page includes all three capability cards", () => {
-  assert.match(page, /Your AI command center/);
-  assert.match(page, /Work that stays organized/);
-  assert.match(page, /Human-approved automation/);
+  assert.match(page, /Meet Crestovai AI, your AI partner/);
+  assert.match(page, /One home for every department/);
+  assert.match(page, /Voice, chat, and trusted actions/);
 });
 
 test("landing page styling supports responsive layouts and reduced motion", () => {
