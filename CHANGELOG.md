@@ -1,3 +1,10 @@
+## v0.3.3 — Live Groq completion smoke check
+
+- Adds an opt-in operator command that makes one bounded real chat-completions request to Groq using privately configured environment variables.
+- Uses a fixed HTTPS endpoint, redirect blocking, a 10-second default timeout, an eight-token response cap, and secret-safe result categories; response text and provider error bodies are never printed or returned.
+- Adds mocked CI tests for successful completion, missing configuration, authentication/rate-limit/provider errors, malformed responses, timeout/network failures, and unsafe settings.
+- No live provider request, database change, credential change, or deployment is performed by this source update. A real check consumes a small amount of Groq quota and must be run by an operator with the key configured privately.
+
 ## v0.3.2 — Provider connectivity diagnostics
 
 - Adds read-only Groq and Resend connectivity checks against fixed HTTPS endpoints; no email is sent and no provider resources are modified.

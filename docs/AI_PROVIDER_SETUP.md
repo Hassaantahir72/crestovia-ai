@@ -32,3 +32,10 @@ When signed in as the organization owner, open Dashboard → AI assistant and se
 ## What remains to validate
 
 The readiness notice is a presence check only. A real successful request, provider error behavior, quota limits, and secret configuration must still be verified in a private test environment before production launch. Public deployment remains deferred until the owner approves it.
+
+
+## Run a live Groq completion smoke check
+
+From `apps/web`, run `npm run smoke:groq` in an environment where `GROQ_API_KEY` is privately configured. The script makes one request to the fixed Groq chat-completions HTTPS endpoint, uses a 10-second timeout and an eight-token cap, and reports only the result category, HTTP status, and model. It does not print or store the key or generated response. It does consume a small amount of provider quota. The script is a provider smoke test, not a full application acceptance test.
+
+For a custom model, set `GROQ_MODEL` privately before running it. Do not pass keys as command-line arguments, paste them into chat, or commit them. CI tests use mocked responses and never contact Groq.
