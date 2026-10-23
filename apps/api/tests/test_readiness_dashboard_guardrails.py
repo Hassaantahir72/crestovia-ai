@@ -9,9 +9,10 @@ def test_launch_readiness_page_is_owner_only_and_requires_owner_mfa():
     dashboard = (WEB / "app" / "dashboard" / "page.tsx").read_text(encoding="utf-8")
 
     assert 'supabase.auth.getUser()' in page
-    assert 'memberships.some(m=>m.role==="owner")' in page
-    assert 'if(!isOwner)redirect("/dashboard")' in page
-    assert 'await enforceOwnerMfa(supabase,"owner")' in page
+    assert 'getActiveOrganizationMembership(supabase,user)' in page
+    assert 'if(!membership)redirect("/onboarding")' in page
+    assert 'if(membership.role!=="owner")redirect("/dashboard")' in page
+    assert 'await enforceOwnerMfa(supabase,membership.role)' in page
     assert 'href="/dashboard/readiness"' in dashboard
 
 
