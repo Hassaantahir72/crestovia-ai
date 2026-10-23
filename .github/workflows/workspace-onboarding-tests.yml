@@ -1,0 +1,21 @@
+name: Workspace onboarding regression tests
+on:
+  push:
+    branches: [main, chore/render-build-gates-api-service-v034]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  workspace-onboarding-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run workspace onboarding regression tests
+        run: node --test scripts/workspace-creation-ui.test.mjs
