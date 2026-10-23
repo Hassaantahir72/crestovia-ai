@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[3]
 WEB = ROOT / "apps" / "web"
@@ -74,6 +75,5 @@ def test_mutating_workspace_actions_validate_organization_scope():
 
     # Mutations use the organization from the authenticated membership, not form data.
     assert 'organization_id:membership.organization_id' in actions
-    assert '.eq("organization_id",membership.organization_id)' in actions
-    assert '.eq("organization_id", membership.organization_id)' in actions
+    assert re.search(r'\.eq\("organization_id",\s*membership\.organization_id\)', actions)
     assert 'if(membership.role!=="owner")' in actions
