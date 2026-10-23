@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { sendAssistantMessage } from "./actions";
 
-type SpeechResult = { results: ArrayLike<{ 0: { transcript?: string } }> };
+type SpeechResult = { results: ArrayLike<{ 0: { transcript?: string }; isFinal?: boolean }> };
 type SpeechRecognizer = {
   lang: string;
+  continuous: boolean;
   interimResults: boolean;
   maxAlternatives: number;
   onresult: ((event: SpeechResult) => void) | null;
@@ -13,6 +14,7 @@ type SpeechRecognizer = {
   onend: (() => void) | null;
   start: () => void;
   stop: () => void;
+  abort?: () => void;
 };
 type SpeechWindow = Window & {
   SpeechRecognition?: new () => SpeechRecognizer;
@@ -25,44 +27,63 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
   const [listening, setListening] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState("");
 
+  useEffect(() => () => {
+    recognizerRef.current?.abort?.();
+    recognizerRef.current = null;
+  }, []);
+
   function toggleVoiceInput() {
     if (listening) {
       recognizerRef.current?.stop();
       setListening(false);
+      setVoiceMessage("Voice input stopped. Review your transcript, then send when ready.");
       return;
     }
     const speechWindow = window as SpeechWindow;
     const SpeechApi = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
     if (!SpeechApi) {
-      setVoiceMessage("Voice input is not supported in this browser. You can still type your message.");
+      setVoiceMessage("Voice input is not supported in this browser. Try an up-to-date Chrome or Edge browser, or type your message.");
       return;
     }
     try {
       const recognizer = new SpeechApi();
       recognizer.lang = navigator.language || "en-US";
+      recognizer.continuous = true;
       recognizer.interimResults = true;
       recognizer.maxAlternatives = 1;
       recognizer.onresult = (event) => {
-        const transcript = Array.from(event.results).map((result) => result[0]?.transcript ?? "").join(" ").trim();
+        const transcript = Array.from(event.results)
+          .map((result) => result[0]?.transcript ?? "")
+          .join(" ")
+          .trim();
         if (inputRef.current && transcript) {
           inputRef.current.value = transcript;
           inputRef.current.dispatchEvent(new Event("input", { bubbles: true }));
         }
       };
       recognizer.onerror = (event) => {
-        setVoiceMessage(event.error === "not-allowed"
-          ? "Microphone permission was denied. Allow microphone access in your browser to use voice input."
-          : "Voice input stopped. Please try again or type your message.");
+        const messages: Record<string, string> = {
+          "not-allowed": "Microphone permission was denied. Allow microphone access for this site in your browser settings.",
+          "no-speech": "No speech was detected. Check the selected microphone and speak in your usual voice, close enough for the mic to hear you.",
+          "audio-capture": "No microphone was found. Connect or enable a microphone, then try again.",
+          "network": "Browser speech recognition could not connect. Check your connection and try again.",
+          "aborted": "Voice input was stopped."
+        };
+        setVoiceMessage(messages[event.error ?? ""] ?? "Voice input stopped. Check your microphone and browser permissions, then try again or type your message.");
         setListening(false);
       };
-      recognizer.onend = () => setListening(false);
+      recognizer.onend = () => {
+        setListening(false);
+        recognizerRef.current = null;
+      };
       recognizerRef.current = recognizer;
-      setVoiceMessage("Listening in this tab only. Your browser may ask for microphone permission.");
+      setVoiceMessage("Listening. Speak naturally at your normal volume; keep the microphone unobstructed and reduce background noise. Your browser may ask for microphone permission.");
       setListening(true);
       recognizer.start();
     } catch {
+      recognizerRef.current = null;
       setListening(false);
-      setVoiceMessage("Could not start voice input. Check microphone permission and try again.");
+      setVoiceMessage("Could not start voice input. Check microphone permission and that another app is not exclusively using the microphone.");
     }
   }
 
