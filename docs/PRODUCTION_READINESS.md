@@ -103,3 +103,25 @@ This evidence log does not assert that live database security, tenant isolation,
 - The latest web and API jobs failed before any workflow step ran: each job has no runner name, zero steps, and a two-second run window. Job-log retrieval returns 404 (BlobNotFound). Root cause is unknown; application code should not be changed speculatively to mask this infrastructure-level symptom.
 - Local npm dependency installation fails at DNS resolution (`EAI_AGAIN registry.npmjs.org`), so current frontend lint and production build are not verified. Historical successful builds on earlier versions do not prove this candidate builds.
 - Release Gate A remains unchecked until a fresh exact-commit workflow run completes, including lint and Next.js production build. Do not bypass CI or merge the stacked PRs while checks are failing.
+
+## Local validation refresh — 2026-10-23
+
+The user synced the current `chore/render-build-gates-api-service-v034` branch and reported a fresh successful run of `scripts/validate-local.ps1` on Windows (Node 24.22.1, npm 11.19.1, Python 3.12.0):
+
+- Preflight tests: 7 passed.
+- Deployment smoke-check tests: 5 passed.
+- Backup helper tests: 5 passed, 1 skipped because Windows could not create symbolic links.
+- Tenant-isolation acceptance runner tests: 5 passed.
+- Provider connectivity tests: 5 passed.
+- Mocked Groq smoke tests: 5 passed.
+- AI guardrail tests: 3 passed.
+- Readiness report tests: 3 passed; checklist structure validation passed.
+- ESLint: passed with no warnings reported.
+- TypeScript: passed.
+- Next.js production build: passed; 22 static pages generated.
+- API tests: 107 passed; one Starlette/httpx deprecation warning.
+- Python compile check: passed.
+
+The validation script explicitly states that these checks validate local code only; they do not verify production secrets, live tenant isolation, backups, or deployment. The run leaves `apps/web/tsconfig.tsbuildinfo` modified, a generated TypeScript build artifact; it should not be committed as a source change.
+
+This newer local run supersedes the earlier local-validation details above for the candidate branch. It does not supersede the requirement for exact-commit remote build evidence, archive integrity verification, live acceptance tests, and owner launch approval.
