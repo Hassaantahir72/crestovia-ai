@@ -70,18 +70,21 @@ jobs:
           keys:
             - pip-v1-{{ checksum "apps/api/requirements.txt" }}
       - run:
+          name: Create isolated API environment
+          command: python -m venv .venv
+      - run:
           name: Install API dependencies
-          command: python -m pip install --user -r apps/api/requirements.txt
+          command: . .venv/bin/activate && python -m pip install --upgrade pip && python -m pip install -r apps/api/requirements.txt
       - save_cache:
           key: pip-v1-{{ checksum "apps/api/requirements.txt" }}
           paths:
             - ~/.cache/pip
       - run:
           name: Compile API Python sources
-          command: python -m compileall -q apps/api
+          command: . .venv/bin/activate && python -m compileall -q apps/api
       - run:
           name: Run API tests
-          command: python -m pytest apps/api/tests -q
+          command: . .venv/bin/activate && python -m pytest apps/api/tests -q
 
 workflows:
   validate:
