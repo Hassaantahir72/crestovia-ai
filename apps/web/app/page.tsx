@@ -3,7 +3,7 @@ import Link from "next/link";
 const capabilities = [
   {
     number: "01",
-    title: "Meet Jarvis, your AI partner",
+    title: "Meet Crestovai AI, your AI partner",
     description: "Chat with your assistant, request a briefing, plan work, and turn ideas into approval-ready tasks without losing company context.",
     href: "/login",
     label: "Open assistant",
@@ -43,7 +43,7 @@ export default function HomePage() {
           <p className="landing-eyebrow"><span /> THE OPERATING SYSTEM FOR YOUR COMPANY</p>
           <h1 id="landing-title">Less busywork.<br /><span>More forward.</span></h1>
           <p className="landing-intro">
-            Meet Jarvis, your company’s AI partner and your personal assistant. Bring your people, projects, departments, and daily briefings together—with useful automation that keeps you in control.
+            Meet Crestovai AI, your company’s AI partner and your personal assistant. Bring your people, projects, departments, and daily briefings together—with useful automation that keeps you in control.
           </p>
           <div className="landing-actions">
             <Link className="button landing-primary" href="/login">Enter your workspace <span aria-hidden="true">→</span></Link>
@@ -78,7 +78,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <div className="landing-float landing-float-top"><span className="landing-float-icon">✳</span><span><strong>Jarvis, with context</strong><small>Company work and private planning</small></span></div>
+          <div className="landing-float landing-float-top"><span className="landing-float-icon">✳</span><span><strong>Crestovai AI, with context</strong><small>Company work and private planning</small></span></div>
           <div className="landing-float landing-float-bottom"><span className="landing-float-icon landing-float-icon-green">✓</span><span><strong>You stay in control</strong><small>Review before action</small></span></div>
         </div>
       </section>
