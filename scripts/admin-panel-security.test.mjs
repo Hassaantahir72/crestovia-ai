@@ -30,10 +30,11 @@ test("private admin lists only the signed-in owner's active memberships", () => 
   assert.match(admin, /does not bypass organization access policies/);
 });
 
-test("admin configuration notice reflects allowlist state without exposing its value", () => {
-  assert.match(admin, /allowlist\.length === 0/);
-  assert.match(admin, /server-side admin allowlist is configured/);
-  assert.doesNotMatch(admin, /Admin allowlist is a separate server-side setting/);
+test("admin configuration checks report allowlist presence without exposing email values", () => {
+  assert.match(admin, /label: "Admin email allowlist"/);
+  assert.match(admin, /ok: allowlist\.length > 0/);
+  assert.match(admin, /PLATFORM_ADMIN_EMAILS/);
+  assert.doesNotMatch(admin, /allowlist\.join/);
 });
 
 test("private admin reports secret-safe configuration presence without rendering values", () => {
