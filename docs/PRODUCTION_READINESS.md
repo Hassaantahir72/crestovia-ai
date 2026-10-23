@@ -1,16 +1,23 @@
 # Crestovia AI — Production Readiness Gate
 
-This checklist is the release gate for the private Crestovia AI deployment. A source-code merge or a green CI run is not proof that a live integration is configured correctly. Do not deploy publicly until the owner explicitly approves launch.
+This checklist is the release gate for the private Crestovai AI deployment. A source-code merge or a green CI run is not proof that a live integration is configured correctly. Do not deploy publicly until the owner explicitly approves launch.
 
 ## Gate A — automated source and build checks
 
-- [ ] API test workflow passes on the exact release commit.
-- [ ] Web ESLint and Next.js production build pass on the exact release commit.
-- [ ] Complete source archive is generated from that same commit and passes ZIP integrity checks.
-
-**Current candidate evidence (v0.3.4, 2026-10-23):** the user reports that `scripts/validate-local.ps1` passed after syncing `chore/render-build-gates-api-service-v034` to the latest branch head. It reports 7/7 preflight tests, 5/5 deployment smoke-check tests, 5/5 backup-helper tests plus one Windows symlink test skipped due to OS permissions, 5/5 tenant-isolation runner tests, 5/5 provider-connectivity tests, 5/5 mocked Groq smoke tests, 3/3 AI guardrail tests, 3/3 readiness-report tests, successful checklist validation, zero ESLint errors with two warnings, TypeScript success, a successful Next.js production build with 22 generated pages, 107 passing API tests, and a successful Python compile check. The working tree was clean after validation. `apps/web/package-lock.json` is committed, and a clean `npm ci --ignore-scripts --no-audit --no-fund` install was previously reported successful locally. The Render blueprint now uses `npm ci --no-audit --no-fund` and pins the web service to Node 22.16.0 to match the declared engine range. This is user-reported local evidence, not an independently observed Render build. GitHub Actions workflow runs for the current candidate still report failure; inspect their job status/log availability before interpreting the cause. Keep Gate A checkboxes open until exact-commit remote checks or an equivalent approved release process and source archive integrity verification are complete.
+- [x] API test workflow passes on candidate commit `f2aed9081944a79cfc35f95f3879a2e9bbcee96f` (workflow run [39959386670](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39959386670)).
+- [x] Web ESLint, TypeScript type-check, and Next.js production build pass on candidate commit `f2aed9081944a79cfc35f95f3879a2e9bbcee96f` (workflow run [39959386453](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39959386453)).
+- [ ] Complete source archive is generated from the exact release commit and passes ZIP integrity and secret-pattern checks. The queried current candidate runs returned no artifacts; archive remains unverified.
 - [ ] Database migrations are reviewed, applied to the intended environment, and their grants/policies verified.
 - [ ] No secrets, tokens, local environment files, or production data are included in the source archive.
+
+## Current candidate evidence — 2026-10-23
+
+- Candidate commit: `f2aed9081944a79cfc35f95f3879a2e9bbcee96f`.
+- Web CI completed successfully: locked dependency installation, regression checks, configuration preflight, smoke tests, helper tests, readiness checklist validation, ESLint, TypeScript, and Next.js production build all passed.
+- API CI completed successfully. These are automated source/build checks, not live integration acceptance.
+- Render preview service `crestovia-ai` reports candidate commit `f2aed9081944a79cfc35f95f3879a2e9bbcee96f` live at https://crestovia-ai.onrender.com. This confirms the platform's deployment status, not interactive browser acceptance.
+- UI additions in the candidate include the illustrated assistant avatar, a dashboard-wide launcher that links to the assistant page, browser speech-to-text where supported, and read-aloud controls. Browser behavior and permission/error handling have not yet been independently tested.
+- The launcher is a navigation shortcut, not an embedded chat overlay. Speech-to-text is user-initiated browser functionality, not an always-listening wake-word assistant.
 
 ## Gate B — organization and role isolation
 
@@ -25,7 +32,7 @@ Use two separate organizations and at least an owner, an administrator/manager, 
 
 ## Gate C — AI provider
 
-- [ ] A valid Groq configuration completes a real assistant request.
+- [ ] A valid Groq configuration completes a real assistant request in the deployed environment.
 - [ ] Missing, invalid, timed-out, rate-limited, and provider-error responses fail safely without leaking keys or internal diagnostics.
 - [ ] Assistant memory and workspace tools are scoped to the active user and organization.
 - [ ] Read-only tool calls remain read-only; consequential actions require explicit approval.
@@ -54,85 +61,4 @@ Use two separate organizations and at least an owner, an administrator/manager, 
 - [ ] Remaining known limitations are reviewed and accepted.
 - [ ] The owner explicitly approves public deployment.
 
-**Current state:** Not release-ready by assertion. Automated checks can pass while live-account acceptance, provider setup, recovery drills, and launch authorization remain outstanding. Keep deployment private until the gates are completed.
-
-
-## v0.2.98 staging acceptance evidence
-
-The v0.2.98 source and web build workflows passed on the release merge commit. Staging database acceptance is recorded separately from production launch authorization.
-
-- **Release commit:** `2db9946f093763eaeb2dcd8c7284f58893a9dece` (v0.2.98; main)
-- **API tests:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39754326941)
-- **Web lint and production build:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39754326771)
-- **Source archive packaging and secret-pattern verification:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39754326746)
-- **Staging project:** `crestovia-ai-staging` (`xpwrsxmwqptrpwycibub`); migrations 0001–0036 applied.
-- **Effective schema privileges:** `anon` has no USAGE on schema `public`; `authenticated` and `service_role` retain USAGE.
-- **RLS / table grants:** all 21 public tables have RLS enabled; no table has RLS disabled; no effective anonymous table DML grants remain.
-- **Security advisor:** no findings.
-- **Known limitation:** platform-managed `supabase_admin` default ACL entries remain unchanged. The schema boundary blocks anonymous access unless schema USAGE is later re-granted; re-audit after future role/schema changes.
-
-This does **not** complete the live tenant-isolation, provider, backup/restore, or launch-authorization gates. Production remains at migration 0033 and was not changed by staging acceptance. Keep public deployment disabled until the remaining gates are evidenced and the owner explicitly approves launch.
-
-
-## Historical verified evidence log (v0.2.97)
-
-The following Gate A items are checked only because their workflows completed successfully on the exact v0.2.97 release source commit recorded below.
-
-- **Release commit:** `6f0f24a36aa28f7a5f2dedb36dfffd2f90e498ba` (v0.2.97; main)
-- **API tests:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744623714)
-- **Web lint and production build:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744623697)
-- **Source archive packaging and content/credential-pattern verification:** [successful workflow run](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39744623706)
-- **Downloaded archive SHA-256:** `e71ea1e08ea7a08d3fad7fda7ec427be0b13c1f621be2dc229f33cac194c19c5` (214 entries; ZIP integrity and embedded archive verification passed; package version 0.2.97)
-
-This evidence log does not assert that live database security, tenant isolation, provider acceptance, recovery, or launch authorization is complete.
-
-
-## Live environment verification refresh (2026-10-22)
-
-- Read-only Supabase security advisors returned no findings in staging or production. Informational unused-index notices remain (46 staging, 47 production); these are not sufficient evidence to remove indexes.
-- Staging migration inventory is at 0036; production remains at 0033. No production migration or write was performed.
-- Latest GitHub Actions reruns again failed before recording any steps, with no retrievable job logs. The root cause remains unconfirmed.
-- Local npm installation timed out; candidate ESLint and Next.js production build remain unverified. Gate A stays unchecked.
-- The connected Render workspace has no service linked to the Crestovia AI repository, so no Crestovia app deployment was found there. No service was created or deployed.
-
-
-## Latest CI blocker detail — 2026-10-22
-
-- Latest retry confirmation at 2026-10-22 11:24 UTC: web run `39769401966` and API run `39769401968` both ended before any steps were recorded; job log retrieval again returned 404 (BlobNotFound). Root cause remains unknown. A further local npm install retry timed out, so the frontend build remains unverified.
-
-- The latest web and API jobs failed before any workflow step ran: each job has no runner name, zero steps, and a two-second run window. Job-log retrieval returns 404 (BlobNotFound). Root cause is unknown; application code should not be changed speculatively to mask this infrastructure-level symptom.
-- Local npm dependency installation fails at DNS resolution (`EAI_AGAIN registry.npmjs.org`), so current frontend lint and production build are not verified. Historical successful builds on earlier versions do not prove this candidate builds.
-- Release Gate A remains unchecked until a fresh exact-commit workflow run completes, including lint and Next.js production build. Do not bypass CI or merge the stacked PRs while checks are failing.
-
-## Local validation refresh — 2026-10-23
-
-The user synced the current `chore/render-build-gates-api-service-v034` branch and reported a fresh successful run of `scripts/validate-local.ps1` on Windows (Node 24.22.1, npm 11.19.1, Python 3.12.0):
-
-- Preflight tests: 7 passed.
-- Deployment smoke-check tests: 5 passed.
-- Backup helper tests: 5 passed, 1 skipped because Windows could not create symbolic links.
-- Tenant-isolation acceptance runner tests: 5 passed.
-- Provider connectivity tests: 5 passed.
-- Mocked Groq smoke tests: 5 passed.
-- AI guardrail tests: 3 passed.
-- Readiness report tests: 3 passed; checklist structure validation passed.
-- ESLint: passed with no warnings reported.
-- TypeScript: passed.
-- Next.js production build: passed; 22 static pages generated.
-- API tests: 107 passed; one Starlette/httpx deprecation warning.
-- Python compile check: passed.
-
-The validation script explicitly states that these checks validate local code only; they do not verify production secrets, live tenant isolation, backups, or deployment. The run leaves `apps/web/tsconfig.tsbuildinfo` modified, a generated TypeScript build artifact; it should not be committed as a source change.
-
-This newer local run supersedes the earlier local-validation details above for the candidate branch. It does not supersede the requirement for exact-commit remote build evidence, archive integrity verification, live acceptance tests, and owner launch approval.
-
-
-## Verification refresh — 2026-10-23 (commit 910878f)
-
-- Exact candidate commit: `910878f8b1c3ef6c96e5473d8768fa4a3adcf9bd` (`ci: include workspace onboarding tests in web validation`).
-- GitHub Actions web workflow run [1197](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39951805904) completed successfully. Its recorded steps include dependency installation, workspace onboarding regression tests, password recovery/admin security checks, preflight and smoke tests, backup helper tests, tenant runner tests, provider/AI guardrail checks, readiness checks, ESLint, TypeScript, and the Next.js production build.
-- GitHub Actions API workflow run [1201](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39951805851) completed successfully; API test job passed.
-- Render still reports commit `1e8923d9927cf74c941b20d2bf7ef2eed740a69a` as the latest live deployment at the time of this refresh. The newer `910878f` commit is not yet confirmed live. Service URL: https://crestovia-ai.onrender.com; dashboard: https://dashboard.render.com/web/srv-dbdi16ei0phs739sj34g.
-- The source archive workflow artifact for this exact commit was not returned by the queried CI runs; a fresh archive from this exact commit is therefore not yet verified.
-- Live acceptance remains outstanding: owner login/recovery and MFA, first workspace creation and membership, two-organization authorization checks, real AI/email delivery, backup/restore drill, production migration review, and explicit launch authorization. No production database changes were made as part of this refresh.
-- This evidence supersedes older statements in this document claiming the current candidate's CI had failed before any steps. Historical dated notes are retained as history; use this section for the latest candidate status.
+**Current state:** Not release-ready. Automated code/build checks pass and the preview is reported live, but the source archive, real-account acceptance, live integrations, tenant-isolation acceptance, recovery drill, and launch authorization remain outstanding. Keep public launch deferred until these gates are completed and explicitly approved.
