@@ -23,3 +23,9 @@ test("owner dashboard links to the separate admin panel", () => {
   assert.match(dashboard, /href="\/admin"/);
   assert.match(dashboard, /Private admin panel/);
 });
+
+test("private admin lists only the signed-in owner's active memberships", () => {
+  assert.match(admin, /memberships\.filter\(\(membership\) => membership\.role === "owner"\)/);
+  assert.match(admin, /membership\.organization_id/);
+  assert.match(admin, /does not bypass organization access policies/);
+});
