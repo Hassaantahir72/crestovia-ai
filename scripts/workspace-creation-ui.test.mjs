@@ -6,7 +6,7 @@ const source = await readFile(new URL('../apps/web/app/onboarding/organization-f
 
 test('workspace creation validates normalized company names and identifiers before RPC', () => {
   assert.match(source, /normalizedName\.length < 2 \|\| normalizedName\.length > 120/);
-  assert.match(source, /\^\[a-z0-9\]\+\(\?:-\[a-z0-9\]\+\)\*\$/);
+  assert.ok(source.includes('if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalizedSlug)'));
   assert.match(source, /p_name: normalizedName/);
   assert.match(source, /p_slug: normalizedSlug/);
 });
