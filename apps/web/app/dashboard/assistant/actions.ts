@@ -6,10 +6,11 @@ import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
 import {generateAssistantReply,type AssistantMessage} from "@/lib/ai/provider";
 import {runReadOnlyAssistantTools} from "@/lib/ai/workspace-tools";
 import {consumeUserRateLimit} from "@/lib/security/rate-limit";
+import {getActiveOrganizationMembership} from "@/lib/organizations/active-membership";
 async function getUserContext(){
  const supabase=await createClient();const {data:{user},error}=await supabase.auth.getUser();if(error||!user)redirect("/login");
- const {data:memberships}=await supabase.from("memberships").select("organization_id,role").eq("user_id",user.id).eq("status","active").order("created_at",{ascending:true}).limit(1);if(!memberships?.length)redirect("/onboarding");
- await enforceOwnerMfa(supabase,memberships[0].role);return {supabase,user,membership:memberships[0]};
+ const {membership}=await getActiveOrganizationMembership(supabase,user);if(!membership)redirect("/onboarding");
+ await enforceOwnerMfa(supabase,membership.role);return {supabase,user,membership};
 }
 function field(data:FormData,name:string,max:number){return String(data.get(name)??"").trim().slice(0,max)}
 export async function testAssistantProvider(){
