@@ -3,10 +3,11 @@ import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {createProject} from "../actions";
 import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
+import {getActiveOrganizationMembership} from "@/lib/organizations/active-membership";
 type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
 export default async function ProjectsPage({searchParams}:Props){
  const p=await searchParams,supabase=await createClient();const {data:{user},error:authError}=await supabase.auth.getUser();if(authError||!user)redirect("/login");
- const {data:ms}=await supabase.from("memberships").select("organization_id,role,organizations(name)").eq("user_id",user.id).eq("status","active").limit(1);const m=ms?.[0];if(!m)redirect("/onboarding");await enforceOwnerMfa(supabase,m.role);
+ const {membership:m}=await getActiveOrganizationMembership(supabase,user);if(!m)redirect("/onboarding");await enforceOwnerMfa(supabase,m.role);
  const org=Array.isArray(m.organizations)?m.organizations[0]:m.organizations;
  const [{data:projects,error},{data:departments}]=await Promise.all([supabase.from("projects").select("id,name,description,status,priority,due_date,department_id").eq("organization_id",m.organization_id).order("updated_at",{ascending:false}),supabase.from("departments").select("id,name").eq("organization_id",m.organization_id).order("name")]); const departmentNames=new Map((departments??[]).map(d=>[d.id,d.name]));
  return <main className="container"><nav className="workspace-nav"><Link href="/dashboard">← Dashboard</Link><Link href="/dashboard/tasks">Tasks</Link><Link href="/dashboard/departments">Departments</Link>{m.role==="owner"?<Link href="/dashboard/team">Team access</Link>:null}</nav>
