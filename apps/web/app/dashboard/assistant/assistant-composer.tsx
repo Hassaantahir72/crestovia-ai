@@ -31,14 +31,84 @@ const speechLanguages = [
 export default function AssistantComposer({ conversationId }: { conversationId: string }) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognizerRef = useRef<SpeechRecognizer | null>(null);
+  const micStreamRef = useRef<MediaStream | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
   const [listening, setListening] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState("");
   const [speechLanguage, setSpeechLanguage] = useState("auto");
+  const [micCheckActive, setMicCheckActive] = useState(false);
+  const [micLevel, setMicLevel] = useState(0);
+
+  function stopMicrophoneCheck(updateState = true) {
+    if (animationFrameRef.current !== null) {
+      window.cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    micStreamRef.current?.getTracks().forEach((track) => track.stop());
+    micStreamRef.current = null;
+    const context = audioContextRef.current;
+    audioContextRef.current = null;
+    if (context && context.state !== "closed") void context.close().catch(() => undefined);
+    if (updateState) {
+      setMicCheckActive(false);
+      setMicLevel(0);
+    }
+  }
 
   useEffect(() => () => {
     recognizerRef.current?.abort?.();
     recognizerRef.current = null;
+    stopMicrophoneCheck(false);
   }, []);
+
+  async function toggleMicrophoneCheck() {
+    if (micCheckActive) {
+      stopMicrophoneCheck();
+      setVoiceMessage("Microphone check stopped. If the signal stayed very low, check Windows microphone input volume and the selected default input device.");
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia || !("AudioContext" in window)) {
+      setVoiceMessage("Microphone level checking is not supported in this browser. Try a current version of Chrome or Edge and check Windows microphone settings.");
+      return;
+    }
+    try {
+      setVoiceMessage("Allow microphone access, then speak at your normal volume for a few seconds.");
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
+      micStreamRef.current = stream;
+      const context = new AudioContext();
+      audioContextRef.current = context;
+      const source = context.createMediaStreamSource(stream);
+      const analyser = context.createAnalyser();
+      analyser.fftSize = 1024;
+      source.connect(analyser);
+      const samples = new Float32Array(analyser.fftSize);
+      setMicCheckActive(true);
+
+      const measureLevel = () => {
+        if (!micStreamRef.current) return;
+        analyser.getFloatTimeDomainData(samples);
+        const sumSquares = samples.reduce((sum, sample) => sum + sample * sample, 0);
+        const rms = Math.sqrt(sumSquares / samples.length);
+        setMicLevel(Math.min(100, Math.round(rms * 500)));
+        animationFrameRef.current = window.requestAnimationFrame(measureLevel);
+      };
+      animationFrameRef.current = window.requestAnimationFrame(measureLevel);
+      setVoiceMessage("Microphone check is running. Speak naturally; the meter shows the signal reaching your browser. This check cannot change Windows microphone gain.");
+    } catch (error) {
+      stopMicrophoneCheck();
+      const name = error instanceof DOMException ? error.name : "";
+      if (name === "NotAllowedError" || name === "SecurityError") {
+        setVoiceMessage("Microphone access was blocked. Allow microphone permission for this site and in Windows Settings > Privacy & security > Microphone.");
+      } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+        setVoiceMessage("No microphone was found. Connect or enable a microphone, then select it as the Windows default input device.");
+      } else {
+        setVoiceMessage("Could not check the microphone. Confirm that it is connected, enabled in Windows, and not blocked by another app.");
+      }
+    }
+  }
 
   function toggleVoiceInput() {
     if (listening) {
@@ -72,7 +142,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
       recognizer.onerror = (event) => {
         const messages: Record<string, string> = {
           "not-allowed": "Microphone permission was denied. Allow microphone access for this site in your browser settings.",
-          "no-speech": "No speech was detected. Check the selected microphone and speak in your usual voice, close enough for the mic to hear you.",
+          "no-speech": "No speech was detected. Run Check mic level to confirm the signal, check the selected Windows microphone, and speak at your usual volume.",
           "audio-capture": "No microphone was found. Connect or enable a microphone, then try again.",
           "network": "Browser speech recognition could not connect. Check your connection and try again.",
           "aborted": "Voice input was stopped."
@@ -85,7 +155,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
         recognizerRef.current = null;
       };
       recognizerRef.current = recognizer;
-      setVoiceMessage("Listening. Speak naturally at your normal volume. If recognition is poor, try selecting English (US/UK) or Urdu (Pakistan), move closer to the microphone, and reduce background noise. Your browser may ask for microphone permission.");
+      setVoiceMessage("Listening. Speak naturally at your normal volume. If recognition is poor, check the microphone signal, choose English (US/UK) or Urdu (Pakistan), and reduce background noise.");
       setListening(true);
       recognizer.start();
     } catch {
@@ -109,19 +179,29 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
             id="speech-language"
             value={speechLanguage}
             onChange={(event) => setSpeechLanguage(event.target.value)}
-            disabled={listening}
+            disabled={listening || micCheckActive}
             aria-label="Speech recognition language"
           >
             {speechLanguages.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}
           </select>
-          <button className="button button-secondary" type="button" onClick={toggleVoiceInput} aria-pressed={listening}>
+          <button className="button button-secondary" type="button" onClick={toggleMicrophoneCheck} disabled={listening} aria-pressed={micCheckActive}>
+            {micCheckActive ? "Stop mic check" : "Check mic level"}
+          </button>
+          <button className="button button-secondary" type="button" onClick={toggleVoiceInput} disabled={micCheckActive} aria-pressed={listening}>
             {listening ? "Stop listening" : "Use voice"}
           </button>
           <button className="button" type="submit">Send message</button>
         </div>
       </div>
+      {micCheckActive ? (
+        <div className="muted" role="status" aria-live="polite">
+          <label htmlFor="mic-signal-level">Live microphone signal</label>
+          <meter id="mic-signal-level" min={0} max={100} value={micLevel} style={{ display: "block", width: "100%", maxWidth: 360 }} />
+          <p>{micLevel < 4 ? "Very little signal detected. Check Windows input volume, mute, and the selected default microphone." : micLevel < 15 ? "Signal detected. Speak at your normal volume and move closer to the microphone if recognition misses words." : "Good signal detected. Speech recognition accuracy can still depend on language, browser, network, and background noise."}</p>
+        </div>
+      ) : null}
       {voiceMessage ? <p className="muted" role="status" aria-live="polite">{voiceMessage}</p> : null}
-      <p className="muted" style={{ fontSize: 12 }}>Voice recognition support and accuracy depend on your browser, operating system, microphone, and network. This page cannot directly change the microphone's hardware gain.</p>
+      <p className="muted" style={{ fontSize: 12 }}>The mic check measures the default microphone signal but cannot change Windows input gain or guarantee browser speech-recognition accuracy. Stop the check before using voice input.</p>
     </form>
   );
 }
