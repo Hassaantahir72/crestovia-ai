@@ -91,14 +91,18 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
       analyser.fftSize = 1024;
       source.connect(analyser);
       const samples = new Float32Array(analyser.fftSize);
+      let frameCount = 0;
       setMicCheckActive(true);
 
       const measureLevel = () => {
         if (!micStreamRef.current) return;
         analyser.getFloatTimeDomainData(samples);
-        const sumSquares = samples.reduce((sum, sample) => sum + sample * sample, 0);
-        const rms = Math.sqrt(sumSquares / samples.length);
-        setMicLevel(Math.min(100, Math.round(rms * 500)));
+        frameCount += 1;
+        if (frameCount % 6 === 0) {
+          const sumSquares = samples.reduce((sum, sample) => sum + sample * sample, 0);
+          const rms = Math.sqrt(sumSquares / samples.length);
+          setMicLevel(Math.min(100, Math.round(rms * 500)));
+        }
         animationFrameRef.current = window.requestAnimationFrame(measureLevel);
       };
       animationFrameRef.current = window.requestAnimationFrame(measureLevel);
