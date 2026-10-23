@@ -2,11 +2,12 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
+import {getActiveOrganizationMembership} from "@/lib/organizations/active-membership";
 import {createMemory,deleteMemory,updateMemory} from "../assistant/actions";
 type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
 export default async function MemoryPage({searchParams}:Props){
  const p=await searchParams,supabase=await createClient();const {data:{user},error}=await supabase.auth.getUser();if(error||!user)redirect("/login");
- const {data:memberships}=await supabase.from("memberships").select("role").eq("user_id",user.id).eq("status","active").limit(1);if(!memberships?.length)redirect("/onboarding");await enforceOwnerMfa(supabase,memberships[0].role);
+ const {membership}=await getActiveOrganizationMembership(supabase,user);if(!membership)redirect("/onboarding");await enforceOwnerMfa(supabase,membership.role);
  const {data:memories}=await supabase.from("assistant_memories").select("id,title,category,content,created_at,updated_at").eq("user_id",user.id).order("updated_at",{ascending:false}).limit(100);
  return <main className="container"><nav className="workspace-nav"><Link href="/dashboard">← Dashboard</Link><Link href="/dashboard/assistant">AI assistant</Link><Link href="/dashboard/security">Account security</Link></nav>
  <header className="page-header"><div><p className="brand">CRESTOVIA AI / PRIVATE MEMORY</p><h1>Private memory</h1><p className="muted">Only your signed-in account can read or change these saved notes. They are not shared with your team. Editing a memory updates the version used in future assistant replies.</p></div></header>
