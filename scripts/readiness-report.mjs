@@ -17,7 +17,7 @@ const gateSource = source.split(/^## Security hardening phase 1/m)[0];
 const headings = [...gateSource.matchAll(/^## (Gate [A-F] — .+)$/gm)];
 const requiredGates = ["A", "B", "C", "D", "E", "F"];
 const foundGates = headings.map((match) => match[1].match(/^Gate ([A-F])/)[1]);
-const checks = [...source.matchAll(/^- \[([ xX])\] (.+)$/gm)].map((match) => ({
+const checks = [...gateSource.matchAll(/^- \[([ xX])\] (.+)$/gm)].map((match) => ({
   checked: match[1].toLowerCase() === "x",
   label: match[2].trim(),
   gate: gateSource.slice(0, match.index).match(/^## Gate ([A-F]) —/gm)?.at(-1)?.match(/^## Gate ([A-F])/)[1] ?? null,
