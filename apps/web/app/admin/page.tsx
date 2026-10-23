@@ -11,6 +11,15 @@ import { enforceOwnerMfa } from "@/lib/security/owner-mfa";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+function configured(name: string): boolean {
+  return Boolean(process.env[name]?.trim());
+}
+
+function strongSecret(name: string, minimumLength = 32): boolean {
+  const value = process.env[name]?.trim();
+  return Boolean(value && value.length >= minimumLength);
+}
+
 export default async function PlatformAdminPage() {
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
@@ -35,6 +44,16 @@ export default async function PlatformAdminPage() {
   }
 
   await enforceOwnerMfa(supabase, "owner");
+
+  const checks = [
+    { label: "Admin email allowlist", ok: allowlist.length > 0, guidance: "PLATFORM_ADMIN_EMAILS" },
+    { label: "Supabase public connection", ok: configured("NEXT_PUBLIC_SUPABASE_URL") && Boolean(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()), guidance: "Supabase URL and publishable/anon key" },
+    { label: "Supabase server role key", ok: configured("SUPABASE_SERVICE_ROLE_KEY"), guidance: "SUPABASE_SERVICE_ROLE_KEY" },
+    { label: "Groq AI provider key", ok: configured("GROQ_API_KEY"), guidance: "GROQ_API_KEY" },
+    { label: "Email MFA configuration", ok: ["SUPABASE_SERVICE_ROLE_KEY", "APP_MFA_SECRET", "RESEND_API_KEY", "RESEND_FROM_EMAIL"].every(configured), guidance: "Service role, MFA secret, Resend key and sender" },
+    { label: "Resend webhook verification", ok: configured("RESEND_WEBHOOK_SECRET"), guidance: "RESEND_WEBHOOK_SECRET" },
+    { label: "Cron authentication secret", ok: strongSecret("CRON_SECRET"), guidance: "CRON_SECRET (at least 32 characters)" },
+  ];
 
   return (
     <main className="container">
@@ -71,16 +90,27 @@ export default async function PlatformAdminPage() {
         <article className="panel">
           <h2>Security and audit</h2>
           <p className="muted">Review account security and workspace audit history. Sensitive controls must remain protected by server-side authorization and database policies.</p>
-          <div className="action-links"><Link className="button button-secondary" href="/dashboard/security">Security settings</Link><Link className="button button-secondary" href="/dashboard/audit">Audit history</Link></div>
+          <div className="action-links"><Link className="button button-secondary" href="/dashboard/security">Security settings</Link><Link className="button button-secondary" href="/dashboard/audit">Audit history</Link><Link className="button button-secondary" href="/dashboard/readiness">Release readiness</Link></div>
         </article>
         <article className="panel">
-          <h2>Connected services</h2>
-          <p className="muted">Provider credentials and platform secrets must be configured privately in the hosting dashboard. This page never displays secret values.</p>
-          {allowlist.length === 0 ? (
-            <p className="notice notice-error">The server-side admin allowlist is not configured. Add PLATFORM_ADMIN_EMAILS in the hosting dashboard before using this panel.</p>
-          ) : (
-            <p className="muted">The server-side admin allowlist is configured. Its value is intentionally not displayed here.</p>
-          )}
+          <h2>Configuration checks</h2>
+          <p className="muted">Presence-only checks for server configuration. Secret values are never displayed. A configured key does not prove that a provider connection works.</p>
+          <ul className="admin-workspace-list">
+            {checks.map((check) => (
+              <li key={check.label}>
+                <strong>{check.label}</strong>
+                <span className={check.ok ? "notice notice-success" : "notice notice-error"}>{check.ok ? "Configured" : "Missing or too short"}</span>
+                <span className="muted">{check.guidance}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="muted">Fix missing settings in the hosting provider's private environment configuration, then redeploy if required. Never paste credentials into this panel or source control.</p>
+        </article>
+        <article className="panel">
+          <h2>Company AI</h2>
+          <p className="muted">The assistant can read bounded, active-organization summaries and the signed-in member's assigned tasks. It cannot directly modify company data or execute external actions.</p>
+          <p className="muted">AI-generated actions must be submitted to the owner approval queue. Personal conversations and saved memories remain scoped to the individual account.</p>
+          <div className="action-links"><Link className="button" href="/dashboard/assistant">Open Company AI</Link><Link className="button button-secondary" href="/dashboard/approvals">Review approvals</Link></div>
         </article>
       </section>
     </main>
