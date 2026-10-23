@@ -4,10 +4,9 @@ on:
   push:
     branches:
       - main
+      - chore/render-build-gates-api-service-v034
       - security/company-hardening-v1
   pull_request:
-    branches:
-      - main
   schedule:
     - cron: "23 4 * * 1"
 
