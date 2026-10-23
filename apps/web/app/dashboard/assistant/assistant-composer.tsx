@@ -38,6 +38,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
   const [voiceMessage, setVoiceMessage] = useState("");
   const [speechLanguage, setSpeechLanguage] = useState("auto");
   const [micCheckActive, setMicCheckActive] = useState(false);
+  const [micCheckStarting, setMicCheckStarting] = useState(false);
   const [micLevel, setMicLevel] = useState(0);
 
   function stopMicrophoneCheck(updateState = true) {
@@ -78,14 +79,16 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
       setVoiceMessage("Microphone level checking is not supported in this browser. Try a current version of Chrome or Edge and check Windows microphone settings.");
       return;
     }
+    setMicCheckStarting(true);
     try {
       setVoiceMessage("Allow microphone access, then speak at your normal volume for a few seconds.");
+      const context = new AudioContext();
+      audioContextRef.current = context;
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
       });
       micStreamRef.current = stream;
-      const context = new AudioContext();
-      audioContextRef.current = context;
+      await context.resume();
       const source = context.createMediaStreamSource(stream);
       const analyser = context.createAnalyser();
       analyser.fftSize = 1024;
@@ -109,6 +112,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
       setVoiceMessage("Microphone check is running. Speak naturally; the meter shows the signal reaching your browser. This check cannot change Windows microphone gain.");
     } catch (error) {
       stopMicrophoneCheck();
+      setMicCheckActive(false);
       const name = error instanceof DOMException ? error.name : "";
       if (name === "NotAllowedError" || name === "SecurityError") {
         setVoiceMessage("Microphone access was blocked. Allow microphone permission for this site and in Windows Settings > Privacy & security > Microphone.");
@@ -117,6 +121,8 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
       } else {
         setVoiceMessage("Could not check the microphone. Confirm that it is connected, enabled in Windows, and not blocked by another app.");
       }
+    } finally {
+      setMicCheckStarting(false);
     }
   }
 
@@ -194,8 +200,8 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
           >
             {speechLanguages.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}
           </select>
-          <button className="button button-secondary" type="button" onClick={toggleMicrophoneCheck} disabled={listening} aria-pressed={micCheckActive}>
-            {micCheckActive ? "Stop mic check" : "Check mic level"}
+          <button className="button button-secondary" type="button" onClick={toggleMicrophoneCheck} disabled={listening || micCheckStarting} aria-pressed={micCheckActive}>
+            {micCheckStarting ? "Starting mic check…" : micCheckActive ? "Stop mic check" : "Check mic level"}
           </button>
           <button className="button button-secondary" type="button" onClick={toggleVoiceInput} disabled={micCheckActive} aria-pressed={listening}>
             {listening ? "Stop listening" : "Use voice"}
