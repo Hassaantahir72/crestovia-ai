@@ -2,6 +2,7 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
+import {getActiveOrganizationMembership} from "@/lib/organizations/active-membership";
 import {createConversation,deleteConversation,proposeAssistantActionForApproval,sendAssistantMessage,testAssistantProvider} from "./actions";
 type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
 const errorText:Record<string,string>={
@@ -33,12 +34,12 @@ const errorText:Record<string,string>={
 };
 export default async function AssistantPage({searchParams}:Props){
  const p=await searchParams,supabase=await createClient();const {data:{user},error}=await supabase.auth.getUser();if(error||!user)redirect("/login");
- const {data:memberships}=await supabase.from("memberships").select("role").eq("user_id",user.id).eq("status","active").limit(1);if(!memberships?.length)redirect("/onboarding");await enforceOwnerMfa(supabase,memberships[0].role);
+ const {membership}=await getActiveOrganizationMembership(supabase,user);if(!membership)redirect("/onboarding");await enforceOwnerMfa(supabase,membership.role);
  const {data:conversations}=await supabase.from("assistant_conversations").select("id,title,updated_at").eq("user_id",user.id).order("updated_at",{ascending:false}).limit(30);
  const requested=typeof p.conversation==="string"?p.conversation:"",activeId=requested||(conversations?.[0]?.id??"");
  const active=conversations?.find(x=>x.id===activeId)??null;
  const {data:messages}=active?await supabase.from("assistant_messages").select("id,role,content,created_at").eq("conversation_id",active.id).eq("user_id",user.id).order("created_at",{ascending:true}).limit(100):{data:[]};
- const aiKeyDetected=Boolean(process.env.GROQ_API_KEY),isOwner=memberships[0].role==="owner";
+ const aiKeyDetected=Boolean(process.env.GROQ_API_KEY),isOwner=membership.role==="owner";
  const providerTest=typeof p.provider_test==="string"?p.provider_test:"";
  const errorKey=typeof p.error==="string"?p.error:"";
  return <main className="container"><nav className="workspace-nav"><Link href="/dashboard">← Dashboard</Link><Link href="/dashboard/projects">Projects</Link><Link href="/dashboard/memory">Private memory</Link><Link href="/dashboard/security">Account security</Link></nav>
