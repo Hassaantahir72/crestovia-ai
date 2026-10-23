@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { enforceOwnerMfa } from "@/lib/security/owner-mfa";
+import { getActiveOrganizationMembership } from "@/lib/organizations/active-membership";
 
 type Task = {
   id: string; title: string; status: string; priority: string; due_at: string | null;
@@ -32,10 +33,9 @@ export default async function DailyBriefingPage() {
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user) redirect("/login");
-  const { data: memberships } = await supabase.from("memberships").select("organization_id,role,organizations(name)").eq("user_id", user.id).eq("status", "active").order("created_at", { ascending: true });
-  if (!memberships?.length) redirect("/onboarding");
-  await enforceOwnerMfa(supabase, memberships.some(m => m.role === "owner") ? "owner" : memberships[0].role);
-  const membership = memberships[0];
+  const { membership } = await getActiveOrganizationMembership(supabase, user);
+  if (!membership) redirect("/onboarding");
+  await enforceOwnerMfa(supabase, membership.role);
   const organization = Array.isArray(membership.organizations) ? membership.organizations[0] : membership.organizations;
   const { data: profile } = await supabase.from("profiles").select("timezone").eq("user_id", user.id).maybeSingle();
   let timezone = profile?.timezone || "Asia/Karachi";
