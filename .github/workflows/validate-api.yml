@@ -19,3 +19,5 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run API tests
         run: python -m pytest apps/api/tests -q
+      - name: Test read-only staging security audit query
+        run: python -m pytest scripts/staging-security-audit.test.py -q

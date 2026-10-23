@@ -141,3 +141,8 @@ Create two synthetic organizations with an owner, manager/admin, and member in e
 - Post-change privilege diff:
 - Post-change advisor output:
 - Post-change health and user acceptance:
+
+
+## Repeatable staging security audit (read-only)
+
+Run `database/audits/staging_security_audit.sql` only against staging project `xpwrsxmwqptrpwycibub`. It returns one row per finding and is expected to return zero rows. The query checks RLS on public base tables, effective anon table privileges, authenticated administrative table privileges, anon USAGE on the public schema, anon EXECUTE on public functions, and the service-role-only SECURITY INVOKER reminder RPC boundary. It makes no changes and does not replace user-level cross-tenant acceptance or restore testing.

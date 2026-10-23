@@ -27,6 +27,7 @@ A passing result means the source artifacts are present. It does **not** mean th
 - Use the read-only tenant acceptance runner with two dedicated staging users and synthetic fixtures.
 - Run the approval RPC regression test to guard organization binding, current owner membership, expiry, status, and single-execution checks.
 - Extend manual tests across owners, managers, members, suspended memberships, a dual-organization user, and direct read/mutation attempts.
+- Run the read-only staging SQL audit and require zero findings for public-table RLS/grants, anon schema/function access, and reminder RPC grants.
 - Verify effective RLS, schema/table/function grants, and approval RPC behavior in staging. Do not use production fixtures.
 
 ### Gate C — Company AI and Groq

@@ -26,6 +26,9 @@ export const RELEASE_GATES = [
       "docs/security/TENANT_ISOLATION_ACCEPTANCE.md",
       "database/migrations/0023_approval_execution_org_scope_v0_2_41.sql",
       "scripts/approval-rpc-security.test.mjs",
+      "database/audits/staging_security_audit.sql",
+      "scripts/staging-security-audit.test.py",
+      "docs/STAGING_SECURITY_AUDIT.md",
     ],
   },
   {
