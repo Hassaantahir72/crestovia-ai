@@ -25,3 +25,5 @@ jobs:
         run: python -m pytest scripts/test_production_acl_remediation_record.py -q
       - name: Test staging RPC permission review guardrails
         run: python -m pytest scripts/test_staging_rpc_permission_review.py -q
+      - name: Test RPC authorization contracts
+        run: python -m pytest scripts/test_rpc_security_contracts.py -q
