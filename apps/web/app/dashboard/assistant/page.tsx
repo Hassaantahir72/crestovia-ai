@@ -5,6 +5,7 @@ import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
 import {getActiveOrganizationMembership} from "@/lib/organizations/active-membership";
 import {createConversation,deleteConversation,proposeAssistantActionForApproval,testAssistantProvider} from "./actions";
 import AssistantComposer from "./assistant-composer";
+import AssistantAvatar from "./assistant-avatar";
 type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
 const errorText:Record<string,string>={
  ai_provider_not_configured:"AI replies are prepared but not active yet. GROQ_API_KEY must be configured as a server-only secret before the assistant can answer.",
@@ -44,7 +45,7 @@ export default async function AssistantPage({searchParams}:Props){
  const providerTest=typeof p.provider_test==="string"?p.provider_test:"";
  const errorKey=typeof p.error==="string"?p.error:"";
  return <main className="container"><nav className="workspace-nav"><Link href="/dashboard">← Dashboard</Link><Link href="/dashboard/projects">Projects</Link><Link href="/dashboard/memory">Private memory</Link><Link href="/dashboard/security">Account security</Link></nav>
- <header className="page-header"><div><p className="brand">CRESTOVAI AI / ASSISTANT</p><h1>Crestovai AI assistant</h1><p className="muted">Private to your signed-in account. When enabled, recent chat and selected saved memories are sent to Groq. Read-only workspace tools can summarize visible tasks, projects, and pending approvals; they never change records or execute external actions.</p></div><form action={createConversation}><button className="button" type="submit">New conversation</button></form></header>
+ <header className="page-header assistant-page-header"><div className="assistant-title-row"><AssistantAvatar size={84}/><div><p className="brand">CRESTOVAI AI / ASSISTANT</p><h1>Crestovai AI assistant</h1><p className="muted">Private to your signed-in account. When enabled, recent chat and selected saved memories are sent to Groq. Read-only workspace tools can summarize visible tasks, projects, and pending approvals; they never change records or execute external actions.</p></div><form action={createConversation}><button className="button" type="submit">New conversation</button></form></header>
  {!aiKeyDetected?<p className="notice notice-error">AI provider is not configured on this server yet. Add GROQ_API_KEY as a private server-side secret, then restart or redeploy the web service. Never use a NEXT_PUBLIC_ variable or commit the key.</p>:<p className="notice">AI provider key detected; connectivity and validity have not been tested yet. The key itself is never displayed.</p>}
  {providerTest==="success"?<p className="notice notice-success">Groq connection test passed. The server received a non-empty response; the API key was not exposed.</p>:null}
  {providerTest&&providerTest!=="success"&&errorText["provider_test_"+providerTest]?<p className="notice notice-error">{errorText["provider_test_"+providerTest]}</p>:null}
