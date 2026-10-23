@@ -30,7 +30,7 @@ export default function HomePage() {
       <header className="landing-nav">
         <Link className="landing-wordmark" href="/" aria-label="Crestovia AI home">
           <span className="landing-mark" aria-hidden="true">C</span>
-          <span>CRESTOVIA<span className="landing-wordmark-light"> AI</span></span>
+          <span>CRESTOVAI<span className="landing-wordmark-light"> AI</span></span>
         </Link>
         <div className="landing-nav-actions">
           <span className="landing-private"><span aria-hidden="true" /> Private workspace</span>
@@ -61,7 +61,7 @@ export default function HomePage() {
           <div className="landing-glow" />
           <div className="landing-console">
             <div className="landing-console-top">
-              <div className="landing-console-brand"><span className="landing-mini-mark">C</span><span>CRESTOVIA <small>COMMAND</small></span></div>
+              <div className="landing-console-brand"><span className="landing-mini-mark">C</span><span>CRESTOVAI <small>COMMAND</small></span></div>
               <span className="landing-console-live"><i /> SYSTEM CONCEPT</span>
             </div>
             <div className="landing-console-body">
@@ -101,7 +101,7 @@ export default function HomePage() {
       </section>
 
       <footer className="landing-footer">
-        <Link className="landing-wordmark landing-footer-brand" href="/"><span className="landing-mark" aria-hidden="true">C</span><span>CRESTOVIA<span className="landing-wordmark-light"> AI</span></span></Link>
+        <Link className="landing-wordmark landing-footer-brand" href="/"><span className="landing-mark" aria-hidden="true">C</span><span>CRESTOVAI<span className="landing-wordmark-light"> AI</span></span></Link>
         <p>Clarity for the work. Control over the automation.</p>
         <span>Private preview · Built for deliberate growth</span>
       </footer>
