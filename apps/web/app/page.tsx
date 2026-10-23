@@ -3,22 +3,22 @@ import Link from "next/link";
 const capabilities = [
   {
     number: "01",
-    title: "Your AI command center",
-    description: "Keep conversations, company context, and proposed actions together in one private workspace.",
+    title: "Meet Jarvis, your AI partner",
+    description: "Chat with your assistant, request a briefing, plan work, and turn ideas into approval-ready tasks without losing company context.",
     href: "/login",
     label: "Open assistant",
   },
   {
     number: "02",
-    title: "Work that stays organized",
-    description: "Bring projects, tasks, departments, and team responsibilities into a shared operating rhythm.",
+    title: "One home for every department",
+    description: "Manage teams, projects, tasks, and department ownership in one workspace, with role-aware access and clear responsibilities.",
     href: "/login",
     label: "Explore workspace",
   },
   {
     number: "03",
-    title: "Human-approved automation",
-    description: "Review suggested work before consequential actions run, with audit history and clear controls.",
+    title: "Voice, chat, and trusted actions",
+    description: "Use chat today and add voice interaction where your browser supports it; consequential actions stay behind explicit human approval.",
     href: "/login",
     label: "Review the workflow",
   },
@@ -43,8 +43,7 @@ export default function HomePage() {
           <p className="landing-eyebrow"><span /> THE OPERATING SYSTEM FOR YOUR COMPANY</p>
           <h1 id="landing-title">Less busywork.<br /><span>More forward.</span></h1>
           <p className="landing-intro">
-            Meet your company’s AI command center. Bring your people, projects, and knowledge together—
-            with automation that keeps you in control.
+            Meet Jarvis, your company’s AI partner and your personal assistant. Bring your people, projects, departments, and daily briefings together—with useful automation that keeps you in control.
           </p>
           <div className="landing-actions">
             <Link className="button landing-primary" href="/login">Enter your workspace <span aria-hidden="true">→</span></Link>
@@ -74,12 +73,12 @@ export default function HomePage() {
               </div>
               <div className="landing-console-task">
                 <span className="landing-task-check">✓</span>
-                <div><strong>One place for the work</strong><small>Projects · Tasks · Team · Knowledge</small></div>
+                <div><strong>One place for the work</strong><small>Briefings · Departments · Tasks · Projects</small></div>
                 <span className="landing-task-arrow">↗</span>
               </div>
             </div>
           </div>
-          <div className="landing-float landing-float-top"><span className="landing-float-icon">✳</span><span><strong>AI, with context</strong><small>Grounded in your workspace</small></span></div>
+          <div className="landing-float landing-float-top"><span className="landing-float-icon">✳</span><span><strong>Jarvis, with context</strong><small>Company work and private planning</small></span></div>
           <div className="landing-float landing-float-bottom"><span className="landing-float-icon landing-float-icon-green">✓</span><span><strong>You stay in control</strong><small>Review before action</small></span></div>
         </div>
       </section>
