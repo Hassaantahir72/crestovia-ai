@@ -4,9 +4,11 @@ This checklist is the release gate for the private Crestovia AI deployment. A so
 
 ## Gate A — automated source and build checks
 
-- [x] API test workflow passes on the exact release commit.
-- [x] Web ESLint and Next.js production build pass on the exact release commit.
-- [x] Complete source archive is generated from that same commit and passes ZIP integrity checks.
+- [ ] API test workflow passes on the exact release commit.
+- [ ] Web ESLint and Next.js production build pass on the exact release commit.
+- [ ] Complete source archive is generated from that same commit and passes ZIP integrity checks.
+
+**Current candidate evidence (v0.3.4, 2026-10-22):** offline web/security tests pass (39/39), API tests pass (107/107), the migration source-order check passes (36 files), and the local candidate ZIP integrity check passes. These checks do not replace an exact-commit CI run. GitHub Actions jobs currently fail before any steps are recorded, with no retrievable job logs. Local npm dependency installation failed because DNS resolution for `registry.npmjs.org` returned `EAI_AGAIN`; therefore ESLint and the Next.js production build have not been verified for this candidate. Do not mark these Gate A checks complete until they pass on the exact release commit.
 - [ ] Database migrations are reviewed, applied to the intended environment, and their grants/policies verified.
 - [ ] No secrets, tokens, local environment files, or production data are included in the source archive.
 
@@ -83,3 +85,21 @@ The following Gate A items are checked only because their workflows completed su
 - **Downloaded archive SHA-256:** `e71ea1e08ea7a08d3fad7fda7ec427be0b13c1f621be2dc229f33cac194c19c5` (214 entries; ZIP integrity and embedded archive verification passed; package version 0.2.97)
 
 This evidence log does not assert that live database security, tenant isolation, provider acceptance, recovery, or launch authorization is complete.
+
+
+## Live environment verification refresh (2026-10-22)
+
+- Read-only Supabase security advisors returned no findings in staging or production. Informational unused-index notices remain (46 staging, 47 production); these are not sufficient evidence to remove indexes.
+- Staging migration inventory is at 0036; production remains at 0033. No production migration or write was performed.
+- Latest GitHub Actions reruns again failed before recording any steps, with no retrievable job logs. The root cause remains unconfirmed.
+- Local npm installation timed out; candidate ESLint and Next.js production build remain unverified. Gate A stays unchecked.
+- The connected Render workspace has no service linked to the Crestovia AI repository, so no Crestovia app deployment was found there. No service was created or deployed.
+
+
+## Latest CI blocker detail — 2026-10-22
+
+- Latest retry confirmation at 2026-10-22 11:24 UTC: web run `39769401966` and API run `39769401968` both ended before any steps were recorded; job log retrieval again returned 404 (BlobNotFound). Root cause remains unknown. A further local npm install retry timed out, so the frontend build remains unverified.
+
+- The latest web and API jobs failed before any workflow step ran: each job has no runner name, zero steps, and a two-second run window. Job-log retrieval returns 404 (BlobNotFound). Root cause is unknown; application code should not be changed speculatively to mask this infrastructure-level symptom.
+- Local npm dependency installation fails at DNS resolution (`EAI_AGAIN registry.npmjs.org`), so current frontend lint and production build are not verified. Historical successful builds on earlier versions do not prove this candidate builds.
+- Release Gate A remains unchecked until a fresh exact-commit workflow run completes, including lint and Next.js production build. Do not bypass CI or merge the stacked PRs while checks are failing.

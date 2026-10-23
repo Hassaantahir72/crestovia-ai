@@ -1,3 +1,78 @@
+## Hands-on validation refresh — 2026-10-22 18:20 PKT
+
+- Re-ran the offline JavaScript test suite: 39 passed, 0 failed.
+- Re-ran the API pytest suite: 107 passed, 0 failed.
+- Migration source sequence check passed for 36 migrations (0001–0036); this is a source-order check, not a live database migration audit.
+- Readiness checklist structure passed (six gates, 30 items); release readiness remains blocked by pending real-world evidence.
+- Re-ran Python bytecode compilation successfully for the API and migration-check script.
+- Tried frontend dependency installation again; npm timed out, and offline install confirmed required package metadata is not cached. No package lockfile is present, so a reproducible frontend install is not yet available.
+- Ran the globally available TypeScript compiler as a diagnostic only. It cannot resolve Next.js, React, Node, or Supabase packages because dependencies are absent. It surfaced no syntax diagnostics, and rate-limit guard flags plus approved-email payload narrowing were hardened, but this is **not** a successful frontend typecheck, ESLint run, or Next.js build.
+- GitHub Actions latest API/web jobs still fail before workflow steps and have no downloadable logs. The runner/setup root cause remains unconfirmed; owner review of repository Actions settings/usage is needed if it persists.
+- No live Groq call was made because the key previously pasted into chat must be revoked. No replacement key is available privately in this environment. No staging users/tokens were available for real tenant-isolation acceptance. No production database writes or deployment were performed.
+
+
+
+## CI / dependency blocker detail — 2026-10-22 11:24 UTC
+
+- Latest Validate Web App run: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39769401966. Latest Validate API run: https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39769401968.
+- A fresh inspection again shows both jobs failed before any workflow step ran; job metadata has no runner name, no steps, and no downloadable log content (GitHub log retrieval returns 404 / BlobNotFound). The underlying cause remains unconfirmed; this does not identify an application-code failure. Do not alter app code speculatively to mask this symptom.
+- A repeated local `npm install --no-audit --no-fund` attempt timed out in this environment after the earlier DNS resolution error (`EAI_AGAIN registry.npmjs.org`) while fetching `@supabase/ssr`. Dependencies could not be confirmed installed. ESLint and Next production build remain unverified.
+- Independent re-run on this candidate: Node 39/39 and API pytest 107/107 passed; migration source-order check covers 36 migrations (0001–0036). These do not replace the blocked frontend build.
+- Required next action: repository owner should inspect GitHub Actions settings/usage limits and retry once runner assignment works. Do not disable CI checks to manufacture a green result.
+
+## Live verification refresh — 2026-10-22 11:06 UTC
+
+- Re-ran source archive tests from the cumulative candidate: Node web/security suite **39/39 passed**; API pytest **107/107 passed**; migration source-order check passed for **36 files (0001–0036)**; ZIP integrity/path/environment/credential-pattern verification passed.
+- Read-only Supabase advisor check: staging (xpwrsxmwqptrpwycibub) and production (nnzxslnkpjlfbjmrvxaw) both report **zero security findings**. Performance advisors report informational unused-index notices (46 staging, 47 production); no indexes were removed.
+- Migration inventory confirms staging through migration 0036 and production through migration 0033. No migration or production database write was made.
+- GitHub Actions rerun requests were accepted, but both jobs again completed as failures with no recorded steps and no retrievable logs. The cause is still unconfirmed; no speculative workflow/runner change was made.
+- A fresh local npm install attempt timed out. ESLint and the Next.js production build remain unverified for this candidate.
+- The connected Render workspace currently lists services for other repositories, not Hassaantahir72/crestovia-ai; no Crestovia deployment is configured in that workspace. No service was created and nothing was deployed.
+
+## Crestovia AI — Current Build Status (2026-10-22)
+
+**Project version:** 0.3.4 (candidate; CI verification pending)
+**Baseline:** v0.3.3 Groq smoke-check branch; PR #84 remains open pending workflow investigation.
+**Milestone:** Real assistant-provider resilience.
+**Change:** Live assistant requests now have a 20-second timeout, blocked redirects, model identifier validation, and safe timeout/malformed-response errors. The owner diagnostic remains limited to 10 seconds.
+**Database:** no migration or database change. Staging remains at migration 0036; production remains at migration 0033.
+**Deployment:** no public deployment; owner approval remains required.
+
+### Validation refresh (2026-10-22)
+- Re-run offline web/security suite: 39 passed, 0 failed.
+- Re-run API suite: 107 passed, 0 failed.
+- Migration source-order check: 36 files, 0001–0036; this is not live database validation.
+- GitHub Actions failed jobs expose no steps and their logs are unavailable through the current GitHub API response; root cause remains unknown.
+- npm registry lookup failed with DNS `EAI_AGAIN`, so ESLint and Next.js production build remain unverified for this candidate.
+
+### Current release blockers
+1. Diagnose GitHub Actions jobs failing before steps run; verify PR #84 and this increment before merging.
+2. Run tenant-isolation acceptance with two synthetic staging users, then complete mutation, role, stale-context, suspension, and approval-replay tests.
+3. Run the Groq smoke check with a privately configured staging key, then test the app real assistant flow. Verify Resend delivery/webhooks, reminders, duplicate suppression, and failure recovery with approved fixtures.
+4. Confirm backup retention and complete an isolated non-production restore drill.
+5. Re-audit effective schema/object privileges after schema or role changes; the platform-managed default-ACL limitation remains documented.
+6. Collect release evidence and obtain explicit owner approval before public deployment.
+
+---
+
+## Crestovia AI — Current Build Status (2026-10-22)
+
+**Project version:** 0.3.3 (candidate; CI verification pending)
+**Baseline:** v0.3.2 / merge commit `59b84f7e1defbbb11b77c2dc6a3ee55ec0e9a8e3`
+**Milestone:** Opt-in live Groq completion smoke check
+**Change:** Adds a real, bounded operator-side completion request using a private `GROQ_API_KEY`; response content and credentials are never printed. Mocked CI tests cover safe failure categories.
+**Database:** no migration or database change. Staging remains at migration 0036; production remains at migration 0033.
+**Deployment:** no public deployment; owner approval remains required.
+
+### Current release blockers
+1. Run tenant-isolation acceptance with two synthetic staging users, then complete mutation, role, stale-context, suspension, and approval-replay tests.
+2. Run the Groq smoke check with a privately configured staging key, then test the app's real assistant flow. Verify Resend delivery/webhooks, reminders, duplicate suppression, and failure recovery with approved fixtures.
+3. Confirm backup retention and complete an isolated non-production restore drill.
+4. Re-audit effective schema/object privileges after schema or role changes; the platform-managed default-ACL limitation remains documented.
+5. Collect release evidence and obtain explicit owner approval before public deployment.
+
+---
+
 ## Crestovia AI — Current Build Status (2026-10-22)
 
 **Project version:** 0.3.2 (provider connectivity diagnostics candidate)

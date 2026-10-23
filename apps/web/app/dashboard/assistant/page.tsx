@@ -6,6 +6,9 @@ import {createConversation,deleteConversation,proposeAssistantActionForApproval,
 type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
 const errorText:Record<string,string>={
  ai_provider_not_configured:"AI replies are prepared but not active yet. GROQ_API_KEY must be configured as a server-only secret before the assistant can answer.",
+ ai_provider_invalid_configuration:"The AI model configuration is invalid. Check GROQ_MODEL privately; do not put secrets in this setting.",
+ ai_provider_timeout:"Groq took too long to respond. Your message was saved; wait a moment and try again.",
+ ai_provider_invalid_response:"Groq returned an unreadable response. Your message was saved; you can retry.",
  ai_provider_auth_failed:"The AI provider rejected the configured credentials. Check the server secret privately.",
  ai_provider_rate_limited:"The AI provider is rate-limiting requests. Wait and try again.",
  ai_provider_request_failed:"Your message was saved, but the AI provider could not reply. You can retry without losing the submitted prompt.",

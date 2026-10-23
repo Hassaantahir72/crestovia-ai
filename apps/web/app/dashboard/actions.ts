@@ -142,7 +142,7 @@ export async function inviteTeamMember(data:FormData){
   if(memberLookupError)redirect("/dashboard/team?error=invite_lookup_failed");
   if(existing?.status==="active")redirect("/dashboard/team?error=already_member");
  }
- let inviteAllowed:boolean;
+ let inviteAllowed = false;
  try{
   inviteAllowed=await consumeUserRateLimit(user.id,"team_invite_minute",5,60)
    &&await consumeUserRateLimit(user.id,"team_invite_hour",20,3600)
@@ -176,7 +176,7 @@ export async function createApprovalRequest(data:FormData){
  const {supabase,user,membership}=await context();const actionType=value(data,"action_type",32)||"other",summary=value(data,"summary",200),details=value(data,"details",4000);
  if(!["create_task","external_write","send_email","send_message","calendar_change","data_export","other"].includes(actionType))redirect("/dashboard/approvals?error=invalid_action_type");
  if(summary.length<3)redirect("/dashboard/approvals?error=invalid_summary");
- let approvalAllowed:boolean;
+ let approvalAllowed = false;
  try{approvalAllowed=await consumeUserRateLimit(user.id,"approval_request_minute",3,60)&&await consumeUserRateLimit(user.id,"approval_request_hour",10,3600)&&await consumeUserRateLimit(user.id,"approval_request_day",30,86400)}catch{redirect("/dashboard/approvals?error=approval_rate_limit_unavailable")}
  if(!approvalAllowed)redirect("/dashboard/approvals?error=approval_rate_limited");
  const {data:created,error}=await supabase.from("action_approval_requests").insert({organization_id:membership.organization_id,requested_by:user.id,action_type:actionType,summary,details}).select("id").single();

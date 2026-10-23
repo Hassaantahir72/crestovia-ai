@@ -1,3 +1,20 @@
+## v0.3.4 — Assistant provider timeout and response hardening
+
+- Corrected release-readiness checklist evidence so current CI/build checks are not marked complete before exact-candidate verification. Recorded reproducible offline test results and the unresolved CI/npm-network blockers.
+
+- The real assistant chat request now blocks redirects and aborts after 20 seconds; the owner-only provider diagnostic remains bounded at 10 seconds and also blocks redirects.
+- Invalid model identifiers are rejected before the external request. Timeouts, malformed JSON, and invalid configuration are mapped to safe, user-actionable errors; raw provider/network details are not shown.
+- Adds regression checks for request bounds and safe error handling.
+- Hardens assistant/email rate-limit guard initialization and narrows approved email payloads explicitly before provider delivery.
+- No database migration, credential change, live provider request, or deployment was performed.
+
+## v0.3.3 — Live Groq completion smoke check
+
+- Adds an opt-in operator command that makes one bounded real chat-completions request to Groq using privately configured environment variables.
+- Uses a fixed HTTPS endpoint, redirect blocking, a 10-second default timeout, an eight-token response cap, and secret-safe result categories; response text and provider error bodies are never printed or returned.
+- Adds mocked CI tests for successful completion, missing configuration, authentication/rate-limit/provider errors, malformed responses, timeout/network failures, and unsafe settings.
+- No live provider request, database change, credential change, or deployment is performed by this source update. A real check consumes a small amount of Groq quota and must be run by an operator with the key configured privately.
+
 ## v0.3.2 — Provider connectivity diagnostics
 
 - Adds read-only Groq and Resend connectivity checks against fixed HTTPS endpoints; no email is sent and no provider resources are modified.
