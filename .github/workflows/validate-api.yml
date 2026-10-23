@@ -20,4 +20,4 @@ jobs:
       - name: Run API tests
         run: python -m pytest apps/api/tests -q
       - name: Test read-only staging security audit query
-        run: python -m pytest scripts/staging-security-audit.test.py -q
+        run: python -m pytest scripts/test_staging_security_audit.py -q
