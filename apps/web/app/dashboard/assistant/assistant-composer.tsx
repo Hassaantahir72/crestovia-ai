@@ -181,6 +181,17 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
     }
   }
 
+  useEffect(() => {
+    if (typeof window === "undefined" || !new URLSearchParams(window.location.search).has("voice")) return;
+    const timer = window.setTimeout(() => {
+      inputRef.current?.focus();
+      toggleVoiceInput();
+    }, 1200);
+    return () => window.clearTimeout(timer);
+    // The wake-word handoff intentionally starts voice capture once when this page opens.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <form action={sendAssistantMessage} className="chat-composer">
       <input type="hidden" name="conversation_id" value={conversationId} />
