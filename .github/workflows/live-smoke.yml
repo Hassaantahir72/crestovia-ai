@@ -27,5 +27,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Test smoke-check logic without network access
+        run: node --test scripts/live-deployment-smoke.test.mjs
       - name: Check public web and API endpoints
         run: node scripts/live-deployment-smoke.mjs
