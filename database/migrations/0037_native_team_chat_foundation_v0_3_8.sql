@@ -32,7 +32,7 @@ create table if not exists public.team_channel_members (
   foreign key (organization_id, user_id)
     references public.memberships(organization_id, user_id) on delete cascade,
   foreign key (organization_id, added_by)
-    references public.memberships(organization_id, user_id) on delete set null
+    references public.memberships(organization_id, user_id) on delete set null (added_by)
 );
 
 create table if not exists public.team_messages (
