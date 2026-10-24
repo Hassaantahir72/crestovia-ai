@@ -58,8 +58,8 @@ export async function linkWhatsAppStaffSender(data: FormData) {
   await enforceOwnerMfa(supabase, membership.role);
   if (!["owner", "admin"].includes(membership.role)) redirect("/dashboard");
   const userId = field(data, "user_id", 64);
-  const phone = field(data, "phone", 32).replace(/\\D/g, "");
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId) || !/^\\d{8,15}$/.test(phone)) {
+  const phone = field(data, "phone", 32).replace(/\D/g, "");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId) || !/^\d{8,15}$/.test(phone)) {
     redirect("/dashboard/integrations/whatsapp?error=staff_mapping_invalid");
   }
   const { error: insertError } = await supabase.from("whatsapp_staff_senders").insert({
