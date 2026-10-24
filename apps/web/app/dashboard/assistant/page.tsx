@@ -42,7 +42,8 @@ export default async function AssistantPage({searchParams}:Props){
  const requested=typeof p.conversation==="string"?p.conversation:"",activeId=requested||(conversations?.[0]?.id??"");
  const active=conversations?.find(x=>x.id===activeId)??null;
  const {data:messages}=active?await supabase.from("assistant_messages").select("id,role,content,created_at").eq("conversation_id",active.id).eq("user_id",user.id).order("created_at",{ascending:true}).limit(100):{data:[]};
- const aiKeyDetected=Boolean(process.env.GROQ_API_KEY),isOwner=membership.role==="owner";\n const latestAssistantMessageId=[...(messages??[])].reverse().find(message=>message.role==="assistant")?.id;
+ const aiKeyDetected=Boolean(process.env.GROQ_API_KEY),isOwner=membership.role==="owner";
+ const latestAssistantMessageId=[...(messages??[])].reverse().find(message=>message.role==="assistant")?.id;
  const providerTest=typeof p.provider_test==="string"?p.provider_test:"";
  const errorKey=typeof p.error==="string"?p.error:"";
  return <main className="container"><nav className="workspace-nav"><Link href="/dashboard">← Dashboard</Link><Link href="/dashboard/projects">Projects</Link><Link href="/dashboard/memory">Private memory</Link><Link href="/dashboard/security">Account security</Link></nav>
