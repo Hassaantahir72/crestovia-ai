@@ -84,3 +84,13 @@ Use two separate organizations and at least an owner, an administrator/manager, 
 - [ ] Obtain explicit owner launch authorization after all applicable gates have evidence.
 
 **Deployment status:** Render web and API services still track `chore/render-build-gates-api-service-v034`; the security branch is not deployed. The web service's latest live deploy is commit `0a90ae92527fe2ab87b40f48d9c4bf1dac460b2c`. Production remains unchanged.
+
+
+## Operational evidence update — 2026-10-24
+
+- [x] Read-only live deployment smoke workflow passed against the public Render web root, API `/health`, and API `/ready` endpoints (GitHub Actions run [40063061539](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/40063061539)).
+- [x] API validation passed on the security follow-up branch (run [40063061529](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/40063061529)).
+- [x] Web lint, TypeScript checks, and Next.js production build passed on the security follow-up branch (run [40063061545](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/40063061545)).
+- [x] CodeQL JavaScript/TypeScript and Python jobs completed successfully on the security follow-up branch (run [40063061532](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/40063061532)).
+
+These results establish endpoint availability and source/build validation at the time of the run. They do **not** establish real-user login success, live Groq completion, email delivery, tenant isolation, approval replay protection in runtime, reminder delivery, or backup restoration. The formal release checklist above remains not release-ready until its remaining evidence and owner approval are completed.
