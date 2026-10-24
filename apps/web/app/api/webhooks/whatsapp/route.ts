@@ -1,3 +1,4 @@
+import { createAdminClient } from "@/lib/supabase/admin";
 import { constantTimeStringEqual, isValidForwardUrl, readBoundedBody, verifyMetaSignature } from "../../../../lib/whatsapp-webhook-security.mjs";
 import { NextResponse } from "next/server";
 
@@ -42,6 +43,39 @@ export async function POST(request: Request) {
   const record = event as Record<string, unknown>;
   if (record.object !== "whatsapp_business_account" || !Array.isArray(record.entry)) {
     return NextResponse.json({ error: "invalid_event" }, { status: 400, headers: NO_STORE });
+  }
+
+  // Persist normalized inbound messages when the organization ledger is configured.
+  // Keep the existing signed, bounded n8n forwarder intact for automation workflows.
+  const organizationId = process.env.WHATSAPP_ORGANIZATION_ID;
+  if (organizationId) {
+    const events: Array<{ organization_id: string; provider_message_id: string; direction: "inbound"; from_phone: string; to_phone: string; message_text: string; status: "received" }> = [];
+    for (const entry of record.entry as Array<Record<string, unknown>>) {
+      const changes = Array.isArray(entry.changes) ? entry.changes as Array<Record<string, unknown>> : [];
+      for (const change of changes) {
+        const value = change.value && typeof change.value === "object" ? change.value as Record<string, unknown> : {};
+        const metadata = value.metadata && typeof value.metadata === "object" ? value.metadata as Record<string, unknown> : {};
+        const toPhone = typeof metadata.display_phone_number === "string" ? metadata.display_phone_number : "";
+        const messages = Array.isArray(value.messages) ? value.messages as Array<Record<string, unknown>> : [];
+        for (const message of messages) {
+          const id = typeof message.id === "string" ? message.id : "";
+          const from = typeof message.from === "string" ? message.from : "";
+          if (!id || !from || !toPhone) continue;
+          const textValue = message.text && typeof message.text === "object" ? (message.text as Record<string, unknown>).body : "";
+          const kind = typeof message.type === "string" ? message.type : "unsupported";
+          const body = kind === "text" && typeof textValue === "string" ? textValue : "[" + kind + " message]";
+          events.push({ organization_id: organizationId, provider_message_id: id, direction: "inbound", from_phone: from.slice(0, 32), to_phone: toPhone.slice(0, 32), message_text: body.slice(0, 4000), status: "received" });
+        }
+      }
+    }
+    if (events.length) {
+      try {
+        const { error } = await createAdminClient().from("whatsapp_message_events").upsert(events, { onConflict: "provider_message_id", ignoreDuplicates: true });
+        if (error) return NextResponse.json({ error: "event_persist_failed" }, { status: 503, headers: NO_STORE });
+      } catch {
+        return NextResponse.json({ error: "event_persist_failed" }, { status: 503, headers: NO_STORE });
+      }
+    }
   }
 
   const target = process.env.N8N_WHATSAPP_WEBHOOK_URL;
