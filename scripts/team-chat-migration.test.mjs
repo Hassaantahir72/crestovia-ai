@@ -79,18 +79,18 @@ test("WhatsApp events are organization-scoped and webhook security remains enfor
 
 
 test("direct message and WhatsApp migrations restrict membership and event access", () => {
-  assert.match(directSql, /create or replace function public\\.create_direct_team_channel/);
+  assert.match(directSql, /create or replace function public\.create_direct_team_channel/);
   assert.match(directSql, /active_same_organization_membership_required/);
-  assert.match(directSql, /revoke insert on public\\.team_channel_members from authenticated/);
-  assert.match(directSql, /create table if not exists public\\.whatsapp_staff_senders/);
+  assert.match(directSql, /revoke insert on public\.team_channel_members from authenticated/);
+  assert.match(directSql, /create table if not exists public\.whatsapp_staff_senders/);
   assert.match(directSql, /owners admins manage WhatsApp staff senders/);
 });
 
 test("team messages use realtime with fallback polling only when disconnected", () => {
-  assert.match(realtimeSql, /alter publication supabase_realtime add table public\\.team_messages/);
+  assert.match(realtimeSql, /alter publication supabase_realtime add table public\.team_messages/);
   assert.match(refresh, /postgres_changes/);
   assert.match(refresh, /status === "SUBSCRIBED"/);
   assert.match(refresh, /30000/);
   assert.match(refresh, /Connecting · fallback refresh enabled/);
-  assert.match(page, /TeamChatRefresh channelId=\\{activeChannel\\.id\\}/);
+  assert.match(page, /TeamChatRefresh channelId=\{activeChannel\.id\}/);
 });
