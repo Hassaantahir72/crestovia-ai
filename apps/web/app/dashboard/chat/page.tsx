@@ -8,6 +8,7 @@ import {createTeamChannel,sendTeamMessage,startDirectConversation} from "./actio
 
 type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
 type TeamMessage={id:string;channel_id:string;author_id:string;body:string;created_at:string};
+type TeamMate={user_id:string;role:string;display_name:string};
 const canManage=(role:string)=>["owner","admin","manager"].includes(role);
 
 export default async function TeamChatPage({searchParams}:Props){
@@ -22,7 +23,7 @@ export default async function TeamChatPage({searchParams}:Props){
   .select("id,name,slug,description,visibility,channel_type,created_at")
   .eq("organization_id",membership.organization_id).order("name").limit(100);
  const {data:colleagues}=await supabase.rpc("list_active_team_members",{p_organization_id:membership.organization_id});
- const teammates=(colleagues??[]).filter(person=>person.user_id!==user.id);
+ const teammates=((colleagues??[]) as TeamMate[]).filter((person)=>person.user_id!==user.id);
  const requested=typeof p.channel==="string"?p.channel:"";
  const activeChannel=(channels??[]).find(c=>c.id===requested)??(channels??[])[0]??null;
  let messages:TeamMessage[]=[];
