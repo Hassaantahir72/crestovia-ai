@@ -67,6 +67,42 @@ grant execute on function public.create_direct_team_channel(uuid, uuid) to authe
 revoke update, delete on public.team_channels from authenticated;
 grant update (name, slug, description, updated_at) on public.team_channels to authenticated;
 
+-- Update channel activity without granting ordinary members broad channel UPDATE rights.
+create or replace function public.touch_team_channel(
+  p_organization_id uuid,
+  p_channel_id uuid
+) returns void
+language plpgsql
+security definer
+set search_path = ''
+as $
+begin
+  if not exists (
+    select 1 from public.memberships m
+    where m.organization_id = p_organization_id
+      and m.user_id = (select auth.uid()) and m.status = 'active'
+  ) then
+    raise exception 'active_organization_membership_required';
+  end if;
+
+  update public.team_channels c
+  set updated_at = now()
+  where c.organization_id = p_organization_id
+    and c.id = p_channel_id
+    and (
+      c.visibility = 'public'
+      or exists (
+        select 1 from public.team_channel_members cm
+        where cm.organization_id = c.organization_id
+          and cm.channel_id = c.id and cm.user_id = (select auth.uid())
+      )
+    );
+  if not found then raise exception 'team_channel_unavailable'; end if;
+end;
+$;
+revoke all on function public.touch_team_channel(uuid, uuid) from public, anon;
+grant execute on function public.touch_team_channel(uuid, uuid) to authenticated;
+
 -- Expose only a minimal active-member directory to authenticated teammates.
 create or replace function public.list_active_team_members(p_organization_id uuid)
 returns table(user_id uuid, role text, display_name text)
