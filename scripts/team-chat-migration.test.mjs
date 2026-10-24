@@ -38,6 +38,8 @@ test("chat UI is separate from assistant and scopes messages to selected organiz
 
 const extensions = readFileSync(new URL("../database/migrations/0038_direct_messages_and_whatsapp.sql", import.meta.url), "utf8");
 const whatsappRoute = readFileSync(new URL("../apps/web/app/api/webhooks/whatsapp/route.ts", import.meta.url), "utf8");
+const whatsappSecurity = readFileSync(new URL("../apps/web/lib/whatsapp-webhook-security.mjs", import.meta.url), "utf8");
+const whatsappDocs = readFileSync(new URL("../docs/WHATSAPP_SETUP.md", import.meta.url), "utf8");
 const whatsappActions = readFileSync(new URL("../apps/web/app/dashboard/integrations/whatsapp/actions.ts", import.meta.url), "utf8");
 
 test("direct messages are created only through an active same-organization RPC", () => {
@@ -118,4 +120,11 @@ test("SECURITY DEFINER chat RPCs pin search_path and reject unauthorized organiz
   assert.match(directSql, /active_same_organization_membership_required/);
   assert.match(directSql, /self\.user_id = \(select auth\.uid\(\)\)/);
   assert.match(directSql, /team_channel_members cm[\s\S]*?cm\.user_id = \(select auth\.uid\(\)\)/);
+});
+
+
+test("WhatsApp webhook payload limit documentation matches the implementation", () => {
+  assert.match(whatsappSecurity, /MAX_BODY_BYTES = 1_000_000/);
+  assert.match(whatsappDocs, /caps request bodies at 1 MB/);
+  assert.doesNotMatch(whatsappDocs, /caps request bodies at 256 KB/);
 });
