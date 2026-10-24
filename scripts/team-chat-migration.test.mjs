@@ -5,6 +5,9 @@ import {readFileSync} from "node:fs";
 const sql = readFileSync(new URL("../database/migrations/0037_native_team_chat_foundation_v0_3_8.sql", import.meta.url), "utf8");
 const page = readFileSync(new URL("../apps/web/app/dashboard/chat/page.tsx", import.meta.url), "utf8");
 const actions = readFileSync(new URL("../apps/web/app/dashboard/chat/actions.ts", import.meta.url), "utf8");
+const directSql = readFileSync(new URL("../database/migrations/0038_direct_messages_and_whatsapp.sql", import.meta.url), "utf8");
+const realtimeSql = readFileSync(new URL("../database/migrations/0039_team_chat_realtime.sql", import.meta.url), "utf8");
+const refresh = readFileSync(new URL("../apps/web/app/dashboard/chat/refresh.tsx", import.meta.url), "utf8");
 
 test("team chat schema is tenant-scoped with composite organization foreign keys", () => {
   for (const table of ["team_channels", "team_channel_members", "team_messages"]) {
@@ -72,4 +75,22 @@ test("WhatsApp events are organization-scoped and webhook security remains enfor
   assert.match(whatsappRoute, /rate-limit query cannot be trusted/);
   assert.match(whatsappActions, /\["owner", "admin"\]/);
   assert.match(whatsappActions, /redirect: "error"/);
+});
+
+
+test("direct message and WhatsApp migrations restrict membership and event access", () => {
+  assert.match(directSql, /create or replace function public\\.create_direct_team_channel/);
+  assert.match(directSql, /active_same_organization_membership_required/);
+  assert.match(directSql, /revoke insert on public\\.team_channel_members from authenticated/);
+  assert.match(directSql, /create table if not exists public\\.whatsapp_staff_senders/);
+  assert.match(directSql, /owners admins manage WhatsApp staff senders/);
+});
+
+test("team messages use realtime with fallback polling only when disconnected", () => {
+  assert.match(realtimeSql, /alter publication supabase_realtime add table public\\.team_messages/);
+  assert.match(refresh, /postgres_changes/);
+  assert.match(refresh, /status === "SUBSCRIBED"/);
+  assert.match(refresh, /30000/);
+  assert.match(refresh, /Connecting · fallback refresh enabled/);
+  assert.match(page, /TeamChatRefresh channelId=\\{activeChannel\\.id\\}/);
 });
