@@ -58,7 +58,7 @@ export async function POST(request: Request) {
         "X-Crestovia-Webhook-Secret": sharedSecret,
         "X-Crestovia-Webhook-Source": "meta-whatsapp-cloud-api",
       },
-      body: read.body,
+      body: new Uint8Array(read.body),
       redirect: "error",
       signal: AbortSignal.timeout(FORWARD_TIMEOUT_MS),
       cache: "no-store",
