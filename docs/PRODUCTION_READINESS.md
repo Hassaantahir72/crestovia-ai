@@ -2,7 +2,7 @@
 
 This checklist is the release gate for the private Crestovai AI deployment. A source-code merge or a green CI run is not proof that a live integration is configured correctly. Do not deploy publicly until the owner explicitly approves launch.
 
-**Current state:** Not release-ready.
+**Current state:** Not release-ready by assertion.
 
 Latest source/build CI is green, but real-account authorization tests, production recovery checks, provider setup, and owner approval are still required.
 
