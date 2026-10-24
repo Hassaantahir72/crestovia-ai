@@ -47,3 +47,44 @@ export async function sendWhatsAppMessage(data: FormData) {
   revalidatePath("/dashboard/integrations/whatsapp");
   redirect("/dashboard/integrations/whatsapp?sent=1");
 }
+
+
+export async function linkWhatsAppStaffSender(data: FormData) {
+  const supabase = await createClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error || !user) redirect("/login");
+  const { membership } = await getActiveOrganizationMembership(supabase, user);
+  if (!membership) redirect("/onboarding");
+  await enforceOwnerMfa(supabase, membership.role);
+  if (!["owner", "admin"].includes(membership.role)) redirect("/dashboard");
+  const userId = field(data, "user_id", 64);
+  const phone = field(data, "phone", 32).replace(/\\D/g, "");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId) || !/^\\d{8,15}$/.test(phone)) {
+    redirect("/dashboard/integrations/whatsapp?error=staff_mapping_invalid");
+  }
+  const { error: insertError } = await supabase.from("whatsapp_staff_senders").insert({
+    organization_id: membership.organization_id, user_id: userId, phone_e164: phone, created_by: user.id, active: true,
+  });
+  if (insertError) redirect("/dashboard/integrations/whatsapp?error=staff_mapping_failed");
+  revalidatePath("/dashboard/integrations/whatsapp");
+  redirect("/dashboard/integrations/whatsapp?staff_linked=1");
+}
+
+export async function unlinkWhatsAppStaffSender(data: FormData) {
+  const supabase = await createClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error || !user) redirect("/login");
+  const { membership } = await getActiveOrganizationMembership(supabase, user);
+  if (!membership) redirect("/onboarding");
+  await enforceOwnerMfa(supabase, membership.role);
+  if (!["owner", "admin"].includes(membership.role)) redirect("/dashboard");
+  const id = field(data, "id", 64);
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
+    redirect("/dashboard/integrations/whatsapp?error=staff_mapping_invalid");
+  }
+  const { error: deleteError } = await supabase.from("whatsapp_staff_senders").delete()
+    .eq("id", id).eq("organization_id", membership.organization_id);
+  if (deleteError) redirect("/dashboard/integrations/whatsapp?error=staff_mapping_failed");
+  revalidatePath("/dashboard/integrations/whatsapp");
+  redirect("/dashboard/integrations/whatsapp?staff_unlinked=1");
+}
