@@ -63,6 +63,25 @@ $$;
 revoke all on function public.create_direct_team_channel(uuid, uuid) from public, anon;
 grant execute on function public.create_direct_team_channel(uuid, uuid) to authenticated;
 
+-- Public channels are created through the normal UI; private/direct channels are created only by the scoped RPC.
+drop policy if exists "managers create team channels" on public.team_channels;
+create policy "managers create public team channels" on public.team_channels
+for insert to authenticated with check (
+  created_by = (select auth.uid())
+  and visibility = 'public'
+  and channel_type in ('general','department','project')
+  and exists (
+    select 1 from public.memberships m
+    where m.organization_id = team_channels.organization_id
+      and m.user_id = (select auth.uid()) and m.status = 'active'
+      and m.role in ('owner','admin','manager')
+  )
+);
+
+-- Membership mutations are handled only by the SECURITY DEFINER direct-message RPC
+-- until a reviewed private-channel administration workflow is implemented.
+revoke insert on public.team_channel_members from authenticated;
+
 -- Prevent manager-level channel CRUD grants from making a private DM public or changing its type.
 revoke update, delete on public.team_channels from authenticated;
 grant update (name, slug, description, updated_at) on public.team_channels to authenticated;
