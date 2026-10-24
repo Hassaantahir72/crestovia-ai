@@ -9,9 +9,14 @@ import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 
 const STAGING_HOST = 'xpwrsxmwqptrpwycibub.supabase.co';
-const ALLOWED_TABLES = new Set([
-  'departments', 'projects', 'tasks', 'task_comments', 'notifications',
-  'assistant_conversations', 'assistant_memories', 'workspace_activity',
+const PROBE_COLUMNS = new Map([
+  ['departments', new Set(['name', 'description'])],
+  ['projects', new Set(['name', 'description'])],
+  ['tasks', new Set(['title', 'description'])],
+  ['task_comments', new Set(['content', 'body'])],
+  ['notifications', new Set(['title', 'body'])],
+  ['assistant_conversations', new Set(['title'])],
+  ['assistant_memories', new Set(['content'])],
 ]);
 
 function isUuid(value) {
@@ -62,8 +67,8 @@ async function readProbe({ baseUrl, key, token, fixture, id, fetchImpl }) {
   if (!Array.isArray(rows)) throw new Error('Supabase returned an unexpected fixture response.');
   return rows.find((row) => row.id === id) ?? null;
 }
-async function patchProbe({ baseUrl, key, token, fixture, id, value, fetchImpl }) {
-  const url = makeUrl(baseUrl, fixture.table, id, fixture.probeColumn, fixture.originalValue);
+async function patchProbe({ baseUrl, key, token, fixture, id, value, filterValue = fixture.originalValue, fetchImpl }) {
+  const url = makeUrl(baseUrl, fixture.table, id, fixture.probeColumn, filterValue);
   const response = await fetchImpl(url, {
     method: 'PATCH',
     headers: authHeaders(key, token, { 'Content-Type': 'application/json', Prefer: 'return=minimal' }),
@@ -71,7 +76,7 @@ async function patchProbe({ baseUrl, key, token, fixture, id, value, fetchImpl }
     signal: AbortSignal.timeout(10000),
     redirect: 'error',
   });
-  return response.ok;
+  return { ok: response.ok, status: response.status };
 }
 
 export async function runMutationAcceptance({
@@ -102,16 +107,47 @@ export async function runMutationAcceptance({
       checks += 1;
       let original;
       try {
+        const actorOwnId = attempt.actor === 'A' ? fixture.orgAId : fixture.orgBId;
+        const actorOwnRow = await readProbe({ baseUrl: parsed.origin, key, token: attempt.actorToken, fixture, id: actorOwnId, fetchImpl });
+        if (!actorOwnRow || actorOwnRow[fixture.probeColumn] !== fixture.originalValue) {
+          failed += 1;
+          write('FAIL table=' + fixture.table + ' actor_org=' + attempt.actor + ' reason=actor_token_or_own_fixture_preflight_failed');
+          continue;
+        }
+        const selfPatch = await patchProbe({ baseUrl: parsed.origin, key, token: attempt.actorToken, fixture, id: actorOwnId, value: fixture.attemptValue, fetchImpl });
+        if (!selfPatch.ok) {
+          failed += 1;
+          write('FAIL table=' + fixture.table + ' actor_org=' + attempt.actor + ' reason=own_update_precondition_http_' + selfPatch.status);
+          continue;
+        }
+        const selfAfter = await readProbe({ baseUrl: parsed.origin, key, token: attempt.actorToken, fixture, id: actorOwnId, fetchImpl });
+        if (!selfAfter || selfAfter[fixture.probeColumn] !== fixture.attemptValue) {
+          failed += 1;
+          write('FAIL table=' + fixture.table + ' actor_org=' + attempt.actor + ' reason=own_update_precondition_not_observed');
+          continue;
+        }
+        const selfRestore = await patchProbe({ baseUrl: parsed.origin, key, token: attempt.actorToken, fixture, id: actorOwnId, value: fixture.originalValue, filterValue: fixture.attemptValue, fetchImpl });
+        const selfRestored = await readProbe({ baseUrl: parsed.origin, key, token: attempt.actorToken, fixture, id: actorOwnId, fetchImpl });
+        if (!selfRestore.ok || !selfRestored || selfRestored[fixture.probeColumn] !== fixture.originalValue) {
+          failed += 1;
+          write('FAIL table=' + fixture.table + ' actor_org=' + attempt.actor + ' reason=own_fixture_restore_failed');
+          continue;
+        }
         original = await readProbe({ baseUrl: parsed.origin, key, token: attempt.ownerToken, fixture, id: attempt.targetId, fetchImpl });
         if (!original || original[fixture.probeColumn] !== fixture.originalValue) {
           failed += 1;
           write('FAIL table=' + fixture.table + ' target_org=' + attempt.targetOrg + ' reason=synthetic_fixture_missing_or_value_mismatch');
           continue;
         }
-        const patchOk = await patchProbe({ baseUrl: parsed.origin, key, token: attempt.actorToken, fixture, id: attempt.targetId, value: fixture.attemptValue, fetchImpl });
-        if (!patchOk) {
+        const patchResult = await patchProbe({ baseUrl: parsed.origin, key, token: attempt.actorToken, fixture, id: attempt.targetId, value: fixture.attemptValue, fetchImpl });
+        if (!patchResult.ok && (patchResult.status === 401 || patchResult.status === 403)) {
+          passed += 1;
+          write('PASS table=' + fixture.table + ' actor_org=' + attempt.actor + ' target_org=' + attempt.targetOrg + ' cross_tenant_update_blocked=true http=' + patchResult.status);
+          continue;
+        }
+        if (!patchResult.ok) {
           failed += 1;
-          write('FAIL table=' + fixture.table + ' target_org=' + attempt.targetOrg + ' reason=mutation_request_rejected_http');
+          write('FAIL table=' + fixture.table + ' target_org=' + attempt.targetOrg + ' reason=mutation_request_failed_http_' + patchResult.status);
           continue;
         }
         const after = await readProbe({ baseUrl: parsed.origin, key, token: attempt.ownerToken, fixture, id: attempt.targetId, fetchImpl });
@@ -122,7 +158,7 @@ export async function runMutationAcceptance({
           // Restore the synthetic row immediately if the unauthorized write took effect.
           const restoreOk = await patchProbe({ baseUrl: parsed.origin, key, token: attempt.ownerToken, fixture, id: attempt.targetId, value: fixture.originalValue, filterValue: fixture.attemptValue, fetchImpl });
           failed += 1;
-          write('FAIL table=' + fixture.table + ' target_org=' + attempt.targetOrg + ' reason=unauthorized_update_changed_fixture restored=' + restoreOk);
+          write('FAIL table=' + fixture.table + ' target_org=' + attempt.targetOrg + ' reason=unauthorized_update_changed_fixture restored=' + restoreOk.ok);
         }
       } catch (error) {
         failed += 1;
@@ -131,7 +167,7 @@ export async function runMutationAcceptance({
     }
   }
   write('SUMMARY checks=' + checks + ' passed=' + passed + ' failed=' + failed + ' mode=staging-cross-tenant-update');
-  write('LIMITATION: this runner checks cross-tenant UPDATE only; it does not prove INSERT/DELETE, role/suspension, stale-context, or approval replay safety.');
+  write('LIMITATION: this runner checks UPDATE only for actors proven able to update their own synthetic row; it does not prove INSERT/DELETE, role/suspension, stale-context, or approval replay safety.');
   return { checks, passed, failed, success: failed === 0 };
 }
 
