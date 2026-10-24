@@ -15,7 +15,7 @@ Crestovia AI is the company's operating workspace. Team members should communica
 - Typing indicators, read receipts, file uploads, emoji reactions, search, push notifications, and message edit/delete. Supabase Realtime message delivery is implemented with a 30-second fallback refresh when the connection is unavailable.
 - Assistant participation inside internal channels. That must be an explicit, permission-aware feature, not an automatic leak of private assistant memory into company channels.
 - Optional direct Jarvis replies over WhatsApp are implemented behind `WHATSAPP_AI_REPLY_ENABLED` and owner/admin-managed staff phone mappings; this is a separate external channel and currently has no permission-scoped workspace tools or conversational history.
-- Staging has migrations 0037–0039 applied. Production has not been migrated. Cross-tenant acceptance with real signed-in test users and live Realtime connection testing are still required before production rollout.
+- Staging has migrations 0037–0040 applied. Production has not been migrated. Cross-tenant acceptance with real signed-in test users and live Realtime connection testing are still required before production rollout.
 
 ## Acceptance checklist
 1. Apply migration 0037, then 0038 to staging only after review.
