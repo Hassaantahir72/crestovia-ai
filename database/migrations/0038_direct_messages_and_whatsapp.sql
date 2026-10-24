@@ -27,6 +27,10 @@ begin
     raise exception 'active_same_organization_membership_required';
   end if;
 
+  perform pg_advisory_xact_lock(hashtextextended(
+    p_organization_id::text || ':' || least(v_me::text, p_other_user_id::text) || ':' || greatest(v_me::text, p_other_user_id::text), 0
+  ));
+
   select c.id into v_channel_id
   from public.team_channels c
   where c.organization_id = p_organization_id
@@ -58,6 +62,10 @@ end;
 $$;
 revoke all on function public.create_direct_team_channel(uuid, uuid) from public, anon;
 grant execute on function public.create_direct_team_channel(uuid, uuid) to authenticated;
+
+-- Prevent manager-level channel CRUD grants from making a private DM public or changing its type.
+revoke update on public.team_channels from authenticated;
+grant update (name, slug, description, updated_at) on public.team_channels to authenticated;
 
 -- Expose only a minimal active-member directory to authenticated teammates.
 create or replace function public.list_active_team_members(p_organization_id uuid)
