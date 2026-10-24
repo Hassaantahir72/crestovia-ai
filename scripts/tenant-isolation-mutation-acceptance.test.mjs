@@ -18,7 +18,7 @@ test('mutation fixtures require allowlisted tables, valid IDs, and distinct safe
   assert.equal(validateMutationFixtures(fixtures).length, 1);
   assert.throws(() => validateMutationFixtures({ tables: [{ ...fixture, table: 'organizations' }] }), /not mutation-allowlisted/);
   assert.throws(() => validateMutationFixtures({ tables: [{ ...fixture, orgBId: idA }] }), /two distinct UUID/);
-  assert.throws(() => validateMutationFixtures({ tables: [{ ...fixture, probeColumn: 'description;delete' }] }), /invalid probeColumn/);
+  assert.throws(() => validateMutationFixtures({ tables: [{ ...fixture, probeColumn: 'description;delete' }] }), /probeColumn that is not allowlisted/);
   assert.throws(() => validateMutationFixtures({ tables: [{ ...fixture, attemptValue: fixture.originalValue }] }), /distinct/);
 });
 
