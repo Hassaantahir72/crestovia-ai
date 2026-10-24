@@ -1,4 +1,5 @@
 import "./team-chat.css";
+import TeamChatRefresh from "./refresh";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -65,7 +66,7 @@ export default async function TeamChatPage({ searchParams }: Props) {
         <section className="team-chat-create"><h3>Message a teammate</h3><form action={startDirectConversation}><label htmlFor="team-user">Choose teammate</label><select className="input" id="team-user" name="user_id" required defaultValue=""><option value="" disabled>Select active teammate</option>{colleagueRows.map((person) => <option key={person.user_id} value={person.user_id}>{person.role} · {person.user_id.slice(0, 8)}</option>)}</select><button className="button button-secondary" type="submit" disabled={!colleagueRows.length}>Open direct message</button></form></section>
       </aside>
       <section className="panel team-chat-main">
-        {active ? <><div className="team-chat-heading"><div><p className="eyebrow">{active.kind === "channel" ? "CHANNEL" : "PRIVATE DIRECT MESSAGE"}</p><h2>{active.kind === "channel" ? "#" + active.name : "Direct conversation"}</h2><p className="muted">Organization-scoped · no AI messages mixed into this conversation</p></div><span className="status">{messages?.length ?? 0} messages loaded</span></div>
+        {active ? <><div className="team-chat-heading"><div><p className="eyebrow">{active.kind === "channel" ? "CHANNEL" : "PRIVATE DIRECT MESSAGE"}</p><h2>{active.kind === "channel" ? "#" + active.name : "Direct conversation"}</h2><p className="muted">Organization-scoped · no AI messages mixed into this conversation</p></div><div style={{display:"grid",gap:8,justifyItems:"end"}}><span className="status">{messages?.length ?? 0} messages loaded</span><TeamChatRefresh /></div></div>
           {messageError ? <p className="notice notice-error">Messages could not be loaded. Check database policies.</p> : null}
           <div className="team-chat-messages">{(messages as TeamMessage[] | null ?? []).map((message) => <article key={message.id} className={"team-chat-message" + (message.author_id === user.id ? " mine" : "")}><div className="team-chat-byline"><strong>{authorLabel(message.author_id)}</strong><time dateTime={message.created_at}>{new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Karachi" }).format(new Date(message.created_at))}</time></div><p>{message.body}</p></article>)}
             {!messages?.length ? <div className="chat-empty"><h3>Start the conversation</h3><p className="muted">Messages are shared with this channel or its direct-message participants.</p></div> : null}</div>
