@@ -1,6 +1,9 @@
 name: Live Deployment Smoke Check
 
 on:
+  push:
+    branches:
+      - security/production-acl-rollout-plan-v1
   workflow_dispatch:
   schedule:
     - cron: "17 */6 * * *"
