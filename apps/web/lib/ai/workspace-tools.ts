@@ -47,7 +47,7 @@ async function workspaceOverview({ supabase, organizationId }: ToolContext): Pro
 }
 
 async function myAssignedTasks({ supabase, organizationId, userId }: ToolContext): Promise<string> {
-  const { data, error } = await supabase.from("tasks").select("title,status,priority,due_at").eq("organization_id", organizationId).eq("assigned_to", userId).order("due_at", { ascending: true, nullsFirst: false }).limit(100);
+  const { data, error } = await supabase.from("tasks").select("title,status,priority,due_at,assigned_to").eq("organization_id", organizationId).eq("assigned_to", userId).order("due_at", { ascending: true, nullsFirst: false }).limit(100);
   if (error) return JSON.stringify({ tool: "my_assigned_tasks", unavailable: true, message: "Assigned tasks could not be loaded under the current account permissions." });
   const openTasks = (data ?? []).filter(task => !["done", "cancelled"].includes(task.status));
   return JSON.stringify({
