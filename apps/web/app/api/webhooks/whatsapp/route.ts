@@ -86,11 +86,11 @@ export async function POST(request: Request) {
   // Optional direct Jarvis replies. Disabled by default and restricted to an explicit staff phone allowlist.
   // n8n remains the automation forwarder; do not enable duplicate AI replies in both systems.
   if (process.env.WHATSAPP_AI_REPLY_ENABLED === "true" && organizationId && newlyStoredIds.size) {
-    const allowedSenders = new Set((process.env.WHATSAPP_ALLOWED_SENDERS ?? "").split(",").map((phone) => phone.replace(/\\D/g, "")).filter((phone) => /^\\d{8,15}$/.test(phone)));
+    const allowedSenders = new Set((process.env.WHATSAPP_ALLOWED_SENDERS ?? "").split(",").map((phone) => phone.replace(/\D/g, "")).filter((phone) => /^\d{8,15}$/.test(phone)));
     const token = process.env.WHATSAPP_ACCESS_TOKEN;
     const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
     const version = process.env.WHATSAPP_API_VERSION;
-    const configValid = Boolean(token && phoneId && version && /^v\\d+\\.\\d+$/.test(version));
+    const configValid = Boolean(token && phoneId && version && /^v\d+\.\d+$/.test(version));
     if (configValid) {
       for (const message of inboundMessages) {
         if (!newlyStoredIds.has(message.id) || message.kind !== "text" || !allowedSenders.has(message.from)) continue;
