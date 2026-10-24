@@ -187,7 +187,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
       <label htmlFor="assistant-message">Message</label>
       <textarea ref={inputRef} className="input chat-input" id="assistant-message" name="content" rows={3} maxLength={12000} required placeholder="Ask Crestovia AI…" />
       <div className="chat-compose-footer">
-        <span className="muted">Workspace context is read-only. Company changes and external actions remain disabled.</span>
+        <span className="muted">Speak your request, review the transcript, then send it. Task actions are limited by your workspace permissions.</span>
         <div className="chat-compose-actions">
           <label htmlFor="speech-language" className="muted">Speech language</label>
           <select
@@ -204,7 +204,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
             {micCheckStarting ? "Starting mic check…" : micCheckActive ? "Stop mic check" : "Check mic level"}
           </button>
           <button className="button button-secondary" type="button" onClick={toggleVoiceInput} disabled={micCheckActive} aria-pressed={listening}>
-            {listening ? "Stop listening" : "Use voice"}
+            {listening ? "Stop listening" : "Speak message"}
           </button>
           <button className="button" type="submit">Send message</button>
         </div>
