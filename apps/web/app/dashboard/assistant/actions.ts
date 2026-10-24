@@ -5,6 +5,7 @@ import {createClient} from "@/lib/supabase/server";
 import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
 import {generateAssistantReply,type AssistantMessage} from "@/lib/ai/provider";
 import {runReadOnlyAssistantTools} from "@/lib/ai/workspace-tools";
+import {runWorkspaceCommand} from "@/lib/ai/workspace-actions";
 import {consumeUserRateLimit} from "@/lib/security/rate-limit";
 import {getActiveOrganizationMembership} from "@/lib/organizations/active-membership";
 async function getUserContext(){
@@ -61,7 +62,7 @@ export async function sendAssistantMessage(data:FormData){
  const title=conversation.title==="New conversation"?content.slice(0,60):conversation.title;
  await supabase.from("assistant_conversations").update({title,updated_at:new Date().toISOString()}).eq("id",id).eq("user_id",user.id);
  let answer="";
- try{const workspaceContext=await runReadOnlyAssistantTools(supabase,membership.organization_id,user.id,content);answer=await generateAssistantReply([...(prior??[]) as AssistantMessage[],{role:"user",content}],savedMemories??[],workspaceContext)}
+ try{const command=await runWorkspaceCommand(supabase,membership.organization_id,user.id,content);if(command.handled){answer=command.reply}else{const workspaceContext=await runReadOnlyAssistantTools(supabase,membership.organization_id,user.id,content);answer=await generateAssistantReply([...(prior??[]) as AssistantMessage[],{role:"user",content}],savedMemories??[],workspaceContext)}}
  catch(e){const code=e instanceof Error?e.message:"AI_PROVIDER_REQUEST_FAILED";const allowed=["AI_PROVIDER_NOT_CONFIGURED","AI_PROVIDER_INVALID_CONFIGURATION","AI_PROVIDER_AUTH_FAILED","AI_PROVIDER_RATE_LIMITED","AI_PROVIDER_REQUEST_FAILED","AI_PROVIDER_TIMEOUT","AI_PROVIDER_INVALID_RESPONSE","AI_PROVIDER_EMPTY_RESPONSE"];redirect("/dashboard/assistant?conversation="+id+"&error="+(allowed.includes(code)?code.toLowerCase():"ai_provider_request_failed"))}
  const {error:assistantErr}=await supabase.from("assistant_messages").insert({conversation_id:id,user_id:user.id,role:"assistant",content:answer});if(assistantErr)redirect("/dashboard/assistant?conversation="+id+"&error=reply_save_failed");
  revalidatePath("/dashboard/assistant");redirect("/dashboard/assistant?conversation="+id);
