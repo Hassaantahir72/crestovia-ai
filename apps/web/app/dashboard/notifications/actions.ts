@@ -3,15 +3,16 @@ import {revalidatePath} from "next/cache";
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
+import {getActiveOrganizationMembership} from "@/lib/organizations/active-membership";
 
 async function notificationContext(){
  const supabase=await createClient();
  const {data:{user},error}=await supabase.auth.getUser();
  if(error||!user)redirect("/login");
- const {data:memberships}=await supabase.from("memberships").select("organization_id,role").eq("user_id",user.id).eq("status","active").limit(1);
- if(!memberships?.length)redirect("/onboarding");
- await enforceOwnerMfa(supabase,memberships[0].role);
- return {supabase,user,membership:memberships[0]};
+ const {membership}=await getActiveOrganizationMembership(supabase,user);
+ if(!membership)redirect("/onboarding");
+ await enforceOwnerMfa(supabase,membership.role);
+ return {supabase,user,membership};
 }
 export async function markNotificationRead(data:FormData){
  const {supabase,user,membership}=await notificationContext();

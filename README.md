@@ -1,6 +1,6 @@
-# Crestovia AI — Jarvis for Company Operations
+# Crestovai AI — Company Operating System
 
-Crestovia AI is a private company-operations workspace built with Next.js, FastAPI, and Supabase. The project is actively developed; it is **not yet production-ready**, and public deployment remains deferred until the owner explicitly approves launch.
+Crestovai AI is a private company-operations workspace built with Next.js, FastAPI, and Supabase. The project is actively developed; it is **not yet production-ready**, and public deployment remains deferred until the owner explicitly approves launch.
 
 ## Implemented capabilities
 

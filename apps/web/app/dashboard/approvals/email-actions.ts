@@ -8,14 +8,14 @@ import { enforceOwnerMfa } from "@/lib/security/owner-mfa";
 import { recordAuditEvent } from "@/lib/security/audit";
 import { consumeUserRateLimit } from "@/lib/security/rate-limit";
 import { emailProviderReadiness, sendApprovedEmail, validateApprovedEmailPayload, type ApprovedEmailPayload } from "@/lib/email/provider";
+import { getActiveOrganizationMembership } from "@/lib/organizations/active-membership";
 
 async function ownerContext() {
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user) redirect("/login");
-  const { data: memberships } = await supabase.from("memberships").select("organization_id,role,status").eq("user_id", user.id).eq("status", "active").limit(1);
-  const membership = memberships?.find((item) => item.role === "owner");
-  if (!membership) redirect("/dashboard/approvals?error=owner_only");
+  const { membership } = await getActiveOrganizationMembership(supabase, user);
+  if (!membership || membership.role !== "owner") redirect("/dashboard/approvals?error=owner_only");
   await enforceOwnerMfa(supabase, membership.role);
   return { supabase, user, membership };
 }

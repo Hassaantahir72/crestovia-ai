@@ -37,13 +37,23 @@ test("rejects empty backup files before archive validation", async () => {
   }
 });
 
-test("rejects symlink paths", async () => {
+test("rejects symlink paths", async (t) => {
   const dir = await mkdtemp(path.join(tmpdir(), "crestovia-backup-test-"));
   try {
     const file = path.join(dir, "backup.dump");
     const link = path.join(dir, "link.dump");
     await writeFile(file, "fixture");
-    await symlink(file, link);
+    try {
+      await symlink(file, link);
+    } catch (error) {
+      // Windows may deny symlink creation unless Developer Mode or elevated privileges
+      // are enabled. Skip only this platform capability test; never skip verifier checks.
+      if (["EPERM", "EACCES", "ENOSYS", "EINVAL"].includes(error?.code)) {
+        t.skip("This environment does not permit creating symbolic links");
+        return;
+      }
+      throw error;
+    }
     await assert.rejects(verifyBackup(link, async () => {}), /symlink/);
   } finally {
     await rm(dir, { recursive: true, force: true });

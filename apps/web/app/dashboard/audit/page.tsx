@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { enforceOwnerMfa } from "@/lib/security/owner-mfa";
+import { getActiveOrganizationMembership } from "@/lib/organizations/active-membership";
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 const actionOptions = [
@@ -18,10 +19,7 @@ export default async function AuditPage({ searchParams }: Props) {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) redirect("/login");
-  const { data: memberships } = await supabase.from("memberships")
-    .select("organization_id, role, organizations(name)")
-    .eq("user_id", user.id).eq("status", "active").limit(1);
-  const membership = memberships?.[0];
+  const { membership } = await getActiveOrganizationMembership(supabase, user);
   if (!membership) redirect("/onboarding");
   if (!["owner", "admin"].includes(membership.role)) redirect("/dashboard?error=owner_admin_only");
   await enforceOwnerMfa(supabase, membership.role);

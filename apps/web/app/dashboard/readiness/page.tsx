@@ -2,6 +2,7 @@ import {redirect} from "next/navigation";
 import Link from "next/link";
 import {createClient} from "@/lib/supabase/server";
 import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
+import {getActiveOrganizationMembership} from "@/lib/organizations/active-membership";
 
 type Check = {name:string;purpose:string;configured:boolean;required:boolean};
 
@@ -9,11 +10,10 @@ export default async function ReadinessPage(){
  const supabase=await createClient();
  const {data:{user},error}=await supabase.auth.getUser();
  if(error||!user)redirect("/login");
- const {data:memberships}=await supabase.from("memberships").select("role").eq("user_id",user.id).eq("status","active");
- if(!memberships?.length)redirect("/onboarding");
- const isOwner=memberships.some(m=>m.role==="owner");
- if(!isOwner)redirect("/dashboard");
- await enforceOwnerMfa(supabase,"owner");
+ const {membership}=await getActiveOrganizationMembership(supabase,user);
+ if(!membership)redirect("/onboarding");
+ if(membership.role!=="owner")redirect("/dashboard");
+ await enforceOwnerMfa(supabase,membership.role);
 
  const checks:Check[]=[
   {name:"Supabase project URL",purpose:"Browser authentication and database connection",configured:Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),required:true},

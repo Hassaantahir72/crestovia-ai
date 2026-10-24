@@ -5,14 +5,15 @@ import { createClient } from "@/lib/supabase/server";
 import { enforceOwnerMfa } from "@/lib/security/owner-mfa";
 import { recordAuditEvent } from "@/lib/security/audit";
 import { consumeUserRateLimit } from "@/lib/security/rate-limit";
+import { getActiveOrganizationMembership } from "@/lib/organizations/active-membership";
 async function context() {
   const supabase = await createClient();
   const {data:{user},error}=await supabase.auth.getUser();
   if(error||!user) redirect("/login");
-  const {data: memberships}=await supabase.from("memberships").select("organization_id,role,status").eq("user_id",user.id).eq("status","active").limit(1);
-  if(!memberships?.length) redirect("/onboarding");
-  await enforceOwnerMfa(supabase,memberships[0].role);
-  return {supabase,user,membership:memberships[0]};
+  const { membership } = await getActiveOrganizationMembership(supabase, user);
+  if(!membership) redirect("/onboarding");
+  await enforceOwnerMfa(supabase,membership.role);
+  return {supabase,user,membership};
 }
 function value(data:FormData,key:string,max:number){return String(data.get(key)??"").trim().slice(0,max)}
 export async function createDepartment(data:FormData){
@@ -161,7 +162,7 @@ export async function inviteTeamMember(data:FormData){
 }
 
 export async function revokeTeamInvitation(data:FormData){
- const {supabase,user,membership}=await context();if(membership.role!=="owner")redirect("/dashboard/team?error=owner_only");
+ const {user,membership}=await context();if(membership.role!=="owner")redirect("/dashboard/team?error=owner_only");
  const id=value(data,"invitation_id",64);if(!id)redirect("/dashboard/team?error=invalid_invitation");
  let adminClient:ReturnType<typeof import("@/lib/supabase/admin").createAdminClient>;
  try{const {createAdminClient}=await import("@/lib/supabase/admin");adminClient=createAdminClient()}catch{redirect("/dashboard/team?error=admin_secret_missing")}

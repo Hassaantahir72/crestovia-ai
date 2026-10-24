@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { enforceOwnerMfa } from "@/lib/security/owner-mfa";
+import { getActiveOrganizationMembership } from "@/lib/organizations/active-membership";
 import { emailProviderReadiness } from "@/lib/email/provider";
 import { createApprovalRequest, reviewApprovalRequest, executeApprovedTaskRequest } from "../actions";
 import { executeApprovedEmailRequest, testEmailProviderConnection } from "./email-actions";
@@ -13,9 +14,8 @@ export default async function ApprovalsPage({ searchParams }: Props) {
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user) redirect("/login");
-  const { data: memberships } = await supabase.from("memberships").select("organization_id,role,organizations(name)").eq("user_id", user.id).eq("status", "active").limit(1);
-  if (!memberships?.length) redirect("/onboarding");
-  const m = memberships[0];
+  const { membership: m } = await getActiveOrganizationMembership(supabase, user);
+  if (!m) redirect("/onboarding");
   await enforceOwnerMfa(supabase, m.role);
   const org = Array.isArray(m.organizations) ? m.organizations[0] : m.organizations;
   const { data: requests } = await supabase.from("action_approval_requests")

@@ -1,6 +1,6 @@
 {
   "name": "crestovia-ai-web",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -14,7 +14,8 @@
     "readiness": "node ../../scripts/readiness-report.mjs",
     "readiness:validate": "node ../../scripts/readiness-report.mjs --validate",
     "migration:check": "python ../../scripts/check-migrations.py",
-    "smoke:groq": "node ../../scripts/groq-live-smoke.mjs"
+    "smoke:groq": "node ../../scripts/groq-live-smoke.mjs",
+    "preflight:local": "node --env-file=.env.local ../../scripts/preflight.mjs web"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

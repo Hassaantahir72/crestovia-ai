@@ -1,3 +1,9 @@
+## Current build status — v0.3.5 (PR validation in progress)
+
+- Package version `0.3.5` introduces the opt-in WhatsApp Cloud API webhook ingress and executable security-helper tests.
+- CI must pass API tests, web regression tests, ESLint, TypeScript, and Next.js production build before merge to the Render-tracked branch.
+- Live Meta/n8n setup and runtime acceptance are not complete; no production secrets, database settings, or live service configuration were changed.
+
 ## Hands-on validation refresh — 2026-10-22 18:20 PKT
 
 - Re-ran the offline JavaScript test suite: 39 passed, 0 failed.

@@ -5,13 +5,13 @@ on:
 jobs:
   web:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: apps/web
     env:
       NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_test_key
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -19,8 +19,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Test public landing page regression checks
+        run: node --test ../../scripts/landing-page.test.mjs
+      - name: Test workspace onboarding regression checks
+        run: node --test ../../scripts/workspace-creation-ui.test.mjs
+      - name: Test password recovery flow guards
+        run: node --test ../../scripts/password-recovery.test.mjs
+      - name: Test private admin panel security guards
+        run: node --test ../../scripts/admin-panel-security.test.mjs
+      - name: Test WhatsApp webhook security primitives
+        run: node --test ../../scripts/whatsapp-webhook-runtime.test.mjs
+      - name: Run web configuration preflight
+        run: npm run preflight
       - name: Test configuration preflight
         run: node --test ../../scripts/preflight.test.mjs
       - name: Test deployment smoke checks
@@ -41,5 +55,7 @@ jobs:
         run: npm run readiness:validate
       - name: Run ESLint
         run: npm run lint
+      - name: Type-check TypeScript
+        run: npx tsc --noEmit
       - name: Build Next.js app
         run: npm run build

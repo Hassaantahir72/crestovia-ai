@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
 
   if (!url || !key) {
     // Do not silently treat an unconfigured app as authenticated.
-    if (request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/onboarding")) {
+    if (request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/onboarding") || request.nextUrl.pathname.startsWith("/admin")) {
       const target = request.nextUrl.clone();
       target.pathname = "/login";
       target.searchParams.set("configuration", "missing");
@@ -31,7 +31,7 @@ export async function middleware(request: NextRequest) {
   });
 
   const { data: { user } } = await supabase.auth.getUser();
-  if ((request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/onboarding")) && !user) {
+  if ((request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/onboarding") || request.nextUrl.pathname.startsWith("/admin")) && !user) {
     const target = request.nextUrl.clone();
     target.pathname = "/login";
     target.searchParams.set("next", request.nextUrl.pathname);
@@ -46,5 +46,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/onboarding/:path*", "/login"],
+  matcher: ["/dashboard/:path*", "/onboarding/:path*", "/admin/:path*", "/admin", "/login"],
 };
