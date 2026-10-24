@@ -25,9 +25,34 @@ test("team chat read and write policies require active organization membership",
 });
 
 test("chat UI is separate from assistant and scopes messages to selected organization and channel", () => {
-  assert.match(page, /Company conversations, separate from your private AI chat/);
+  assert.match(page, /Channels and private direct messages, separate from your private AI chat/);
   assert.match(page, /eq\("organization_id",membership\.organization_id\)\.eq\("channel_id",activeChannel\.id\)/);
   assert.match(actions, /author_id:user\.id/);
   assert.match(actions, /eq\("organization_id",membership\.organization_id\)/);
   assert.match(actions, /length > 8000/);
+});
+
+const extensions = readFileSync(new URL("../database/migrations/0038_direct_messages_and_whatsapp.sql", import.meta.url), "utf8");
+const whatsappRoute = readFileSync(new URL("../apps/web/app/api/webhooks/whatsapp/route.ts", import.meta.url), "utf8");
+const whatsappActions = readFileSync(new URL("../apps/web/app/dashboard/integrations/whatsapp/actions.ts", import.meta.url), "utf8");
+
+test("direct messages are created only through an active same-organization RPC", () => {
+  assert.match(extensions, /create or replace function public\\.create_direct_team_channel/);
+  assert.match(extensions, /security definer/);
+  assert.match(extensions, /active_same_organization_membership_required/);
+  assert.match(extensions, /revoke all on function public\\.create_direct_team_channel/);
+  assert.match(extensions, /create or replace function public\\.list_active_team_members/);
+  assert.match(extensions, /grant execute on function public\\.list_active_team_members/);
+  assert.match(actions, /create_direct_team_channel/);
+});
+
+test("WhatsApp events are organization-scoped and webhook security remains enforced", () => {
+  assert.match(extensions, /create table if not exists public\\.whatsapp_message_events/);
+  assert.match(extensions, /owners and admins read organization WhatsApp events/);
+  assert.match(whatsappRoute, /verifyMetaSignature/);
+  assert.match(whatsappRoute, /readBoundedBody/);
+  assert.match(whatsappRoute, /whatsapp_message_events/);
+  assert.match(whatsappRoute, /ignoreDuplicates: true/);
+  assert.match(whatsappActions, /\["owner", "admin"\]/);
+  assert.match(whatsappActions, /redirect: "error"/);
 });
