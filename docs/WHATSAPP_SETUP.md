@@ -25,7 +25,7 @@ Do not share tokens in chat, commit them, or paste them into source files. Rotat
 
 ## Database and release order
 
-1. Review `database/migrations/0034_team_chat_and_whatsapp.sql`.
+1. Review `database/migrations/0037_team_chat_and_whatsapp.sql`.
 2. Apply it to a non-production Supabase project first, then verify RLS and privileges.
 3. Deploy the code to staging, test team channel/direct-message isolation and WhatsApp webhook signature rejection.
 4. Apply to production only after explicit owner approval and verified backup/rollback plan.
