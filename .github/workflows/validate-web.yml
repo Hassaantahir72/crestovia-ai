@@ -33,6 +33,8 @@ jobs:
         run: node --test ../../scripts/admin-panel-security.test.mjs
       - name: Test WhatsApp webhook security primitives
         run: node --test ../../scripts/whatsapp-webhook-runtime.test.mjs
+      - name: Test team chat, direct messages, and WhatsApp integration
+        run: node --test ../../scripts/team-chat-migration.test.mjs
       - name: Run web configuration preflight
         run: npm run preflight
       - name: Test configuration preflight
