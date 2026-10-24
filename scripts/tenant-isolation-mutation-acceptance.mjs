@@ -42,11 +42,11 @@ export function validateMutationFixtures(document) {
   return document.tables;
 }
 
-function makeUrl(baseUrl, table, id, column, value) {
+function makeUrl(baseUrl, table, id, column, filterValue) {
   const url = new URL('/rest/v1/' + table, baseUrl);
   url.searchParams.set('id', 'eq.' + id);
   url.searchParams.set('select', 'id,' + column);
-  url.searchParams.set(column, 'eq.' + value);
+  url.searchParams.set(column, 'eq.' + filterValue);
   return url;
 }
 function authHeaders(key, token, extra = {}) {
@@ -120,7 +120,7 @@ export async function runMutationAcceptance({
           write('PASS table=' + fixture.table + ' actor_org=' + attempt.actor + ' target_org=' + attempt.targetOrg + ' cross_tenant_update_blocked=true');
         } else {
           // Restore the synthetic row immediately if the unauthorized write took effect.
-          const restoreOk = await patchProbe({ baseUrl: parsed.origin, key, token: attempt.ownerToken, fixture, id: attempt.targetId, value: fixture.originalValue, fetchImpl });
+          const restoreOk = await patchProbe({ baseUrl: parsed.origin, key, token: attempt.ownerToken, fixture, id: attempt.targetId, value: fixture.originalValue, filterValue: fixture.attemptValue, fetchImpl });
           failed += 1;
           write('FAIL table=' + fixture.table + ' target_org=' + attempt.targetOrg + ' reason=unauthorized_update_changed_fixture restored=' + restoreOk);
         }
