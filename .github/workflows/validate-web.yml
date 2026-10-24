@@ -43,6 +43,8 @@ jobs:
         run: node --test ../../scripts/verify-db-backup.test.mjs
       - name: Test read-only tenant isolation acceptance runner
         run: node --test ../../scripts/tenant-isolation-acceptance.test.mjs
+      - name: Test opt-in staging tenant mutation acceptance runner
+        run: node --test ../../scripts/tenant-isolation-mutation-acceptance.test.mjs
       - name: Test read-only provider connectivity helper
         run: node --test ../../scripts/provider-connectivity-check.test.mjs
       - name: Test live Groq completion smoke helper (mocked)

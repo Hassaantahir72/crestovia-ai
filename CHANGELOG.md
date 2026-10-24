@@ -1,4 +1,4 @@
-## v0.3.5 — guarded WhatsApp webhook ingress
+## v0.3.6 — staging tenant mutation acceptance tooling\n\n- Adds an opt-in, staging-host-pinned cross-tenant UPDATE acceptance runner using separate organization user tokens and synthetic fixture rows.\n- Requires both a command-line write opt-in and an explicit environment acknowledgement; restricts target tables/columns, avoids logging tokens/provider payloads, verifies owner-visible values, and attempts restoration if a test exposes a cross-tenant write.\n- Adds mocked tests for allowed/blocked policies, production-host refusal, fixture validation, and safe output. This does not replace live staging execution or prove INSERT/DELETE, role/suspension, stale context, or approval replay.\n- No production database, secrets, or service settings changed.\n\n## v0.3.5 — guarded WhatsApp webhook ingress
 
 - Adds opt-in Meta webhook challenge verification and HMAC-SHA256 validation over bounded raw request bytes.
 - Forwards verified events only to a configured HTTPS n8n endpoint with a separate strong shared secret; rejects obvious local/IP-literal targets and does not log inbound message bodies.
