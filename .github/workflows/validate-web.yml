@@ -31,6 +31,8 @@ jobs:
         run: node --test ../../scripts/password-recovery.test.mjs
       - name: Test private admin panel security guards
         run: node --test ../../scripts/admin-panel-security.test.mjs
+      - name: Test WhatsApp webhook security primitives
+        run: node --test ../../scripts/whatsapp-webhook-runtime.test.mjs
       - name: Run web configuration preflight
         run: npm run preflight
       - name: Test configuration preflight
