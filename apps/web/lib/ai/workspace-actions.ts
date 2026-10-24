@@ -19,7 +19,7 @@ export async function runWorkspaceCommand(
   message: string,
 ): Promise<CommandResult> {
   const text = message.trim();
-  const createMatch = text.match(/^(?:please\s+)?(?:create|add|make|set\\s+up)\s+(?:a\s+)?task(?:\s+(?:called|named))?\s*[:—-]?\s+(.+)$/i);
+  const createMatch = text.match(/^(?:please\s+)?(?:create|add|make|set\s+up)\s+(?:a\s+)?task(?:\s+(?:called|named))?\s*[:—-]?\s+(.+)$/i);
   if (createMatch) {
     let title = normalize(createMatch[1]);
     const priorityMatch = title.match(/\s+priority\s*[:=]?\s*(low|medium|high|urgent)\s*$/i);
