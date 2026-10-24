@@ -13,7 +13,8 @@ Crestovia AI is the company's operating workspace. Team members should communica
 ## Not yet included
 - Private-channel membership management UI.
 - True Supabase realtime delivery, typing indicators, read receipts, file uploads, emoji reactions, search, push notifications, and message edit/delete. The current chat view refreshes every five seconds.
-- Assistant participation inside channels. That must be an explicit, permission-aware feature, not an automatic leak of private assistant memory into company channels.
+- Assistant participation inside internal channels. That must be an explicit, permission-aware feature, not an automatic leak of private assistant memory into company channels.
+- Optional direct Jarvis replies over WhatsApp are implemented behind `WHATSAPP_AI_REPLY_ENABLED` and `WHATSAPP_ALLOWED_SENDERS`; this is a separate external channel and has no verified identity or private workspace tools.
 - Applying migrations 0037–0038 to any Supabase environment. Staging migration and cross-tenant acceptance must happen first.
 
 ## Acceptance checklist
