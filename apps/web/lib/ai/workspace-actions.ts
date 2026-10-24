@@ -71,7 +71,8 @@ export async function runWorkspaceCommand(
     if (assignedTo && assignedTo !== userId) {
       const { error: notificationError } = await supabase.from("notifications").insert({ organization_id: organizationId, recipient_id: assignedTo, created_by: userId, type: "task_assigned", title: "A task was assigned to you", body: created.title, entity_type: "task", entity_id: created.id, dedupe_key: "task_assigned:" + created.id + ":" + assignedTo });
       if (notificationError) await recordAuditEvent({ organizationId, actorId: userId, action: "notification.task_assignment.failed", entityType: "task", entityId: created.id, metadata: { recipient_id: assignedTo, source: "assistant_command" } });
-    }\n    return { handled: true, reply: assignedTo ? `Done — I created “${created.title}” with ${created.priority} priority and assigned it to the teammate you named. The task is on the company task board; they can open it, update status, and reply in comments.` : `Done — I created “${created.title}” in your company task board with ${created.priority} priority. It is currently unassigned. If you want, tell me who should own it, for example: “Create task: Prepare outreach assign to Alex priority high.”` };
+    }
+    return { handled: true, reply: assignedTo ? `Done — I created “${created.title}” with ${created.priority} priority and assigned it to the teammate you named. The task is on the company task board; they can open it, update status, and reply in comments.` : `Done — I created “${created.title}” in your company task board with ${created.priority} priority. It is currently unassigned. If you want, tell me who should own it, for example: “Create task: Prepare outreach assign to Alex priority high.”` };
   }
 
   const statusMatch = text.match(/^(?:please\s+)?(?:mark|set|move|update)\s+(?:the\s+)?task\s+["'“]?(.+?)["'”]?\s+(?:as\s+)?(to do|todo|in progress|blocked|in review|done|completed|cancelled|canceled)$/i);
