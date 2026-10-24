@@ -86,15 +86,20 @@ export async function POST(request: Request) {
   // Optional direct Jarvis replies. Disabled by default and restricted to an explicit staff phone allowlist.
   // n8n remains the automation forwarder; do not enable duplicate AI replies in both systems.
   if (process.env.WHATSAPP_AI_REPLY_ENABLED === "true" && organizationId && newlyStoredIds.size) {
-    const allowedSenders = new Set((process.env.WHATSAPP_ALLOWED_SENDERS ?? "").split(",").map((phone) => phone.replace(/\D/g, "")).filter((phone) => /^\d{8,15}$/.test(phone)));
     const token = process.env.WHATSAPP_ACCESS_TOKEN;
     const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
     const version = process.env.WHATSAPP_API_VERSION;
     const configValid = Boolean(token && phoneId && version && /^v\d+\.\d+$/.test(version));
     if (configValid) {
       for (const message of inboundMessages) {
-        if (!newlyStoredIds.has(message.id) || message.kind !== "text" || !allowedSenders.has(message.from)) continue;
+        if (!newlyStoredIds.has(message.id) || message.kind !== "text") continue;
         try {
+          const { data: staffMapping, error: mappingError } = await createAdminClient().from("whatsapp_staff_senders")
+            .select("user_id").eq("organization_id", organizationId).eq("phone_e164", message.from).eq("active", true).maybeSingle();
+          if (mappingError || !staffMapping?.user_id) continue;
+          const { data: activeMembership, error: membershipError } = await createAdminClient().from("memberships")
+            .select("user_id").eq("organization_id", organizationId).eq("user_id", staffMapping.user_id).eq("status", "active").maybeSingle();
+          if (membershipError || !activeMembership) continue;
           const { count, error: countError } = await createAdminClient().from("whatsapp_message_events")
             .select("id", { count: "exact", head: true })
             .eq("organization_id", organizationId).eq("direction", "inbound").eq("from_phone", message.from)
@@ -102,7 +107,7 @@ export async function POST(request: Request) {
           // Fail closed if the rate-limit query cannot be trusted.
           if (countError || (count ?? 0) > 20) continue;
           const answer = await generateAssistantReply([{ role: "user", content: message.body }], [],
-            "This is a WhatsApp message from a sender on the configured company allowlist. You do not know the sender's verified identity and have no access to company records, private memory, or action tools. Answer general questions, be concise, and ask the user to use the authenticated Crestovia workspace for private company data or consequential actions. Never claim to have sent a reminder, updated records, or completed an action.");
+            "This WhatsApp sender is mapped by an organization owner/admin to an active company member. However, this WhatsApp route has no permission-scoped workspace tools or conversation history. Answer general questions only, be concise, and ask the user to use the authenticated Crestovia workspace for company records, private information, approvals, or consequential actions. Never claim to have sent a reminder, updated records, or completed an action.");
           const reply = answer.slice(0, 3500);
           const response = await fetch("https://graph.facebook.com/" + version + "/" + phoneId + "/messages", {
             method: "POST",
