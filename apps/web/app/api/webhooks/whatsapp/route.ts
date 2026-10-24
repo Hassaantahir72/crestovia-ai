@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { generateAssistantReply } from "@/lib/ai/provider";
 import { constantTimeStringEqual, isValidForwardUrl, readBoundedBody, verifyMetaSignature } from "../../../../lib/whatsapp-webhook-security.mjs";
 import { NextResponse } from "next/server";
 
@@ -48,6 +49,8 @@ export async function POST(request: Request) {
   // Persist normalized inbound messages when the organization ledger is configured.
   // Keep the existing signed, bounded n8n forwarder intact for automation workflows.
   const organizationId = process.env.WHATSAPP_ORGANIZATION_ID;
+  const newlyStoredIds = new Set<string>();
+  const inboundMessages: Array<{ id: string; from: string; to: string; body: string; kind: string }> = [];
   if (organizationId) {
     const events: Array<{ organization_id: string; provider_message_id: string; direction: "inbound"; from_phone: string; to_phone: string; message_text: string; status: "received" }> = [];
     for (const entry of record.entry as Array<Record<string, unknown>>) {
@@ -65,15 +68,58 @@ export async function POST(request: Request) {
           const kind = typeof message.type === "string" ? message.type : "unsupported";
           const body = kind === "text" && typeof textValue === "string" ? textValue : "[" + kind + " message]";
           events.push({ organization_id: organizationId, provider_message_id: id, direction: "inbound", from_phone: from.slice(0, 32), to_phone: toPhone.slice(0, 32), message_text: body.slice(0, 4000), status: "received" });
+          inboundMessages.push({ id, from: from.slice(0, 32), to: toPhone.slice(0, 32), body: body.slice(0, 4000), kind });
         }
       }
     }
     if (events.length) {
       try {
-        const { error } = await createAdminClient().from("whatsapp_message_events").upsert(events, { onConflict: "provider_message_id", ignoreDuplicates: true });
+        const { data: inserted, error } = await createAdminClient().from("whatsapp_message_events").upsert(events, { onConflict: "provider_message_id", ignoreDuplicates: true }).select("provider_message_id");
         if (error) return NextResponse.json({ error: "event_persist_failed" }, { status: 503, headers: NO_STORE });
+        for (const row of inserted ?? []) if (typeof row.provider_message_id === "string") newlyStoredIds.add(row.provider_message_id);
       } catch {
         return NextResponse.json({ error: "event_persist_failed" }, { status: 503, headers: NO_STORE });
+      }
+    }
+  }
+
+  // Optional direct Jarvis replies. Disabled by default and restricted to an explicit staff phone allowlist.
+  // n8n remains the automation forwarder; do not enable duplicate AI replies in both systems.
+  if (process.env.WHATSAPP_AI_REPLY_ENABLED === "true" && organizationId && newlyStoredIds.size) {
+    const allowedSenders = new Set((process.env.WHATSAPP_ALLOWED_SENDERS ?? "").split(",").map((phone) => phone.replace(/\\D/g, "")).filter((phone) => /^\\d{8,15}$/.test(phone)));
+    const token = process.env.WHATSAPP_ACCESS_TOKEN;
+    const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+    const version = process.env.WHATSAPP_API_VERSION;
+    const configValid = Boolean(token && phoneId && version && /^v\\d+\\.\\d+$/.test(version));
+    if (configValid) {
+      for (const message of inboundMessages) {
+        if (!newlyStoredIds.has(message.id) || message.kind !== "text" || !allowedSenders.has(message.from)) continue;
+        try {
+          const { count, error: countError } = await createAdminClient().from("whatsapp_message_events")
+            .select("id", { count: "exact", head: true })
+            .eq("organization_id", organizationId).eq("direction", "inbound").eq("from_phone", message.from)
+            .gte("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString());
+          // Fail closed if the rate-limit query cannot be trusted.
+          if (countError || (count ?? 0) > 20) continue;
+          const answer = await generateAssistantReply([{ role: "user", content: message.body }], [],
+            "This is a WhatsApp message from a sender on the configured company allowlist. You do not know the sender's verified identity and have no access to company records, private memory, or action tools. Answer general questions, be concise, and ask the user to use the authenticated Crestovia workspace for private company data or consequential actions. Never claim to have sent a reminder, updated records, or completed an action.");
+          const reply = answer.slice(0, 3500);
+          const response = await fetch("https://graph.facebook.com/" + version + "/" + phoneId + "/messages", {
+            method: "POST",
+            headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+            body: JSON.stringify({ messaging_product: "whatsapp", recipient_type: "individual", to: message.from, type: "text", text: { preview_url: false, body: reply } }),
+            cache: "no-store", redirect: "error", signal: AbortSignal.timeout(12000),
+          });
+          const result = await response.json() as { messages?: Array<{ id?: string }> };
+          const providerId = result.messages?.[0]?.id;
+          if (!response.ok || !providerId) continue;
+          await createAdminClient().from("whatsapp_message_events").insert({
+            organization_id: organizationId, provider_message_id: providerId, direction: "outbound",
+            from_phone: phoneId, to_phone: message.from, message_text: reply, status: "sent",
+          });
+        } catch {
+          // AI replies are best-effort. Do not make Meta retry a verified webhook because a provider is unavailable.
+        }
       }
     }
   }
