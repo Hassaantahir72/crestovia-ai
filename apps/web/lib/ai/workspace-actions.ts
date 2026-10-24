@@ -59,7 +59,7 @@ export async function runWorkspaceCommand(
     const { data: matches, error: lookupError } = await supabase.from("tasks")
       .select("id,title,status")
       .eq("organization_id", organizationId)
-      .ilike("title", title.replace(/[%,_]/g, "\\$&"))
+      .eq("title", title)
       .limit(3);
     if (lookupError) return { handled: true, reply: "I couldn't check the task list, so I did not change anything." };
     if (!matches?.length) return { handled: true, reply: `I couldn't find a task titled “${title}” in this workspace. No changes were made. Check the exact task title and try again.` };
