@@ -19,7 +19,7 @@ export async function runWorkspaceCommand(
   message: string,
 ): Promise<CommandResult> {
   const text = message.trim();
-  const createMatch = text.match(/^(?:please\s+)?(?:create|add|make)\s+(?:a\s+)?task(?:\s+(?:called|named))?\s*[:—-]?\s+(.+)$/i);
+  const createMatch = text.match(/^(?:please\s+)?(?:create|add|make|set\\s+up)\s+(?:a\s+)?task(?:\s+(?:called|named))?\s*[:—-]?\s+(.+)$/i);
   if (createMatch) {
     let title = normalize(createMatch[1]);
     const priorityMatch = title.match(/\s+priority\s*[:=]?\s*(low|medium|high|urgent)\s*$/i);
@@ -55,7 +55,7 @@ export async function runWorkspaceCommand(
   if (statusMatch) {
     const title = normalize(statusMatch[1]);
     const rawStatus = statusMatch[2].toLowerCase().replace(/\s+/g, "_");
-    const status: TaskStatus = rawStatus === "completed" ? "done" : rawStatus === "canceled" ? "cancelled" : rawStatus as TaskStatus;
+    const status: TaskStatus = rawStatus === "completed" ? "done" : rawStatus === "canceled" ? "cancelled" : rawStatus === "to_do" ? "todo" : rawStatus as TaskStatus;
     const { data: matches, error: lookupError } = await supabase.from("tasks")
       .select("id,title,status")
       .eq("organization_id", organizationId)
