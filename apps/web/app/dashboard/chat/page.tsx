@@ -2,6 +2,7 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
+import {getActiveOrganizationMembership} from "@/lib/organizations/active-membership";
 import {createTeamChannel,sendTeamMessage} from "./actions";
 
 type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
@@ -11,10 +12,7 @@ export default async function TeamChatPage({searchParams}:Props){
  const p=await searchParams,supabase=await createClient();
  const {data:{user},error:authError}=await supabase.auth.getUser();
  if(authError||!user)redirect("/login");
- const {data:memberships}=await supabase.from("memberships")
-  .select("organization_id,role,organizations(name)")
-  .eq("user_id",user.id).eq("status","active").limit(1);
- const membership=memberships?.[0];
+ const {membership}=await getActiveOrganizationMembership(supabase,user);
  if(!membership)redirect("/onboarding");
  await enforceOwnerMfa(supabase,membership.role);
  const organization=Array.isArray(membership.organizations)?membership.organizations[0]:membership.organizations;
