@@ -1,3 +1,10 @@
+## v0.3.5 — guarded WhatsApp webhook ingress
+
+- Adds opt-in Meta webhook challenge verification and HMAC-SHA256 validation over bounded raw request bytes.
+- Forwards verified events only to a configured HTTPS n8n endpoint with a separate strong shared secret; rejects obvious local/IP-literal targets and does not log inbound message bodies.
+- Adds executable security-helper tests and CI coverage. Live Meta registration, durable queueing, deduplication, sender-to-tenant mapping, consent/opt-out enforcement, and outbound replies remain unimplemented and must pass staging acceptance before enabling.
+- No production database or credential changes are included.
+
 ## v0.3.4 — Assistant provider timeout and response hardening
 
 - Corrected release-readiness checklist evidence so current CI/build checks are not marked complete before exact-candidate verification. Recorded reproducible offline test results and the unresolved CI/npm-network blockers.
