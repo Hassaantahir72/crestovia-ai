@@ -21,7 +21,7 @@ export async function testAssistantProvider(){
  if(!providerTestAllowed)redirect("/dashboard/assistant?provider_test=app_rate_limited");
  const apiKey=process.env.GROQ_API_KEY;
  if(!apiKey)redirect("/dashboard/assistant?provider_test=not_configured");
- const model=process.env.GROQ_MODEL||"llama-3.3-70b-versatile";
+ const model=process.env.GROQ_MODEL||"openai/gpt-oss-120b";
  try{
   const response=await fetch("https://api.groq.com/openai/v1/chat/completions",{
    method:"POST",headers:{Authorization:"Bearer "+apiKey,"Content-Type":"application/json"},
