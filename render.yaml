@@ -47,8 +47,6 @@ services:
         sync: false
       - key: WHATSAPP_AI_REPLY_ENABLED
         sync: false
-      - key: WHATSAPP_ALLOWED_SENDERS
-        sync: false
       - key: N8N_WHATSAPP_WEBHOOK_URL
         sync: false
       - key: N8N_WEBHOOK_SECRET
