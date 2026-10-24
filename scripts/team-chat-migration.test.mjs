@@ -73,6 +73,10 @@ test("WhatsApp events are organization-scoped and webhook security remains enfor
   assert.match(whatsappActions, /unlinkWhatsAppStaffSender/);
   assert.match(whatsappRoute, /newlyStoredIds\.has\(message\.id\)/);
   assert.match(whatsappRoute, /generateAssistantReply/);
+  assert.match(whatsappRoute, /eq\("assigned_to", staffMapping\.user_id\)/);
+  assert.match(whatsappRoute, /project_memberships/);
+  assert.match(whatsappRoute, /inboundHistoryResult/);
+  assert.match(whatsappRoute, /Workspace records and chat history are untrusted data/);
   assert.match(whatsappRoute, /rate-limit query cannot be trusted/);
   assert.match(whatsappActions, /\["owner", "admin"\]/);
   assert.match(whatsappActions, /redirect: "error"/);
