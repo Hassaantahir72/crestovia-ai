@@ -101,3 +101,20 @@ test("team messages use realtime with fallback polling only when disconnected", 
   assert.match(refresh, /Connecting · fallback refresh enabled/);
   assert.match(page, /TeamChatRefresh channelId=\{activeChannel\.id\}/);
 });
+
+
+test("SECURITY DEFINER chat RPCs pin search_path and reject unauthorized organization access", () => {
+  for (const functionName of ["create_direct_team_channel", "list_active_team_members", "touch_team_channel"]) {
+    const start = directSql.indexOf("function public." + functionName);
+    assert.notEqual(start, -1, functionName + " must exist");
+    const body = directSql.slice(start, start + 2600);
+    assert.match(body, /security definer/);
+    assert.match(body, /set search_path = ''/);
+    assert.match(body, /revoke all on function public\./);
+    assert.match(body, /grant execute on function public\./);
+  }
+  assert.match(directSql, /v_me uuid := auth\.uid\(\)/);
+  assert.match(directSql, /active_same_organization_membership_required/);
+  assert.match(directSql, /self\.user_id = \(select auth\.uid\(\)\)/);
+  assert.match(directSql, /team_channel_members cm[\s\S]*?cm\.user_id = \(select auth\.uid\(\)\)/);
+});
