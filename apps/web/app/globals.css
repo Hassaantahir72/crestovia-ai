@@ -346,3 +346,13 @@ label{font-size:12px;font-weight:650;letter-spacing:.015em;color:#aab8ce}
 @media(max-width:820px){.agent-welcome{grid-template-columns:minmax(0,1fr) 170px;padding:28px 24px}.agent-orbit{width:165px;height:165px}.agent-orbit-avatar{width:94px;height:94px;border-radius:28px}.agent-orbit-ring-inner{inset:20px}.agent-orbit-ring-outer{inset:0}.agent-new-chat{top:auto;bottom:18px;right:18px}.agent-capability-strip{grid-template-columns:1fr}.agent-capability-strip article{padding:13px}}
 @media(max-width:580px){.agent-welcome{grid-template-columns:1fr;min-height:0;padding:26px 20px 84px}.agent-welcome h1{font-size:34px}.agent-orbit{position:absolute;right:-25px;top:6px;width:130px;height:130px;opacity:.48}.agent-orbit-avatar{width:70px;height:70px;border-radius:22px}.agent-orbit-avatar img{width:58px!important;height:58px!important}.agent-orbit-ring-inner{inset:14px}.agent-new-chat{right:18px;bottom:18px;left:18px}.agent-new-chat .button{width:100%}.agent-prompt-suggestions{grid-template-columns:1fr}.agent-prompt-suggestions>div{padding:12px}.agent-empty{padding:24px 0}.agent-chat-title p{display:none}}
 @media(prefers-reduced-motion:reduce){.agent-orbit-ring-inner{animation:none}}
+
+/* Interactive AI starter prompts */
+.agent-prompt-card{display:flex;flex-direction:column;align-items:flex-start;gap:7px;padding:14px;border:1px solid rgba(148,166,198,.18);border-radius:13px;background:rgba(255,255,255,.025);color:inherit;text-align:left;cursor:pointer;transition:background .18s ease,border-color .18s ease,transform .18s ease;width:100%;font:inherit}
+.agent-prompt-card:hover{background:rgba(125,151,255,.09);border-color:rgba(148,166,255,.42);transform:translateY(-2px)}
+.agent-prompt-card:focus-visible{outline:2px solid #9aafff;outline-offset:3px}
+.agent-prompt-card>span{font-size:17px;color:#a9c3ff}
+.agent-prompt-card strong{font-size:11px;color:#dbe6f8}
+.agent-prompt-card small{font-size:10px;line-height:1.5;color:#8496b3}
+@media(max-width:580px){.agent-prompt-card{padding:12px}}
+@media(prefers-reduced-motion:reduce){.agent-prompt-card{transition:none}.agent-prompt-card:hover{transform:none}}
