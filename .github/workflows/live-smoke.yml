@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - security/production-acl-rollout-plan-v1
+  pull_request:
+    branches:
+      - security/company-hardening-v1
   workflow_dispatch:
   schedule:
     - cron: "17 */6 * * *"
