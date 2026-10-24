@@ -2,6 +2,7 @@
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {enforceOwnerMfa} from "@/lib/security/owner-mfa";
+import {getActiveOrganizationMembership} from "@/lib/organizations/active-membership";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -9,9 +10,7 @@ async function activeMembership() {
  const supabase = await createClient();
  const {data:{user},error} = await supabase.auth.getUser();
  if (error || !user) redirect("/login");
- const {data:memberships} = await supabase.from("memberships")
-  .select("organization_id,role").eq("user_id",user.id).eq("status","active").limit(1);
- const membership = memberships?.[0];
+ const {membership} = await getActiveOrganizationMembership(supabase,user);
  if (!membership) redirect("/onboarding");
  await enforceOwnerMfa(supabase,membership.role);
  return {supabase,user,membership};
