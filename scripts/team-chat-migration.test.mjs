@@ -63,7 +63,7 @@ test("WhatsApp events are organization-scoped and webhook security remains enfor
   assert.match(whatsappRoute, /ignoreDuplicates: true/);
   assert.match(whatsappRoute, /WHATSAPP_AI_REPLY_ENABLED === "true"/);
   assert.match(whatsappRoute, /WHATSAPP_ALLOWED_SENDERS/);
-  assert.match(whatsappRoute, /newlyStoredIds\\.has\\(message\\.id\\)/);
+  assert.match(whatsappRoute, /newlyStoredIds\.has\(message\.id\)/);
   assert.match(whatsappRoute, /generateAssistantReply/);
   assert.match(whatsappRoute, /rate-limit query cannot be trusted/);
   assert.match(whatsappActions, /\["owner", "admin"\]/);
