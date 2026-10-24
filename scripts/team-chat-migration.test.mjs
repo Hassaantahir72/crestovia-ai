@@ -7,6 +7,7 @@ const page = readFileSync(new URL("../apps/web/app/dashboard/chat/page.tsx", imp
 const actions = readFileSync(new URL("../apps/web/app/dashboard/chat/actions.ts", import.meta.url), "utf8");
 const directSql = readFileSync(new URL("../database/migrations/0038_direct_messages_and_whatsapp.sql", import.meta.url), "utf8");
 const realtimeSql = readFileSync(new URL("../database/migrations/0039_team_chat_realtime.sql", import.meta.url), "utf8");
+const indexesSql = readFileSync(new URL("../database/migrations/0040_team_chat_foreign_key_indexes.sql", import.meta.url), "utf8");
 const refresh = readFileSync(new URL("../apps/web/app/dashboard/chat/refresh.tsx", import.meta.url), "utf8");
 
 test("team chat schema is tenant-scoped with composite organization foreign keys", () => {
@@ -88,6 +89,8 @@ test("direct message and WhatsApp migrations restrict membership and event acces
 
 test("team messages use realtime with fallback polling only when disconnected", () => {
   assert.match(realtimeSql, /alter publication supabase_realtime add table public\.team_messages/);
+  assert.match(indexesSql, /team_channel_members_org_channel_idx/);
+  assert.match(indexesSql, /team_messages_org_author_idx/);
   assert.match(refresh, /postgres_changes/);
   assert.match(refresh, /status === "SUBSCRIBED"/);
   assert.match(refresh, /30000/);
