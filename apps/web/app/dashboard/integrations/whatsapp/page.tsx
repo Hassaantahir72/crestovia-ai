@@ -22,7 +22,7 @@ export default async function WhatsAppIntegrationPage({searchParams}:Props) {
   await enforceOwnerMfa(supabase,membership.role);
   if(!["owner","admin"].includes(membership.role)) redirect("/dashboard");
   const configured=Boolean(process.env.WHATSAPP_ACCESS_TOKEN&&process.env.WHATSAPP_PHONE_NUMBER_ID&&process.env.WHATSAPP_APP_SECRET&&process.env.WHATSAPP_VERIFY_TOKEN&&process.env.WHATSAPP_API_VERSION&&process.env.WHATSAPP_ORGANIZATION_ID===membership.organization_id);
-  const jarvisRepliesEnabled=process.env.WHATSAPP_AI_REPLY_ENABLED==="true"&&Boolean(process.env.WHATSAPP_ALLOWED_SENDERS?.split(",").some((phone)=>/^[0-9]{8,15}$/.test(phone.replace(/\\D/g,""))));
+  const jarvisRepliesEnabled=process.env.WHATSAPP_AI_REPLY_ENABLED==="true"&&Boolean(process.env.WHATSAPP_ALLOWED_SENDERS?.split(",").some((phone)=>/^[0-9]{8,15}$/.test(phone.replace(/\D/g,""))));
   const {data:events,error:eventsError}=await supabase.from("whatsapp_message_events").select("id,direction,from_phone,to_phone,message_text,status,created_at").eq("organization_id",membership.organization_id).order("created_at",{ascending:false}).limit(50);
   const errorKey=typeof params.error==="string"?params.error:"";
   return <main className="container">
