@@ -138,3 +138,10 @@ body{
 
 
 .team-chat-layout{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:16px;align-items:start}.team-chat-sidebar,.team-chat-main{min-width:0}.team-chat-sidebar h2,.team-chat-main h2{margin-top:0}.team-channel-form{border-top:1px solid var(--border);margin-top:20px;padding-top:18px;display:grid;gap:4px}.team-channel-form h3{margin:0 0 8px}.team-channel-form .input{margin-bottom:10px}.team-channel-form .button{width:100%}.team-message-list{max-height:60vh;min-height:300px;overflow-y:auto}.team-chat-main .chat-composer{margin-top:8px}.team-chat-main .chat-heading{margin-bottom:6px}.team-chat-main .chat-heading h2{margin-bottom:8px}@media(max-width:760px){.team-chat-layout{grid-template-columns:minmax(0,1fr)}.team-chat-sidebar{order:2}.team-chat-main{order:1}}
+
+/* Global assistant launcher controls and opt-in browser wake word */
+.assistant-global-launcher{flex-direction:column;align-items:stretch;gap:8px;min-width:230px;max-width:min(320px,calc(100vw - 24px));padding:10px}
+.assistant-launcher-open{display:flex;align-items:center;gap:11px;width:100%;padding:2px;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+.assistant-wake-toggle{width:100%;font-size:12px;padding:8px 10px}
+.assistant-wake-status{display:block;color:#a8b4ca;font-size:11px;line-height:1.4;max-width:280px}
+@media(max-width:640px){.assistant-global-launcher{right:12px;bottom:12px;min-width:0;width:min(265px,calc(100vw - 24px));padding:9px}.assistant-wake-status{font-size:10px}}
