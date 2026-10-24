@@ -65,7 +65,7 @@ export async function sendAssistantMessage(data:FormData){
  try{const command=await runWorkspaceCommand(supabase,membership.organization_id,user.id,content);if(command.handled){answer=command.reply}else{const workspaceContext=await runReadOnlyAssistantTools(supabase,membership.organization_id,user.id,content);answer=await generateAssistantReply([...(prior??[]) as AssistantMessage[],{role:"user",content}],savedMemories??[],workspaceContext)}}
  catch(e){const code=e instanceof Error?e.message:"AI_PROVIDER_REQUEST_FAILED";const allowed=["AI_PROVIDER_NOT_CONFIGURED","AI_PROVIDER_INVALID_CONFIGURATION","AI_PROVIDER_AUTH_FAILED","AI_PROVIDER_RATE_LIMITED","AI_PROVIDER_REQUEST_FAILED","AI_PROVIDER_TIMEOUT","AI_PROVIDER_INVALID_RESPONSE","AI_PROVIDER_EMPTY_RESPONSE"];redirect("/dashboard/assistant?conversation="+id+"&error="+(allowed.includes(code)?code.toLowerCase():"ai_provider_request_failed"))}
  const {error:assistantErr}=await supabase.from("assistant_messages").insert({conversation_id:id,user_id:user.id,role:"assistant",content:answer});if(assistantErr)redirect("/dashboard/assistant?conversation="+id+"&error=reply_save_failed");
- revalidatePath("/dashboard/assistant");redirect("/dashboard/assistant?conversation="+id);
+ revalidatePath("/dashboard/assistant");redirect("/dashboard/assistant?conversation="+id+(field(data,"voice_mode",1)==="1"?"&voice_reply=1":""));
 }
 export async function deleteConversation(data:FormData){
  const {supabase,user}=await getUserContext();const id=field(data,"conversation_id",64);if(!id)redirect("/dashboard/assistant?error=conversation_not_found");
