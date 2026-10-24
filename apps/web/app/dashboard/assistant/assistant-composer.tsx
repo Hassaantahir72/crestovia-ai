@@ -35,6 +35,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
   const audioContextRef = useRef<AudioContext | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const [listening, setListening] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState("");
   const [speechLanguage, setSpeechLanguage] = useState("auto");
   const [micCheckActive, setMicCheckActive] = useState(false);
@@ -183,6 +184,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
 
   useEffect(() => {
     if (typeof window === "undefined" || !new URLSearchParams(window.location.search).has("voice")) return;
+    setVoiceMode(true);
     const timer = window.setTimeout(() => {
       inputRef.current?.focus();
       toggleVoiceInput();
@@ -195,6 +197,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
   return (
     <form action={sendAssistantMessage} className="chat-composer">
       <input type="hidden" name="conversation_id" value={conversationId} />
+      <input type="hidden" name="voice_mode" value={voiceMode ? "1" : "0"} />
       <label htmlFor="assistant-message">Message</label>
       <textarea ref={inputRef} className="input chat-input" id="assistant-message" name="content" rows={3} maxLength={12000} required placeholder="Ask Crestovia AI…" />
       <div className="chat-compose-footer">
