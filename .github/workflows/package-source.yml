@@ -1,7 +1,7 @@
 name: Package full source
 on:
   push:
-    branches: [main, chore/render-build-gates-api-service-v034, security/company-hardening-v1]
+    branches: [main, chore/render-build-gates-api-service-v034, security/company-hardening-v1, security/production-acl-rollout-plan-v1]
   workflow_dispatch:
 permissions:
   contents: read

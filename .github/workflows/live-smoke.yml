@@ -1,0 +1,36 @@
+name: Live Deployment Smoke Check
+
+on:
+  push:
+    branches:
+      - security/production-acl-rollout-plan-v1
+  pull_request:
+    branches:
+      - security/company-hardening-v1
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crestovia-live-smoke
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    name: Read-only public endpoint checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Test smoke-check logic without network access
+        run: node --test scripts/live-deployment-smoke.test.mjs
+      - name: Check public web and API endpoints
+        run: node scripts/live-deployment-smoke.mjs
