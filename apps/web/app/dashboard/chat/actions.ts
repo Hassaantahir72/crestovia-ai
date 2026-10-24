@@ -46,3 +46,18 @@ export async function sendTeamMessage(formData:FormData) {
  if (error) redirect("/dashboard/chat?channel="+encodeURIComponent(channelId)+"&error=message_send_failed");
  redirect("/dashboard/chat?channel="+encodeURIComponent(channelId)+"&sent=1");
 }
+
+export async function startDirectConversation(formData:FormData) {
+ const {supabase,membership} = await activeMembership();
+ const otherUserId = String(formData.get("user_id")??"").trim();
+ if (!UUID.test(otherUserId)) redirect("/dashboard/chat?error=teammate_invalid");
+ const {data:other,error:otherError} = await supabase.from("memberships")
+  .select("user_id").eq("organization_id",membership.organization_id)
+  .eq("user_id",otherUserId).eq("status","active").maybeSingle();
+ if (otherError || !other) redirect("/dashboard/chat?error=teammate_invalid");
+ const {data:channelId,error} = await supabase.rpc("create_direct_team_channel",{
+  p_organization_id:membership.organization_id,p_other_user_id:otherUserId
+ });
+ if (error || !channelId) redirect("/dashboard/chat?error=direct_create_failed");
+ redirect("/dashboard/chat?channel="+encodeURIComponent(channelId));
+}
