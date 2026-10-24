@@ -64,7 +64,7 @@ revoke all on function public.create_direct_team_channel(uuid, uuid) from public
 grant execute on function public.create_direct_team_channel(uuid, uuid) to authenticated;
 
 -- Prevent manager-level channel CRUD grants from making a private DM public or changing its type.
-revoke update on public.team_channels from authenticated;
+revoke update, delete on public.team_channels from authenticated;
 grant update (name, slug, description, updated_at) on public.team_channels to authenticated;
 
 -- Expose only a minimal active-member directory to authenticated teammates.
