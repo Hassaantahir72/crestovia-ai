@@ -9,7 +9,7 @@ This checklist is the release gate for the private Crestovai AI deployment. A so
 - [x] API test workflow passes on candidate commit `f2aed9081944a79cfc35f95f3879a2e9bbcee96f` (workflow run [39959386670](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39959386670)).
 - [x] Web ESLint, TypeScript type-check, and Next.js production build pass on candidate commit `f2aed9081944a79cfc35f95f3879a2e9bbcee96f` (workflow run [39959386453](https://github.com/Hassaantahir72/crestovia-ai/actions/runs/39959386453)).
 - [ ] Complete source archive is generated from the exact release commit and passes ZIP integrity and secret-pattern checks. The queried current candidate runs returned no artifacts; archive remains unverified.
-- [ ] Database migrations are reviewed, applied to the intended environment, and their grants/policies verified, including 0037–0038 for team chat/direct messages and WhatsApp event logging.
+- [ ] Database migrations are reviewed, applied to the intended environment, and their grants/policies verified, including 0037–0039 for team chat/direct messages, WhatsApp event logging, and Realtime publication. Staging migrations 0037–0039 are applied; production remains unchanged.
 - [ ] No secrets, tokens, local environment files, or production data are included in the source archive.
 
 ## Current candidate evidence — 2026-10-23
