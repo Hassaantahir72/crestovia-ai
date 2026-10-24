@@ -23,5 +23,5 @@ test("provider failure categories are safe and actionable without exposing raw e
 });
 
 test("model configuration is validated before sending a provider request", () => {
-  assert.ok(provider.includes("if(!/^[A-Za-z0-9._:-]{1,120}$/.test(model))"));
+  assert.ok(provider.includes("if(!/^[A-Za-z0-9._:\\/-]{1,120}$/.test(model))"));
 });

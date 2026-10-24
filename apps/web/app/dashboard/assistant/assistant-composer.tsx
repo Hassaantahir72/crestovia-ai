@@ -35,6 +35,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
   const audioContextRef = useRef<AudioContext | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const [listening, setListening] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState("");
   const [speechLanguage, setSpeechLanguage] = useState("auto");
   const [micCheckActive, setMicCheckActive] = useState(false);
@@ -181,13 +182,26 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
     }
   }
 
+  useEffect(() => {
+    if (typeof window === "undefined" || !new URLSearchParams(window.location.search).has("voice")) return;
+    setVoiceMode(true);
+    const timer = window.setTimeout(() => {
+      inputRef.current?.focus();
+      toggleVoiceInput();
+    }, 1200);
+    return () => window.clearTimeout(timer);
+    // The wake-word handoff intentionally starts voice capture once when this page opens.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <form action={sendAssistantMessage} className="chat-composer">
       <input type="hidden" name="conversation_id" value={conversationId} />
+      <input type="hidden" name="voice_mode" value={voiceMode ? "1" : "0"} />
       <label htmlFor="assistant-message">Message</label>
       <textarea ref={inputRef} className="input chat-input" id="assistant-message" name="content" rows={3} maxLength={12000} required placeholder="Ask Crestovia AI…" />
       <div className="chat-compose-footer">
-        <span className="muted">Workspace context is read-only. Company changes and external actions remain disabled.</span>
+        <span className="muted">Speak your request, review the transcript, then send it. Task actions are limited by your workspace permissions.</span>
         <div className="chat-compose-actions">
           <label htmlFor="speech-language" className="muted">Speech language</label>
           <select
@@ -204,7 +218,7 @@ export default function AssistantComposer({ conversationId }: { conversationId: 
             {micCheckStarting ? "Starting mic check…" : micCheckActive ? "Stop mic check" : "Check mic level"}
           </button>
           <button className="button button-secondary" type="button" onClick={toggleVoiceInput} disabled={micCheckActive} aria-pressed={listening}>
-            {listening ? "Stop listening" : "Use voice"}
+            {listening ? "Stop listening" : "Speak message"}
           </button>
           <button className="button" type="submit">Send message</button>
         </div>

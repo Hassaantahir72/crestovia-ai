@@ -33,6 +33,24 @@ services:
         sync: false
       - key: CRON_SECRET
         sync: false
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_APP_SECRET
+        sync: false
+      - key: WHATSAPP_VERIFY_TOKEN
+        sync: false
+      - key: WHATSAPP_API_VERSION
+        sync: false
+      - key: WHATSAPP_ORGANIZATION_ID
+        sync: false
+      - key: WHATSAPP_AI_REPLY_ENABLED
+        sync: false
+      - key: N8N_WHATSAPP_WEBHOOK_URL
+        sync: false
+      - key: N8N_WEBHOOK_SECRET
+        sync: false
 
   - type: web
     name: crestovia-ai-api
