@@ -32,7 +32,9 @@ def test_repository_migration_sequence_is_contiguous():
         text=True,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "36 files, 0001 through 0036" in result.stdout
+    migration_files = sorted((ROOT / "database" / "migrations").glob("*.sql"))
+    latest_version = max(int(file.name[:4]) for file in migration_files)
+    assert f"{len(migration_files)} files, 0001 through {latest_version:04d}" in result.stdout
     assert "does not verify a live database" in result.stdout
 
 
