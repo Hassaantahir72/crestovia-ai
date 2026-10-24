@@ -15,7 +15,7 @@ function safeText(value: unknown, max = 180): string {
 
 async function workspaceOverview({ supabase, organizationId }: ToolContext): Promise<string> {
   const [tasksResult, projectsResult, approvalsResult] = await Promise.all([
-    supabase.from("tasks").select("title,status,priority,due_at").eq("organization_id", organizationId).in("status", ["todo", "in_progress", "blocked", "in_review"]).order("due_at", { ascending: true, nullsFirst: false }).limit(100),
+    supabase.from("tasks").select("title,status,priority,due_at,assigned_to").eq("organization_id", organizationId).in("status", ["todo", "in_progress", "blocked", "in_review"]).order("due_at", { ascending: true, nullsFirst: false }).limit(100),
     supabase.from("projects").select("name,status,priority,due_date").eq("organization_id", organizationId).in("status", ["planned", "active", "on_hold"]).order("due_date", { ascending: true, nullsFirst: false }).limit(40),
     supabase.from("action_approval_requests").select("summary,action_type,status,expires_at").eq("organization_id", organizationId).eq("status", "pending").order("created_at", { ascending: false }).limit(20),
   ]);
@@ -38,7 +38,7 @@ async function workspaceOverview({ supabase, organizationId }: ToolContext): Pro
       visible_open_projects_in_result_window: projectsResult.error ? null : projects.length,
       unexpired_pending_approval_requests: approvalsResult.error ? null : activeApprovals.length,
     },
-    tasks: tasks.slice(0, 12).map(task => ({ title: safeText(task.title), status: task.status, priority: task.priority, due_at: task.due_at })),
+    tasks: tasks.slice(0, 12).map(task => ({ title: safeText(task.title), status: task.status, priority: task.priority, due_at: task.due_at, assigned_to: task.assigned_to })),
     projects: projects.slice(0, 8).map(project => ({ name: safeText(project.name), status: project.status, priority: project.priority, due_date: project.due_date })),
     pending_approvals: activeApprovals.slice(0, 8).map(item => ({ summary: safeText(item.summary), type: item.action_type, expires_at: item.expires_at })),
     limits: "Queries are capped; counts describe returned visible records, not necessarily the full database.",
@@ -54,7 +54,7 @@ async function myAssignedTasks({ supabase, organizationId, userId }: ToolContext
     tool: "my_assigned_tasks",
     access: "authenticated Supabase client; database row-level security applies",
     count: openTasks.length,
-    tasks: openTasks.slice(0, 20).map(task => ({ title: safeText(task.title), status: task.status, priority: task.priority, due_at: task.due_at })),
+    tasks: openTasks.slice(0, 20).map(task => ({ title: safeText(task.title), status: task.status, priority: task.priority, due_at: task.due_at, assigned_to: task.assigned_to })),
     limits: "At most 100 visible assigned tasks were checked.",
   });
 }
@@ -64,7 +64,7 @@ const READ_ONLY_TOOL_REGISTRY: ReadOnlyTool[] = [
     name: "workspace_overview",
     description: "Read visible workspace task, project, and pending approval summaries.",
     mode: "read_only",
-    matches: message => /\b(workspace|company|project|projects|task|tasks|deadline|deadlines|blocked|in progress|approval|approvals|team status|work status|briefing)\b/i.test(message),
+    matches: message => /\b(workspace|company|project|projects|task|tasks|deadline|deadlines|blocked|in progress|approval|approvals|team status|work status|briefing|updates?|recent changes|what changed|pending work|what is pending|what\s+is\s+pending|what.s happening|company status)\b/i.test(message),
     execute: workspaceOverview,
   },
   {
