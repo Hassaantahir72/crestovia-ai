@@ -43,6 +43,9 @@ test("direct messages are created only through an active same-organization RPC",
   assert.match(extensions, /revoke all on function public\\.create_direct_team_channel/);
   assert.match(extensions, /create or replace function public\\.list_active_team_members/);
   assert.match(extensions, /grant execute on function public\\.list_active_team_members/);
+  assert.match(extensions, /revoke update on public\\.team_channels from authenticated/);
+  assert.match(extensions, /grant update \\(name, slug, description, updated_at\\) on public\\.team_channels to authenticated/);
+  assert.match(extensions, /pg_advisory_xact_lock/);
   assert.match(actions, /create_direct_team_channel/);
 });
 
