@@ -11,7 +11,9 @@ Set these on the web service only. Never place credentials in source control or 
 - `WHATSAPP_APP_SECRET`: Meta app secret used to verify HMAC signatures.
 - `WHATSAPP_VERIFY_TOKEN`: long random string also entered in Meta webhook setup.
 - `WHATSAPP_API_VERSION`: currently supported Graph API version from Meta documentation.
-- `WHATSAPP_ORGANIZATION_ID`: organization UUID authorized for this integration.
+- `WHATSAPP_ORGANIZATION_ID`: organization UUID authorized for this integration and event ledger.
+- `N8N_WHATSAPP_WEBHOOK_URL`: HTTPS n8n workflow endpoint that receives verified webhook events.
+- `N8N_WEBHOOK_SECRET`: a separate random secret (at least 32 characters) shared with that n8n workflow. The existing webhook validates this configuration before forwarding inbound events.
 
 ## Meta setup
 
@@ -29,4 +31,4 @@ Set these on the web service only. Never place credentials in source control or 
 4. Test a real outbound message with an opted-in test recipient.
 5. Apply to production only after explicit owner approval and a verified backup/rollback plan.
 
-The webhook caps request bodies at 256 KB, requires Meta's HMAC signature, deduplicates provider message IDs, and does not download media. Inbound message text is stored for owners/admins in the organization event ledger.
+The webhook caps request bodies at 256 KB, requires Meta's HMAC signature, deduplicates provider message IDs, forwards verified events to the configured n8n HTTPS endpoint, and does not download media. When `WHATSAPP_ORGANIZATION_ID` is configured, inbound message text is also stored for owners/admins in the organization event ledger.
