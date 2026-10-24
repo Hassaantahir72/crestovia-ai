@@ -107,7 +107,7 @@ test("SECURITY DEFINER chat RPCs pin search_path and reject unauthorized organiz
   for (const functionName of ["create_direct_team_channel", "list_active_team_members", "touch_team_channel"]) {
     const start = directSql.indexOf("function public." + functionName);
     assert.notEqual(start, -1, functionName + " must exist");
-    const nextFunction = directSql.indexOf("\\ncreate or replace function public.", start + 1);
+    const nextFunction = directSql.indexOf("\ncreate or replace function public.", start + 1);
     const body = directSql.slice(start, nextFunction > start ? nextFunction : directSql.length);
     assert.match(body, /security definer/);
     assert.match(body, /set search_path = ''/);
