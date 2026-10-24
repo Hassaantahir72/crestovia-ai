@@ -27,9 +27,9 @@ export function validateMutationFixtures(document) {
   }
   const seen = new Set();
   for (const [index, item] of document.tables.entries()) {
-    if (!item || !ALLOWED_TABLES.has(item.table)) throw new Error('Fixture ' + (index + 1) + ' uses a table that is not mutation-allowlisted.');
+    if (!item || !PROBE_COLUMNS.has(item.table)) throw new Error('Fixture ' + (index + 1) + ' uses a table that is not mutation-allowlisted.');
     if (!isUuid(item.orgAId) || !isUuid(item.orgBId) || item.orgAId === item.orgBId) throw new Error('Fixture ' + (index + 1) + ' must contain two distinct UUID row IDs.');
-    if (typeof item.probeColumn !== 'string' || !/^[a-z][a-z0-9_]{0,62}$/.test(item.probeColumn)) throw new Error('Fixture ' + (index + 1) + ' has an invalid probeColumn.');
+    if (typeof item.probeColumn !== 'string' || !PROBE_COLUMNS.get(item.table).has(item.probeColumn)) throw new Error('Fixture ' + (index + 1) + ' has a probeColumn that is not allowlisted for this table.');
     if (!isSafeText(item.originalValue) || !isSafeText(item.attemptValue) || item.originalValue === item.attemptValue) {
       throw new Error('Fixture ' + (index + 1) + ' must provide distinct, non-empty text originalValue and attemptValue strings.');
     }
