@@ -13,9 +13,9 @@ type TeamMessage = { id: string; author_id: string; body: string; created_at: st
 const errors: Record<string, string> = {
   channel_permission: "Only owners, admins, and managers can create channels.",
   invalid_channel: "Channel names must contain at least two characters.",
-  channel_create_failed: "Could not create the channel. Confirm migration 0034 has been applied.",
+  channel_create_failed: "Could not create the channel. Confirm migration 0037 has been applied.",
   invalid_teammate: "Choose an active teammate in your organization.",
-  direct_create_failed: "Could not start the direct conversation. Confirm migration 0034 has been applied.",
+  direct_create_failed: "Could not start the direct conversation. Confirm migration 0037 has been applied.",
   empty_message: "Write a message before sending.",
   conversation_unavailable: "That conversation is not available to your account.",
   message_send_failed: "Message was not sent. Check the team chat migration and your organization membership.",
@@ -51,7 +51,7 @@ export default async function TeamChatPage({ searchParams }: Props) {
     <nav className="workspace-nav"><Link href="/dashboard">← Dashboard</Link><Link href="/dashboard/assistant">AI assistant</Link><Link href="/dashboard/projects">Projects</Link><Link href="/dashboard/integrations/whatsapp">WhatsApp integration</Link></nav>
     <header className="page-header"><div><p className="brand">CRESTOVIA AI / TEAM</p><h1>Team chat</h1><p className="muted">Internal conversations for {displayName} · messages stay inside your organization.</p></div><span className="role-pill">{membership.role}</span></header>
     {errorKey && errors[errorKey] ? <p className="notice notice-error">{errors[errorKey]}</p> : null}
-    {conversationError ? <p className="notice notice-error">Team chat tables are not available yet. Apply database migration 0034 in staging first.</p> : null}
+    {conversationError ? <p className="notice notice-error">Team chat tables are not available yet. Apply database migration 0037 in staging first.</p> : null}
     <div className="team-chat-layout">
       <aside className="panel team-chat-sidebar">
         <h2>Channels & direct messages</h2>
