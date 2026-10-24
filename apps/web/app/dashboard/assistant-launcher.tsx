@@ -39,6 +39,7 @@ export default function AssistantLauncher() {
   const pathname = usePathname();
   const router = useRouter();
   const recognizerRef = useRef<Recognition | null>(null);
+  const restartTimerRef = useRef<number | null>(null);
   const [wakeEnabled, setWakeEnabled] = useState(false);
   const [wakeStatus, setWakeStatus] = useState("");
   const [supported, setSupported] = useState(false);
@@ -47,6 +48,7 @@ export default function AssistantLauncher() {
     const speechWindow = window as SpeechWindow;
     setSupported(Boolean(speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition));
     return () => {
+      if (restartTimerRef.current !== null) window.clearTimeout(restartTimerRef.current);
       recognizerRef.current?.stop();
       recognizerRef.current = null;
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
@@ -54,6 +56,8 @@ export default function AssistantLauncher() {
   }, []);
 
   function stopWakeWord() {
+    if (restartTimerRef.current !== null) window.clearTimeout(restartTimerRef.current);
+    restartTimerRef.current = null;
     recognizerRef.current?.stop();
     recognizerRef.current = null;
     setWakeEnabled(false);
@@ -91,9 +95,21 @@ export default function AssistantLauncher() {
         recognizerRef.current = null;
       };
       recognizer.onend = () => {
+        // Some browsers end a continuous recognition session after a short silence.
+        // Restart it while wake-word mode is still enabled instead of silently going idle.
         if (recognizerRef.current === recognizer) {
-          recognizerRef.current = null;
-          setWakeEnabled(false);
+          restartTimerRef.current = window.setTimeout(() => {
+            restartTimerRef.current = null;
+            if (recognizerRef.current !== recognizer) return;
+            try {
+              recognizer.start();
+              setWakeStatus("Still listening for “Crestovia”. Keep this tab open and the microphone enabled.");
+            } catch {
+              recognizerRef.current = null;
+              setWakeEnabled(false);
+              setWakeStatus("Wake-word listening stopped unexpectedly. Turn it on again and check microphone permission.");
+            }
+          }, 350);
         }
       };
       recognizerRef.current = recognizer;
