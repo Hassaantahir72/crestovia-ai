@@ -59,6 +59,31 @@ $$;
 revoke all on function public.create_direct_team_channel(uuid, uuid) from public, anon;
 grant execute on function public.create_direct_team_channel(uuid, uuid) to authenticated;
 
+-- Expose only a minimal active-member directory to authenticated teammates.
+create or replace function public.list_active_team_members(p_organization_id uuid)
+returns table(user_id uuid, role text, display_name text)
+language sql
+stable
+security definer
+set search_path = ''
+as $
+  select m.user_id, m.role, coalesce(nullif(trim(p.display_name), ''), 'Team member')
+  from public.memberships m
+  left join public.profiles p on p.user_id = m.user_id
+  where m.organization_id = p_organization_id
+    and m.status = 'active'
+    and exists (
+      select 1 from public.memberships self
+      where self.organization_id = p_organization_id
+        and self.user_id = (select auth.uid())
+        and self.status = 'active'
+    )
+  order by coalesce(nullif(trim(p.display_name), ''), 'Team member'), m.role;
+$;
+revoke all on function public.list_active_team_members(uuid) from public, anon;
+grant execute on function public.list_active_team_members(uuid) to authenticated;
+
+
 create table if not exists public.whatsapp_message_events (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null references public.organizations(id) on delete cascade,
