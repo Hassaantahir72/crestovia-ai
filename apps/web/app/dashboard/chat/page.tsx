@@ -6,6 +6,7 @@ import {getActiveOrganizationMembership} from "@/lib/organizations/active-member
 import {createTeamChannel,sendTeamMessage} from "./actions";
 
 type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
+type TeamMessage={id:string;channel_id:string;author_id:string;body:string;created_at:string};
 const canManage=(role:string)=>["owner","admin","manager"].includes(role);
 
 export default async function TeamChatPage({searchParams}:Props){
@@ -21,7 +22,7 @@ export default async function TeamChatPage({searchParams}:Props){
   .eq("organization_id",membership.organization_id).order("name").limit(100);
  const requested=typeof p.channel==="string"?p.channel:"";
  const activeChannel=(channels??[]).find(c=>c.id===requested)??(channels??[])[0]??null;
- let messages:any[]=[];
+ let messages:TeamMessage[]=[];
  let messageError=false;
  if(activeChannel){
   const result=await supabase.from("team_messages")
@@ -54,7 +55,7 @@ export default async function TeamChatPage({searchParams}:Props){
    <section className="panel team-chat-main">
     {activeChannel?<><div className="chat-heading"><div><h2># {activeChannel.name}</h2><p className="muted">{activeChannel.description||"Company-wide channel"} · {activeChannel.visibility} · Messages are visible to authorized channel members.</p></div></div>
      {messageError?<p className="notice notice-error">Messages could not be loaded. Check the database migration and channel permissions.</p>:null}
-     <div className="chat-messages team-message-list">{messages.length?messages.map((m:any)=><article className={"chat-message "+(m.author_id===user.id?"user-message":"assistant-message")} key={m.id}><p className="message-role">{m.author_id===user.id?"You":"Team member · "+m.author_id.slice(0,8)} · {new Date(m.created_at).toLocaleString()}</p><p className="message-content">{m.body}</p></article>):<div className="chat-empty"><h3>Start the conversation</h3><p className="muted">Share an update, ask a teammate a question, or coordinate the next step.</p></div>}</div>
+     <div className="chat-messages team-message-list">{messages.length?messages.map((m)=><article className={"chat-message "+(m.author_id===user.id?"user-message":"assistant-message")} key={m.id}><p className="message-role">{m.author_id===user.id?"You":"Team member · "+m.author_id.slice(0,8)} · {new Date(m.created_at).toLocaleString()}</p><p className="message-content">{m.body}</p></article>):<div className="chat-empty"><h3>Start the conversation</h3><p className="muted">Share an update, ask a teammate a question, or coordinate the next step.</p></div>}</div>
      <form action={sendTeamMessage} className="chat-composer"><input type="hidden" name="channel_id" value={activeChannel.id}/><label htmlFor="team-message">Message your team</label><textarea className="input chat-input" id="team-message" name="body" required minLength={1} maxLength={8000} rows={4} placeholder="Write a message…"/><div className="chat-compose-footer"><span className="muted">Company chat · Not sent to the AI assistant</span><button className="button" type="submit">Send message</button></div></form>
     </>:<div className="chat-empty"><h2>Company team chat</h2><p className="muted">Create a channel to begin sharing updates with your team. This is separate from the private AI assistant.</p></div>}
    </section>
