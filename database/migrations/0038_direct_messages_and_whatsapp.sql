@@ -94,7 +94,7 @@ create or replace function public.touch_team_channel(
 language plpgsql
 security definer
 set search_path = ''
-as $
+as $function$
 begin
   if not exists (
     select 1 from public.memberships m
@@ -118,7 +118,7 @@ begin
     );
   if not found then raise exception 'team_channel_unavailable'; end if;
 end;
-$;
+$function$;
 revoke all on function public.touch_team_channel(uuid, uuid) from public, anon;
 grant execute on function public.touch_team_channel(uuid, uuid) to authenticated;
 
@@ -129,7 +129,7 @@ language sql
 stable
 security definer
 set search_path = ''
-as $
+as $function$
   select m.user_id, m.role, coalesce(nullif(trim(p.display_name), ''), 'Team member')
   from public.memberships m
   left join public.profiles p on p.user_id = m.user_id
@@ -142,7 +142,7 @@ as $
         and self.status = 'active'
     )
   order by coalesce(nullif(trim(p.display_name), ''), 'Team member'), m.role;
-$;
+$function$;
 revoke all on function public.list_active_team_members(uuid) from public, anon;
 grant execute on function public.list_active_team_members(uuid) to authenticated;
 
