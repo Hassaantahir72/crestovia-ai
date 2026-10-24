@@ -175,3 +175,54 @@ using (
       and m.status = 'active' and m.role in ('owner','admin')
   )
 );
+
+
+-- Verified staff phone mappings let WhatsApp identify an active organization member
+-- before exposing read-only workspace context to the assistant.
+create table if not exists public.whatsapp_staff_senders (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid not null references public.organizations(id) on delete cascade,
+  user_id uuid not null,
+  phone_e164 text not null check (phone_e164 ~ '^[0-9]{8,15}$'),
+  active boolean not null default true,
+  created_by uuid not null,
+  created_at timestamptz not null default now(),
+  unique (organization_id, phone_e164),
+  unique (organization_id, user_id),
+  foreign key (organization_id, user_id)
+    references public.memberships(organization_id, user_id) on delete cascade,
+  foreign key (organization_id, created_by)
+    references public.memberships(organization_id, user_id) on delete cascade
+);
+create index if not exists whatsapp_staff_senders_lookup_idx
+  on public.whatsapp_staff_senders(organization_id, phone_e164) where active = true;
+alter table public.whatsapp_staff_senders enable row level security;
+revoke all on public.whatsapp_staff_senders from anon;
+grant select, insert, delete on public.whatsapp_staff_senders to authenticated;
+grant all on public.whatsapp_staff_senders to service_role;
+drop policy if exists "owners admins manage WhatsApp staff senders" on public.whatsapp_staff_senders;
+create policy "owners admins manage WhatsApp staff senders"
+on public.whatsapp_staff_senders for all to authenticated
+using (
+  exists (
+    select 1 from public.memberships m
+    where m.organization_id = whatsapp_staff_senders.organization_id
+      and m.user_id = (select auth.uid())
+      and m.status = 'active' and m.role in ('owner','admin')
+  )
+)
+with check (
+  created_by = (select auth.uid())
+  and exists (
+    select 1 from public.memberships m
+    where m.organization_id = whatsapp_staff_senders.organization_id
+      and m.user_id = (select auth.uid())
+      and m.status = 'active' and m.role in ('owner','admin')
+  )
+  and exists (
+    select 1 from public.memberships target
+    where target.organization_id = whatsapp_staff_senders.organization_id
+      and target.user_id = whatsapp_staff_senders.user_id
+      and target.status = 'active'
+  )
+);
